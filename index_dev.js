@@ -1,3 +1,11 @@
+/**
+ * Entry point of the application while in development.
+ * 
+ * In development :
+ * - KissJS library is loaded dynamically from the local folder, using its non-minified version to ease the debugging
+ * - Your custom application scripts and styles are loaded dynamically and must be added to the list below
+ * - HTTPs is disabled
+ */
 kiss
     .loader.loadLibrary({
         libraryPath: "./kissjs"
