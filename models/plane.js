@@ -25,7 +25,7 @@ kiss.app.defineModel({
             id: "hourPrice",
             type: "number",
             unit: "€/h",
-            label: "Taris horaire"
+            label: "Tarif horaire"
         }
     ]
 });

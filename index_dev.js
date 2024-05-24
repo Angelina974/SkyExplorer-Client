@@ -15,7 +15,12 @@ kiss
         kiss.loader.loadScripts([
             // VIEWS
             "views/home/start",
+            "views/home/planes",
+            "views/home/planning",
 
+            // TEMPLATES
+            "templates/topbar",
+            
             // TEXTS
             "resources/texts"
 
@@ -42,7 +47,6 @@ kiss
         })
     })
 
-
 window.onload = async function () {
     // Switch http instead of https for local dev
     kiss.session.secure = false
@@ -59,6 +63,8 @@ window.onload = async function () {
 
     // Init the KissJS app
     await kiss.app.init()
+
+    await kiss.app.models.plane.collection.insertFakeRecords(10)
 
     // Remove the splash screen
     $("splash").remove()

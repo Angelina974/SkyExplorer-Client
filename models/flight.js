@@ -8,43 +8,71 @@ kiss.app.defineModel({
     items: [
         {
             id: "date",
-            dataType: Date
+            type: "date",
+            label: "Date du vol",
+            value: "today"
         },
         {
             id: "time",
-            dataType: String
+            type: "select",
+            label: "Heure du vol",
+            template: "time",
+            min: 7,
+            max: 19,
+            interval: 60
         },
         {
-            id: "student",
-            dataType: String
+            id: "client",
+            type: "text",
+            label: "Client ou Elève pilote"
         },
         {
             id: "type",
-            dataType: String
+            type: "select",
+            label: "Type de vol",
+            options: [
+                {
+                    label: "Formation",
+                    value: "formation",
+                    color: "#00aaee"
+                },
+                {
+                    label: "Loisir",
+                    value: "loisir",
+                    color: "#ee3333"
+                }
+            ]
         },
         {
             id: "duration",
-            dataType: Number
+            type: "number",
+            unit: "mn",
+            label: "Durée du vol"
         },
         {
             id: "description",
-            dataType: String
+            type: "text",
+            label: "Description du vol"
         },
         {
             id: "planeId",
-            dataType: String
+            type: "text",
+            label: "Immatriculation de l'avion"
         },
         {
             id: "planeBrand",
-            dataType: String
+            type: "text",
+            label: "Marque d'avion"
         },
         {
             id: "planeType",
-            dataType: String
+            type: "text",
+            label: "Type d'avion"
         },
         {
             id: "hourPrice",
-            dataType: Number
+            type: "number",
+            label: "Tarif horaire"
         }
     ]
 });
