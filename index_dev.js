@@ -29,13 +29,17 @@ kiss
 
             // Load styles dynamically
             kiss.loader.loadStyles([
-                // VIEWS
+                // Your CSS files here...
             ])
         })
     })
 
 
 window.onload = async function () {
+    // Switch http instead of https for local dev
+    kiss.session.secure = false
+    
+    // Start the app
     app.init
         .logo()
         .host()
