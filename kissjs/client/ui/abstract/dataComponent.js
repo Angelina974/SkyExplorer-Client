@@ -781,6 +781,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
         }
 
         if (this.columns) {
+
             // A config is provided
             // Filters out the columns which field doesn't exist anymore in the model
             this.columns = this.columns.filter(column => {

@@ -24,7 +24,7 @@ kiss.app.defineModel({
         {
             id: "client",
             type: "text",
-            label: "Client ou Elève pilote"
+            label: "Client"
         },
         {
             id: "type",

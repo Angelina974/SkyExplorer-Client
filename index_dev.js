@@ -64,8 +64,6 @@ window.onload = async function () {
     // Init the KissJS app
     await kiss.app.init()
 
-    await kiss.app.models.plane.collection.insertFakeRecords(10)
-
     // Remove the splash screen
     $("splash").remove()
 };

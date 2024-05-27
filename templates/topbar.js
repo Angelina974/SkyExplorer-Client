@@ -9,13 +9,15 @@ function createTopBar() {
                 type: "button",
                 icon: "fas fa-chevron-left",
                 margin: "0 20px 0 10px",
-                height: 40,
+                width: 34,
+                height: 34,
                 borderRadius: "32px",
                 action: () => kiss.router.navigateTo("home-start")
             },
             {
                 type: "html",
-                html: "TOP BAR"
+                color: "#ffffff",
+                html: "RETOUR"
             }
         ]
     }

@@ -1,6 +1,14 @@
 kiss.app.defineView({
     id: "planning",
     renderer: function(id, target) {
+
+        // Restrict the columns to the ones we want to display
+        let visibleColumns = ["time", "client", "type", "duration", "planeId"]
+        let columns = kiss.app.models.flight.getFieldsAsColumns()
+        columns.forEach(column => {
+            column.hidden = !visibleColumns.includes(column.id)
+        })
+
         return createBlock({
             id, 
             target,
@@ -18,6 +26,7 @@ kiss.app.defineView({
                     height: () => kiss.screen.getHeightMinus(50),
                     
                     collection: kiss.app.collections.flight,
+                    columns,
 
                     actions: [
                         {
