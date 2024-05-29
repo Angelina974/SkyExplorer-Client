@@ -23,7 +23,7 @@ kiss.app.defineView({
                     canCreateRecord: true,
                     startOnMonday: true,
                     showWeekend: true,
-                    height: () => kiss.screen.getHeightMinus(50),
+                    height: () => kiss.screen.current.height - 60,
                     
                     collection: kiss.app.collections.flight,
                     columns,

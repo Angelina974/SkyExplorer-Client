@@ -13,10 +13,13 @@ kiss
     .then(() => {
         // Load scripts dynamically
         kiss.loader.loadScripts([
+            // KissJS extensions
+            "kissjs/client/ux/link/link",
+
             // VIEWS
-            "views/home/start",
-            "views/home/planes",
-            "views/home/planning",
+            "views/start",
+            "views/planes",
+            "views/planning",
 
             // TEMPLATES
             "templates/topbar",
@@ -33,6 +36,7 @@ kiss
                 "models/user",
                 "models/group",
                 "models/model",
+                "models/view",
                 "models/file",
                 "models/link",
                 "models/trash",
@@ -42,7 +46,11 @@ kiss
 
             // Load styles dynamically
             kiss.loader.loadStyles([
-                // Your CSS files here...
+                // KissJS extensions
+                "kissjs/client/ux/link/link",
+
+                // VIEWS
+                "views/start",
             ])
         })
     })

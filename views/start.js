@@ -12,18 +12,22 @@ kiss.app.defineView({
             layout: "horizontal",
             items: [
                 {
+                    class: "home-left",
                     type: "html",
                     color: "#ffffff",
-                    background: "#00aaee",
+                    background: "#000055",
                     width: "50%",
-                    html: "<center>Sky Explorer</center>"
+                    html: `<img src="./resources/img/logo 256x128.png">`
                 },
                 {
                     layout: "vertical",
+                    background: "#00aaee",
                     alignItems: "center",
                     justifyContent: "center",
                     flex: 1,
                     defaultConfig: {
+                        iconSize: 20,
+                        iconColor: "#00aaee",
                         height: 50,
                         width: 300,
                         margin: 15,
@@ -32,31 +36,31 @@ kiss.app.defineView({
                     items: [
                         {
                             type: "button",
-                            icon: "fas fa-check",
+                            icon: "fas fa-clipboard",
                             text: "Voir le planning des vols",
                             action: () => kiss.router.navigateTo("planning")
                         },
                         {
                             type: "button",
-                            icon: "fas fa-check",
+                            icon: "fas fa-chart-line",
                             text: "Ma progression",
                             action: () => kiss.router.navigateTo("progress")
                         },
                         {
                             type: "button",
-                            icon: "fas fa-check",
+                            icon: "fas fa-dollar-sign",
                             text: "Factures",
                             action: () => kiss.router.navigateTo("invoices")
                         },
                         {
                             type: "button",
-                            icon: "fas fa-check",
+                            icon: "fas fa-user-graduate",
                             text: "Gérer le plan de formation",
                             action: () => kiss.router.navigateTo("training")
                         },
                         {
                             type: "button",
-                            icon: "fas fa-check",
+                            icon: "fas fa-fighter-jet",
                             text: "Suivi des avions",
                             action: () => kiss.router.navigateTo({
                                 ui: "planes",
@@ -66,7 +70,7 @@ kiss.app.defineView({
                         },
                         {
                             type: "button",
-                            icon: "fas fa-check",
+                            icon: "fas fa-power-off",
                             text: "Se déconnecter",
                             action: () => kiss.session.logout()
                         }

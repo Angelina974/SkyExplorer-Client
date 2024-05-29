@@ -104,6 +104,36 @@ kiss.language.texts = {
         "fr": "rechercher",
         "es": "buscar"
     },
+    "#createdAt": {
+        "en": "created at",
+        "fr": "créé le",
+        "es": "creado el"
+    },
+    "#createdBy": {
+        "en": "created by",
+        "fr": "créé par",
+        "es": "creado por"
+    },
+    "#updatedAt": {
+        "en": "updated at",
+        "fr": "modifié le",
+        "es": "modificado el"
+    },
+    "#updatedBy": {
+        "en": "updated by",
+        "fr": "modifié par",
+        "es": "modificado por"
+    },
+    "#deletedAt": {
+        "en": "deleted at",
+        "fr": "supprimé le",
+        "es": "eliminado el"
+    },
+    "#deletedBy": {
+        "en": "deleted by",
+        "fr": "supprimé par",
+        "es": "eliminado por"
+    },
 
     /**
      * Authentication & Registration
@@ -830,6 +860,24 @@ kiss.language.texts = {
     /**
      * Link field
      */
+    "link to another table": {
+        "fr": "liaison vers une autre table",
+        "es": "enlace a otra tabla"
+    },
+    "#select link": {
+        "en": "select",
+        "fr": "sélectionner",
+        "es": "seleccionar"
+    },
+    "delete a link": {
+        "fr": "effacer une liaison",
+        "es": "eliminar un enlace"
+    },
+    "#delete link": {
+        "en": "this will delete the link between the records. Do you want to do that?",
+        "fr": "cela va supprimer la liaison entre les fiches. Voulez-vous bien faire cela ?",
+        "es": "esto eliminará el enlace entre los registros. ¿Quieres hacer eso?"
+    },
     "#connect records": {
         "en": "connecting 2 records",
         "fr": "connecter 2 données",
@@ -844,6 +892,20 @@ kiss.language.texts = {
         "en": "link to a record from the table:",
         "fr": "lier à une donnée de la table :",
         "es": "enlazar con un registro de la tabla:"
+    },
+    "#record already linked": {
+        "en": "this record is already linked",
+        "fr": "cette fiche est déjà liée",
+        "es": "este registro ya está vinculado"
+    },
+    "#only one link": {
+        "en": "you can only link a single element",
+        "fr": "vous ne pouvez lier qu'un seul élément",
+        "es": "solo puedes enlazar un único elemento"
+    },
+    "display as table": {
+        "fr": "afficher en table",
+        "es": "mostrar como tabla"
     },
 
     /**
@@ -1140,6 +1202,11 @@ kiss.language.texts = {
         "en": "do you want to review these tips?",
         "fr": "voulez-vous revoir ces conseils ?",
         "es": "¿quieres revisar estos consejos?"
+    },
+    "#open link": {
+        en: "open link in new tab",
+        fr: "ouvrir le lien dans un nouvel onglet",
+        es: "abrir enlace en nueva pestaña"
     },
 
     /**

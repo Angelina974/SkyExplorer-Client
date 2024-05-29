@@ -3,7 +3,7 @@ kiss.app.defineModel({
     name: "Vol",
     namePlural: "Vols",
     icon: "fas fa-clipboard",
-    color: "#00aaee",
+    color: "#9700ee",
 
     items: [
         {
@@ -56,23 +56,56 @@ kiss.app.defineModel({
         },
         {
             id: "planeId",
-            type: "text",
-            label: "Immatriculation de l'avion"
+            type: "link",
+            label: "Avion",
+            canCreateRecord: true,
+            canDeleteLinks: true,
+            canLinkRecords: false,
+            multiple: false,
+            link: {
+                modelId: "plane",
+                fieldId: "flights"
+            }
         },
         {
             id: "planeBrand",
-            type: "text",
-            label: "Marque d'avion"
+            type: "lookup",
+            label: "Marque d'avion",
+            computed: true,
+            lookup: {
+                linkId: "planeId",
+                fieldId: "planeBrand"
+            }
         },
         {
             id: "planeType",
-            type: "text",
-            label: "Type d'avion"
+            type: "lookup",
+            label: "Type d'avion",
+            computed: true,
+            lookup: {
+                linkId: "planeId",
+                fieldId: "planeType"
+            }
         },
         {
             id: "hourPrice",
+            type: "lookup",
+            label: "Tarif horaire",
+            unit: "€HT/h",
+            computed: true,
+            lookup: {
+                linkId: "planeId",
+                fieldId: "hourPrice",
+                type: "number"
+            }
+        },
+        {
+            id: "totalPrice",
             type: "number",
-            label: "Tarif horaire"
+            unit: "€HT",
+            label: "Prix total du vol",
+            computed: true,
+            formula: "ROUND ( {{Tarif horaire}} * {{Durée du vol}} / 60, 2 )"
         }
     ]
 });

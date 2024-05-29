@@ -2,22 +2,19 @@ function createTopBar() {
     return {
         layout: "horizontal",
         alignItems: "center",
-        height: 50,
+        height: 60,
         background: "#00aaee",
         items: [
             {
                 type: "button",
+                text: "Retour",
                 icon: "fas fa-chevron-left",
-                margin: "0 20px 0 10px",
-                width: 34,
-                height: 34,
-                borderRadius: "32px",
-                action: () => kiss.router.navigateTo("home-start")
-            },
-            {
-                type: "html",
+                iconColor: "#ffffff",
                 color: "#ffffff",
-                html: "RETOUR"
+                background: "#00aaee",
+                margin: "0 10px",
+                height: 32,
+                action: () => kiss.router.navigateTo("home-start")
             }
         ]
     }

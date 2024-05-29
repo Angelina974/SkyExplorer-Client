@@ -1,0 +1,11 @@
+.home-left {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media screen and (max-width: 700px) {
+    .home-left {
+        display: none;
+    }
+}

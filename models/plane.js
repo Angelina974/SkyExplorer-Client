@@ -26,6 +26,19 @@ kiss.app.defineModel({
             type: "number",
             unit: "€/h",
             label: "Tarif horaire"
+        },
+        {
+            id: "flights",
+            type: "link",
+            label: "Vols",
+            canCreateRecord: true,
+            canDeleteLinks: true,
+            canLinkRecords: false,
+            multiple: true,
+            link: {
+                modelId: "flight",
+                fieldId: "planeId"
+            }
         }
     ]
 });

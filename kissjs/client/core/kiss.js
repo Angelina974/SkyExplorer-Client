@@ -307,6 +307,8 @@ const kiss = {
         core: {
             scripts: [
                 // "modules/global",
+                "modules/language",
+                "modules/language.texts",
                 "modules/dataTrash",
                 "modules/ajax",
                 "modules/context",
@@ -319,8 +321,6 @@ const kiss = {
                 "modules/router",
                 "modules/views",
                 "modules/theme",
-                "modules/language",
-                "modules/language.texts",
                 "modules/plugins",
                 "modules/selection",
                 "modules/screen",

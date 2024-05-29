@@ -12,7 +12,7 @@ kiss.app.defineView({
                     type: "datatable",
                     canEdit: true,
                     canCreateRecord: true,
-                    height: () => kiss.screen.current.height - 50,
+                    height: () => kiss.screen.current.height - 60,
                     collection: kiss.app.collections.plane,
 
                     actions: [
