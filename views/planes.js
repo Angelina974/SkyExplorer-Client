@@ -9,6 +9,7 @@ kiss.app.defineView({
             items: [
                 createTopBar(),
                 {
+                    id: "planes-list",
                     type: "datatable",
                     canEdit: true,
                     canCreateRecord: true,

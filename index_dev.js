@@ -20,6 +20,7 @@ kiss
             "views/start",
             "views/planes",
             "views/planning",
+            "views/users",
 
             // TEMPLATES
             "templates/topbar",
@@ -41,7 +42,8 @@ kiss
                 "models/link",
                 "models/trash",
                 "models/flight",
-                "models/plane"
+                "models/plane",
+                "models/user"
             ])
 
             // Load styles dynamically

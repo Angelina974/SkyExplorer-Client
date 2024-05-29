@@ -65,9 +65,19 @@ kiss.app.defineView({
                             action: () => kiss.router.navigateTo({
                                 ui: "planes",
                                 modelId: "plane",
-                                viewId: "planes"
+                                viewId: "planes-list"
                             })
                         },
+                        {
+                            type: "button",
+                            icon: "fas fa-users",
+                            text: "Gestion des utilisateurs",
+                            action: () => kiss.router.navigateTo({
+                                ui: "users",
+                                modelId: "user",
+                                viewId: "users-list"
+                            })
+                        },                        
                         {
                             type: "button",
                             icon: "fas fa-power-off",

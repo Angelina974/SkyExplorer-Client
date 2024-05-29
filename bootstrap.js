@@ -116,6 +116,10 @@ const app = {
             kiss.session.addHook("afterInit", async () => await app.init.account())
             kiss.session.addHook("afterRestore", async () => await app.init.account())
 
+            // Restrict the login methods to "internal"
+            // No time to implement SSO with Google, Facebook, etc.
+            kiss.session.setLoginMethods(["internal"])
+
             return app.init
         },
 
@@ -135,20 +139,9 @@ const app = {
 
         /**
          * Init the session account by retrieving the record which holds the account data.
-         * When offline, generates a fake offline account.
          */
         async account() {
-            if (kiss.session.isOnline()) {
-                kiss.session.account = await kiss.app.collections.account.findOne(kiss.session.getCurrentAccountId())
-            } else {
-                kiss.session.account = kiss.app.models.account.create({
-                    accountId: "anonymous",
-                    status: "active"
-                })
-            }
-
-            // Observe account updates
-            kiss.pubsub.subscribe("EVT_DB_UPDATE:ACCOUNT", async () => kiss.session.account = await kiss.app.collections.account.findOne(kiss.session.getCurrentAccountId()))
+            kiss.session.account = await kiss.app.collections.account.findOne(kiss.session.getCurrentAccountId())
         },
 
         /**
