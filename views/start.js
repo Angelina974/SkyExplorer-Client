@@ -49,7 +49,11 @@ kiss.app.defineView({
                             type: "button",
                             icon: "fas fa-dollar-sign",
                             text: "Factures",
-                            action: () => kiss.router.navigateTo("invoices")
+                            action: () => kiss.router.navigateTo({
+                                ui: "invoices",
+                                modelId: "invoice",
+                                viewId: "invoices-list"
+                            })
                         },
                         {
                             type: "button",

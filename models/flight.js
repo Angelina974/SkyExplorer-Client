@@ -3,9 +3,15 @@ kiss.app.defineModel({
     name: "Vol",
     namePlural: "Vols",
     icon: "fas fa-clipboard",
-    color: "#9700ee",
+    color: "#ee3500",
 
     items: [
+        {
+            id: "flightId",
+            type: "text",
+            label: "Identifiant du vol",
+            value: "unid"
+        },
         {
             id: "date",
             type: "date",
@@ -123,11 +129,11 @@ kiss.app.defineModel({
             label: "Facture",
             canCreateRecord: true,
             canDeleteLinks: true,
-            canLinkRecords: false,
+            canLinkRecord: false,
             multiple: false,
             link: {
                 modelId: "invoice",
-                fieldId: "flightId"
+                fieldId: "flight"
             }
         }
     ]
