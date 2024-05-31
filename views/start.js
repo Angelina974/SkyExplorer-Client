@@ -14,24 +14,23 @@ kiss.app.defineView({
                 {
                     class: "home-left",
                     type: "html",
-                    color: "#ffffff",
-                    background: "#000055",
                     width: "50%",
-                    html: `<img src="./resources/img/logo 256x128.png">`
+                    html: `<img src="./resources/img/skyExplorer.svg">`
                 },
                 {
                     layout: "vertical",
-                    background: "#00aaee",
+                    background: "#000055",
                     alignItems: "center",
                     justifyContent: "center",
                     flex: 1,
                     defaultConfig: {
-                        iconSize: 20,
-                        iconColor: "#00aaee",
+                        iconSize: 22,
+                        iconColor: "#000055",
                         height: 50,
                         width: 300,
-                        margin: 15,
-                        borderRadius: 25
+                        margin: 20,
+                        borderRadius: 25,
+                        fontSize: 16,
                     },
                     items: [
                         {

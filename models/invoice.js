@@ -1,69 +1,66 @@
-kiss.app.defineView({
+kiss.app.defineModel({
     id: "invoice",
-    name: "Invoice",
-    namePlural: "Invoices",
-    icon: "fas fa-users",
-    color: "#00aaee",
+    name: "Facture",
+    namePlural: "Factures",
+    icon: "fas fa-clipboard",
+    color: "#9700ee",
 
     items: [
         {
-            id: "invoiceId",
+            id: "client",
             type: "text",
-            label: "Référence"
+            label: "Client",
+            lookup: {
+                modelId: "user",
+                fieldId: "fisrtName"
+            }
         },
         {
             id: "flightId",
             type: "link",
-            label: "Identifiant du vol",
-            link: {
-                modelId: "flight",
-                fieldId: "planeId"
-            }
-        },
-        {
-            id: "client",
-            type: "link",
-            label: "Client",
-            link: {
-                modelId: "user",
-                fieldId: "userId"
-            }
-        },
-        {
-            id: "invoiceDate",
-            type: "date",
-            label: "Date de la facture"
-        },
-        {
-            id: "vols",
-            type: "link",
-            unit: "€/h",
-            label: "Tarif horaire",
-            link: {
-                modelId: "plane",
-                fieldId: "hourPrice"
-            }
-        },
-        {
-            id: "totalPrice",
-            type: "number",
-            unit: "€HT",
-            label: "Prix total du vol",
-            computed: true,
-            formula: "ROUND ( {{Tarif horaire}} * {{Durée du vol}} / 60, 2 )"
-        },
-        {
-            id: "flights",
-            type: "link",
-            label: "Vols",
+            label: "Vol",
             canCreateRecord: true,
             canDeleteLinks: true,
             canLinkRecords: false,
-            multiple: true,
+            multiple: false,
             link: {
                 modelId: "flight",
-                fieldId: "planeId"
+                fieldId: "invoice"
+            }
+        },
+        {
+            id: "flightId",
+            type: "lookup",
+            label: "Identifiant du vol",
+            computed: true,
+            lookup: {
+                linkId: "flight",
+                fieldId: "flightId"
+            }
+        },
+        {
+            id: "date",
+            type: "date",
+            label: "Date de la facture",
+            value: "today"
+        },
+        {
+            id: "invoiceId",
+            type: "text",
+            label: "Référence",
+            
+        },
+        {
+            id: "totalPrice",
+            type: "lookup",
+            label: "Montant de la facture",
+            unit: "€HT/h",
+            computed: true,
+            lookup: {
+                linkId: "flight",
+                fieldId: "totalPrice",
+                type: "number"
             }
         },
     ]
-})
+});

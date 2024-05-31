@@ -18,7 +18,7 @@ kiss.app.defineView({
 
                     actions: [
                         {
-                            text: txtTitleCase("Supprimer les facturs sélectionnés"),
+                            text: txtTitleCase("Supprimer les factures sélectionnés"),
                             icon: "fas fa-trash",
                             iconColor: "var(--red)",
                             action: () => kiss.selection.deleteSelectedRecords()
