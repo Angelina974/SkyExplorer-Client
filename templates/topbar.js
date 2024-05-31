@@ -3,7 +3,7 @@ function createTopBar() {
         layout: "horizontal",
         alignItems: "center",
         height: 60,
-        background: "#00aaee",
+        background: "#000055",
         items: [
             {
                 type: "button",
@@ -11,7 +11,7 @@ function createTopBar() {
                 icon: "fas fa-chevron-left",
                 iconColor: "#ffffff",
                 color: "#ffffff",
-                background: "#00aaee",
+                background: "#414180",
                 margin: "0 10px",
                 height: 32,
                 action: () => kiss.router.navigateTo("home-start")
@@ -35,7 +35,7 @@ function createTopBar() {
                 borderRadius: 16,
                 iconColor: "#ffffff",
                 color: "#ffffff",
-                background: "#00aaee",
+                background: "#414180",
                 action: () => kiss.session.logout()
             }
         ]
