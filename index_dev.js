@@ -22,6 +22,7 @@ kiss
             "views/planning",
             "views/users",
             "views/invoices",
+            "views/progression",
 
             // TEMPLATES
             "templates/topbar",

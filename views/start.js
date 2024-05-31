@@ -44,7 +44,7 @@ kiss.app.defineView({
                             type: "button",
                             icon: "fas fa-chart-line",
                             text: "Ma progression",
-                            action: () => kiss.router.navigateTo("progress")
+                            action: () => kiss.router.navigateTo("progression")
                         },
                         {
                             type: "button",
@@ -52,6 +52,7 @@ kiss.app.defineView({
                             text: "Factures",
                             action: () => kiss.router.navigateTo("invoices")
                         },
+                        
                         {
                             type: "button",
                             icon: "fas fa-user-graduate",
