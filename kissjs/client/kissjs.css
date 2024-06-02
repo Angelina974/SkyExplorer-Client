@@ -113,6 +113,15 @@ input:focus, textarea:focus, select:focus {
     overflow: hidden;
 }
 
+.userSelect {
+
+  border-radius: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  
+}
+
+
 .underline-effect:before {
     content: "";
     position: absolute;

@@ -22,6 +22,7 @@ kiss
             "views/planning",
             "views/users",
             "views/invoices",
+            "views/formations",
 
             // TEMPLATES
             "templates/topbar",
@@ -46,6 +47,9 @@ kiss
                 "models/plane",
                 "models/user",
                 "models/invoice",
+                "models/formation",
+                "models/exercices",
+
             
             ])
 
