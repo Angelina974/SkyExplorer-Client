@@ -17,6 +17,7 @@ kiss
             "kissjs/client/ux/link/link",
             "kissjs/client/ux/directory/directory",
             "kissjs/client/ux/selectViewColumn/selectViewColumn",
+            "kissjs/client/ux/selectViewColumns/selectViewColumns",
 
             // VIEWS
             "views/start",

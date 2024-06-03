@@ -237,5 +237,25 @@ kiss.app.defineModel({
                 if (record.accessRead && kiss.tools.intersects(userACL, record.accessRead)) return true
             }            
         }
-    } 
+    },
+
+    methods: {
+        /**
+         * Get the collection of records associated to this view
+         */
+        getCollection() {
+            let collection = kiss.app.collections[this.id]
+            if (!collection) {
+                collection = new kiss.data.Collection({
+                    id: this.id,
+                    model: kiss.app.models[this.modelId],
+                    sort: this.sort,
+                    filter: this.filter,
+                    group: this.group,
+                    projection: this.projection
+                })
+            }
+            return collection
+        }        
+    }
 });

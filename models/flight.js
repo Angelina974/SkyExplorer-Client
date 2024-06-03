@@ -33,6 +33,11 @@ kiss.app.defineModel({
             label: "Client"
         },
         {
+            id: "instructor",
+            type: "directory",
+            label: "Instructeur"
+        },        
+        {
             id: "type",
             type: "select",
             label: "Type de vol",
@@ -141,6 +146,7 @@ kiss.app.defineModel({
             type: "link",
             label: "Exercices",
             multiple: true,
+            canDeleteLinks: true,
             link: {
                 modelId: "exercise",
                 fieldId: "flight"
