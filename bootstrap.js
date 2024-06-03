@@ -24,6 +24,9 @@ const app = {
             return false
         }
 
+        // Load relationships between models
+        app.init.relationships()
+
         // Load links between records
         await app.init.links()
 
@@ -37,6 +40,16 @@ const app = {
      * @namespace
      */
     init: {
+        /**
+         * Establish relationships between models
+         */
+        relationships() {
+            Object.values(kiss.app.models).forEach(model => {
+                log("Init relationships for model " + model.name)
+                model._defineRelationships()
+            })
+        },
+
         /**
          * Init KissJS application "load" method.
          * 

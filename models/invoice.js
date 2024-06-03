@@ -25,7 +25,7 @@ kiss.app.defineModel({
             label: "ID du vol",
             canCreateRecord: false,
             canDeleteLinks: true,
-            canLinkRecord: false,
+            canLinkRecord: true,
             multiple: false,
             link: {
                 modelId: "flight",
@@ -40,7 +40,7 @@ kiss.app.defineModel({
             label: "ID du vol",
             computed: true,
             lookup: {
-                modelId: "flight",
+                linkId: "flight",
                 fieldId: "flightId",
                 type: "text"
             }
@@ -52,7 +52,7 @@ kiss.app.defineModel({
             label: "Avion",
             computed: true,
             lookup: {
-                modelId: "flight",
+                linkId: "flight",
                 fieldId: "planeId",
                 type: "text"
             }
@@ -64,7 +64,7 @@ kiss.app.defineModel({
             label: "Date du vol",
             computed: true,
             lookup: {
-                modelId: "flight",
+                linkId: "flight",
                 fieldId: "date",
                 type: "date"
             }
@@ -76,7 +76,7 @@ kiss.app.defineModel({
             label: "Type du vol",
             computed: true,
             lookup: {
-                modelId: "flight",
+                linkId: "flight",
                 fieldId: "type",
                 type: "text"
             }
@@ -88,7 +88,7 @@ kiss.app.defineModel({
             label: "Durée du vol",
             computed: true,
             lookup: {
-                modelId: "flight",
+                linkId: "flight",
                 fieldId: "duration",
                 type: "number"
             }
@@ -100,7 +100,7 @@ kiss.app.defineModel({
             label: "Client",
             computed: true,
             lookup: {
-                modelId: "flight",
+                linkId: "flight",
                 fieldId: "client",
                 type: "text"
             }
