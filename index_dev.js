@@ -25,7 +25,6 @@ kiss
             "views/planning",
             "views/users",
             "views/invoices",
-            "views/formations",
             "views/training",
             "views/exercises",
 

@@ -4,8 +4,7 @@ kiss.app.defineModel({
     icon: "fas fa-fighter-jet",
     color: "#00aaee",
 
-    items: [
-        {
+    items: [{
             id: "Phases",
             type: "text",
             label: "Phases"
@@ -19,8 +18,7 @@ kiss.app.defineModel({
             id: "subject",
             type: "text",
             label: "Sujets"
-        }
-        ,{
+        }, {
             id: "exercice",
             type: "link",
             label: "exercice",
@@ -33,6 +31,7 @@ kiss.app.defineModel({
                 fieldId: "formation"
             }
         }
-     ]
-     
-});
+    ]
+})
+
+;

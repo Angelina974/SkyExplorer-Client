@@ -153,4 +153,6 @@ kiss.app.defineModel({
             }
         }
     ]
-});
+})
+
+;

@@ -48,3 +48,5 @@ kiss.app.defineView({
         })
     }
 })
+
+;

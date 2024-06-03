@@ -1,0 +1,29 @@
+#panel-header-login {
+    background: blueviolet !important;
+}.userSelect {
+
+    border-radius: 20px;
+    margin-top: 10px;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    padding: 5px;
+    background-color: white;
+    border: 2px solid #1CB7D6;
+    color: #00A5BF;
+    font-size: 120%;
+    
+}
+
+.home-left {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media screen and (max-width: 700px) {
+    .home-left {
+        display: none;
+    }
+}
+
+

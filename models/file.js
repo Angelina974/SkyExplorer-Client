@@ -64,4 +64,6 @@ kiss.app.defineModel({
             dataType: String
         }
     ]    
-});
+})
+
+;

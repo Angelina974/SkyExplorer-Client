@@ -28,3 +28,5 @@ kiss.app.defineView({
         })
     }
 })
+
+;
