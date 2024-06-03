@@ -146,6 +146,7 @@ kiss.app.defineModel({
             type: "link",
             label: "Exercices",
             multiple: true,
+            canLinkRecord: false,
             canDeleteLinks: true,
             link: {
                 modelId: "exercise",

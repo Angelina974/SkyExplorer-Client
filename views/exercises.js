@@ -12,7 +12,7 @@ kiss.app.defineView({
                     id: "exercises-list",
                     type: "datatable",
                     canEdit: true,
-                    canCreateRecord: true,
+                    canCreateRecord: false,
                     height: () => kiss.screen.current.height - 60,
                     collection: kiss.app.collections.exercise,
 
