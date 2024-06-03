@@ -14,7 +14,7 @@ kiss.app.defineView({
                     canEdit: true,
                     canCreateRecord: true,
                     height: () => kiss.screen.current.height - 60,
-                    collection: kiss.app.collections.plane,
+                    collection: kiss.app.collections.training,
 
                     actions: [
                         {
