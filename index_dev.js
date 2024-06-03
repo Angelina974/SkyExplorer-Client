@@ -15,6 +15,7 @@ kiss
         kiss.loader.loadScripts([
             // KissJS extensions
             "kissjs/client/ux/link/link",
+            "kissjs/client/ux/directory/directory",
 
             // VIEWS
             "views/start",
@@ -57,6 +58,7 @@ kiss
             kiss.loader.loadStyles([
                 // KissJS extensions
                 "kissjs/client/ux/link/link",
+                "kissjs/client/ux/directory/directory",
 
                 // VIEWS
                 "views/start",
