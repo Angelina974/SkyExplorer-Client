@@ -313,6 +313,8 @@ kiss.ui.Container = class Container extends kiss.ui.Component {
                 }
                 else {
                     // Other fields and elements
+                    console.log("===========================================")
+                    console.log(item)
                     return document.createElement("a-" + type.toLowerCase()).init(item)
                 }
             }

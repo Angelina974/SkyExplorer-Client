@@ -16,6 +16,7 @@ kiss
             // KissJS extensions
             "kissjs/client/ux/link/link",
             "kissjs/client/ux/directory/directory",
+            "kissjs/client/ux/selectViewColumn/selectViewColumn",
 
             // VIEWS
             "views/start",
@@ -50,10 +51,8 @@ kiss
                 "models/user",
                 "models/invoice",
                 "models/formation",
-                "models/exercices",
+                "models/exercise",
                 "models/training",
-
-            
             ])
 
             // Load styles dynamically

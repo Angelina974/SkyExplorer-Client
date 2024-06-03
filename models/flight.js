@@ -135,6 +135,15 @@ kiss.app.defineModel({
                 modelId: "invoice",
                 fieldId: "flight"
             }
+        },
+        {
+            id: "exercises",
+            type: "link",
+            multiple: true,
+            link: {
+                modelId: "exercise",
+                fieldId: "flight"
+            }
         }
     ]
 });
