@@ -59,7 +59,11 @@ kiss.app.defineView({
                             type: "button",
                             icon: "fas fa-user-graduate",
                             text: "Gérer le plan de formation",
-                            action: () => kiss.router.navigateTo("formations")
+                            action: () => kiss.router.navigateTo({
+                                ui: "training",
+                                modelId: "training",
+                                viewId: "training-list"
+                            })
                         },
                         {
                             type: "button",

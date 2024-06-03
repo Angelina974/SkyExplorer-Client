@@ -37,14 +37,12 @@
 
                         </select>`
                     },
-
                     {
                         type: "directory",
                         width: 300,
                         label: "User",
                         labelPosition: "top"
                     },
-        
                     {
                         id: "usersDelete",
                         type: "datatable",
