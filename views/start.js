@@ -42,8 +42,12 @@ kiss.app.defineView({
                         {
                             type: "button",
                             icon: "fas fa-chart-line",
-                            text: "Ma progression",
-                            action: () => kiss.router.navigateTo("progress")
+                            text: "Ma progression (exercices)",
+                            action: () => kiss.router.navigateTo({
+                                ui: "exercises",
+                                modelId: "exercise",
+                                viewId: "exercises-list"
+                            })
                         },
                         {
                             type: "button",

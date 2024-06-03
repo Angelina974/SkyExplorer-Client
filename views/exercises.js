@@ -1,5 +1,5 @@
 kiss.app.defineView({
-    id: "invoices",
+    id: "exercises",
     renderer: function(id, target) {
         return createBlock({
             id,
@@ -9,16 +9,16 @@ kiss.app.defineView({
             items: [
                 createTopBar(),
                 {
-                    id: "invoices-list",
+                    id: "exercises-list",
                     type: "datatable",
                     canEdit: true,
-                    canCreateRecord: false,
+                    canCreateRecord: true,
                     height: () => kiss.screen.current.height - 60,
-                    collection: kiss.app.collections.invoice,
+                    collection: kiss.app.collections.exercise,
 
                     actions: [
                         {
-                            text: txtTitleCase("Supprimer les factures sélectionnés"),
+                            text: txtTitleCase("Supprimer les exercices sélectionnés"),
                             icon: "fas fa-trash",
                             iconColor: "var(--red)",
                             action: () => kiss.selection.deleteSelectedRecords()
@@ -27,9 +27,9 @@ kiss.app.defineView({
 
                     methods: {
                         createRecord: async function() {
-                            const newInvoice = kiss.app.models.invoice.create()
-                            await newInvoice.save()
-                            createForm(newInvoice)
+                            const newExercise = kiss.app.models.exercise.create()
+                            await newExercise.save()
+                            createForm(newExercise)
                         },
                         selectRecord: function(record) {
                             createForm(record)

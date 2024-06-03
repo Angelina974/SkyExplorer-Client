@@ -54,7 +54,7 @@ const app = {
          * Init the application logo
          */
         logo() {
-            app.logo = "./resources/img/logo 256x128.png"
+            app.logo = "./resources/img/skyExplorer.svg"
             return app.init
         },
 

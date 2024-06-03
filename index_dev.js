@@ -26,6 +26,7 @@ kiss
             "views/invoices",
             "views/formations",
             "views/training",
+            "views/exercises",
 
             // TEMPLATES
             "templates/topbar",
@@ -63,6 +64,7 @@ kiss
 
                 // VIEWS
                 "views/start",
+                "authentication"
             ])
         })
     })

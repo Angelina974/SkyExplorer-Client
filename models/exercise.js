@@ -5,7 +5,16 @@ kiss.app.defineModel({
     color: "#000055",
 
     items: [{
+            title: "test",
             layout: "horizontal",
+
+            defaultConfig: {
+                width: "50%",
+                labelWidth: "100%",
+                fieldWidth: "100%",
+                labelPosition: "top"
+            },
+
             items: [{
                     id: "client",
                     type: "directory",
@@ -30,7 +39,16 @@ kiss.app.defineModel({
             label: "Sujet"
         },
         {
+            title: "test",
             layout: "horizontal",
+
+            defaultConfig: {
+                width: "50%",
+                labelWidth: "100%",
+                fieldWidth: "100%",
+                labelPosition: "top"
+            },
+
             items: [{
                     id: "category",
                     type: "text",
@@ -39,7 +57,7 @@ kiss.app.defineModel({
                 {
                     id: "subcategory",
                     type: "text",
-                    label: "Catégorie"
+                    label: "Sous-catégorie"
                 }
             ]
         },

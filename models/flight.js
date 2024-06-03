@@ -139,6 +139,7 @@ kiss.app.defineModel({
         {
             id: "exercises",
             type: "link",
+            label: "Exercices",
             multiple: true,
             link: {
                 modelId: "exercise",
