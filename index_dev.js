@@ -27,6 +27,7 @@ kiss
             "views/invoices",
             "views/training",
             "views/exercises",
+            "views/questions",
 
             // TEMPLATES
             "templates/topbar",
@@ -54,6 +55,7 @@ kiss
                 "models/formation",
                 "models/exercise",
                 "models/training",
+                "models/question",
             ])
 
             // Load styles dynamically
@@ -64,7 +66,8 @@ kiss
 
                 // VIEWS
                 "views/start",
-                "authentication"
+                "views/authentication",
+                "views/parameters"
             ])
         })
     })

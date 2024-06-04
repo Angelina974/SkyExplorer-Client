@@ -3,7 +3,7 @@ kiss.app.defineModel({
     name: "Vol",
     namePlural: "Vols",
     icon: "fas fa-clipboard",
-    color: "#ee3500",
+    color: "var(--buttons-color)",
 
     items: [
         {

@@ -11,6 +11,7 @@ kiss.app.defineView({
                 {
                     id: "invoices-list",
                     type: "datatable",
+                    color: "var(--buttons-color)",
                     canEdit: true,
                     canCreateRecord: false,
                     height: () => kiss.screen.current.height - 60,

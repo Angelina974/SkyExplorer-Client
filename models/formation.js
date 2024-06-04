@@ -2,7 +2,7 @@ kiss.app.defineModel({
     id: "formation",
     name: "Nouveau",
     icon: "fas fa-fighter-jet",
-    color: "#00aaee",
+    color: "var(--buttons-color)",
 
     items: [{
             id: "Phases",

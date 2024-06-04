@@ -25,12 +25,14 @@ kiss.app.defineView({
                     flex: 1,
                     defaultConfig: {
                         iconSize: 22,
-                        iconColor: "#000055",
+                        iconColor: "var(--buttons-color)",
                         height: 50,
                         width: 300,
                         margin: 20,
-                        borderRadius: 25,
+                        borderRadius: "var(--panel-border-radius)",
                         fontSize: 16,
+                        boxShadow: "none",
+                        boxShadowHover: "0 0 20px #0077c8"
                     },
                     items: [
                         {
@@ -88,7 +90,17 @@ kiss.app.defineView({
                                 modelId: "user",
                                 viewId: "users-list"
                             })
-                        },                        
+                        },
+                        {
+                            type: "button",
+                            icon: "fas fa-question",
+                            text: "Questions & Réponses",
+                            action: () => kiss.router.navigateTo({
+                                ui: "questions",
+                                modelId: "question",
+                                viewId: "questions-list"
+                            })
+                        },                                             
                         {
                             type: "button",
                             icon: "fas fa-power-off",

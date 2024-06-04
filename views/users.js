@@ -11,6 +11,7 @@ kiss.app.defineView({
                 {
                     id: "users-list",
                     type: "datatable",
+                    color: "var(--buttons-color)",
                     canEdit: false,
                     canCreateRecord: false,
                     canSelect: false,

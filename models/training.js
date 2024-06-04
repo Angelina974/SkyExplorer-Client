@@ -2,7 +2,7 @@ kiss.app.defineModel({
     id: "training",
     name: "Formation",
     icon: "fas fa-clipboard",
-    color: "#000055",
+    color: "var(--buttons-color)",
 
     items: [{
             id: "type",

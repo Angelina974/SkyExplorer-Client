@@ -1,5 +1,5 @@
 kiss.app.defineView({
-    id: "planes",
+    id: "questions",
     renderer: function(id, target) {
         return createBlock({
             id,
@@ -9,17 +9,17 @@ kiss.app.defineView({
             items: [
                 createTopBar(),
                 {
-                    id: "planes-list",
+                    id: "questions-list",
                     type: "datatable",
                     color: "var(--buttons-color)",
                     canEdit: true,
                     canCreateRecord: true,
                     height: () => kiss.screen.current.height - 60,
-                    collection: kiss.app.collections.plane,
+                    collection: kiss.app.collections.question,
 
                     actions: [
                         {
-                            text: txtTitleCase("Supprimer les avions sélectionnés"),
+                            text: txtTitleCase("Supprimer les questions sélectionnés"),
                             icon: "fas fa-trash",
                             iconColor: "var(--red)",
                             action: () => kiss.selection.deleteSelectedRecords()
@@ -28,9 +28,9 @@ kiss.app.defineView({
 
                     methods: {
                         createRecord: async function() {
-                            const newPlane = kiss.app.models.plane.create()
-                            await newPlane.save()
-                            createForm(newPlane)
+                            const newQuestion = kiss.app.models.question.create()
+                            await newQuestion.save()
+                            createForm(newQuestion)
                         },
                         selectRecord: function(record) {
                             createForm(record)

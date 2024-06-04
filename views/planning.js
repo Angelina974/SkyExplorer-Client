@@ -18,6 +18,7 @@ kiss.app.defineView({
                 createTopBar(),
                 {
                     type: "calendar",
+                    color: "var(--buttons-color)",
 
                     // Calendar options
                     period: "1 week + details",
