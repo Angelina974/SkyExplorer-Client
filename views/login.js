@@ -325,12 +325,12 @@ kiss.app.defineView({
                                     if (!$("authentication-login")) return
 
                                     if (kiss.screen.isVertical()) {
-                                        $("common-matrix").hide()
+                                        // $("common-matrix").hide()
                                         $("login").config.width = "380px"
                                         $("panel-body-login").style.flexFlow = "column"
                                         $("auth-login-separator").style.flexFlow = "row"
                                     } else {
-                                        $("common-matrix").show()
+                                        // $("common-matrix").show()s
                                         $("login").config.width = "760px"    
                                         $("panel-body-login").style.flexFlow = "row"
                                         $("auth-login-separator").style.flexFlow = "column"
