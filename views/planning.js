@@ -38,10 +38,12 @@ kiss.app.defineView({
                             const newFlight = kiss.app.models.flight.create()
                             await newFlight.save()
                             createForm(newFlight)
+                            createDeleteButton(newFlight)
                         },
                         // - the user clicks on a flight in the calendar
                         selectRecord: function(record) {
                             createForm(record)
+                            createDeleteButton(record)
                         }
                     }
                 }

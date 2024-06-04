@@ -67,4 +67,6 @@ kiss.app.defineModel({
             }
         }
     }
-});
+})
+
+;

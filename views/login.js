@@ -66,15 +66,15 @@ kiss.app.defineView({
                     overflow: "auto",
 
                     items: [
-                        // Gradient
+                        // White color + logo
                         {
                             flex: 1,
                             background: "white"
                         },
-                        // Matrix effect
+                        // Blue color
                         {
                             flex: 1,
-                            background: "#000055"
+                            background: "var(--skyexplorer-color)",
                         }
                     ]
                 },
@@ -86,8 +86,8 @@ kiss.app.defineView({
                         {
                             hidden: !app.logo,
                             position: "absolute",
-                            top: 400,
-                            left: 300,
+                            top: "calc(50% - 75px)",
+                            left: "calc(25% - 175px)",
                             
                             type: "image",
                             src: app.logo,
@@ -97,8 +97,11 @@ kiss.app.defineView({
                         {
                             id: "login",
                             type: "panel",
-                            headerBackgroundColor: "var(--background-blue)",
+                            icon: "fas fa-key",
+                            title: "Identifiez-vous",
+                            headerBackgroundColor: "var(--skyexplorer-color)",
                             draggable: true,
+                            
 
                             width: 800,
                             maxHeight: () => kiss.screen.current.height,
@@ -109,7 +112,7 @@ kiss.app.defineView({
                             overflowY: "auto",
 
                             // Language buttons
-                            headerButtons: kiss.templates.authLanguageButtons(),
+                            // headerButtons: kiss.templates.authLanguageButtons(),
 
                             items: [
                                 // LOCAL LOGIN METHOD

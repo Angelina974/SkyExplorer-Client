@@ -30,4 +30,6 @@ kiss.app.defineModel({
             rows: 10
         }
     ]
-});
+})
+
+;

@@ -29,9 +29,11 @@ kiss
             "views/exercises",
             "views/questions",
             "views/login",
+            "views/register",
 
             // TEMPLATES
             "templates/topbar",
+            "templates/formButton",
             
             // TEXTS
             "resources/texts"
@@ -67,7 +69,6 @@ kiss
 
                 // VIEWS
                 "views/start",
-                "views/authentication",
                 "views/parameters"
             ])
         })

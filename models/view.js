@@ -258,4 +258,6 @@ kiss.app.defineModel({
             return collection
         }        
     }
-});
+})
+
+;

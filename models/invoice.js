@@ -71,7 +71,7 @@ kiss.app.defineModel({
         },
         // - Type du vol
         {
-            id: "flightDate",
+            id: "flightType",
             type: "lookup",
             label: "Type du vol",
             computed: true,
@@ -119,4 +119,6 @@ kiss.app.defineModel({
             }
         }
     ]
-});
+})
+
+;

@@ -31,9 +31,12 @@ kiss.app.defineView({
                             const newTraining = kiss.app.models.training.create()
                             await newTraining.save()
                             createForm(newTraining)
+                            createDeleteButton(newTraining)
+                            
                         },
                         selectRecord: function(record) {
                             createForm(record)
+                            createDeleteButton(record)
                         }
                     }
                 }
