@@ -28,6 +28,7 @@ kiss
             "views/training",
             "views/exercises",
             "views/questions",
+            "views/login",
 
             // TEMPLATES
             "templates/topbar",

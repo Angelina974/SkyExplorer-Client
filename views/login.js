@@ -73,7 +73,7 @@ kiss.app.defineView({
                         },
                         // Matrix effect
                         {
-                            type: "view",
+                            flex: 1,
                             background: "#000055"
                         }
                     ]
