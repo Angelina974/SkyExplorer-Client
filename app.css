@@ -1,7 +1,9 @@
 :root {
     --skyexplorer-color: #000055;
     --buttons-color: #0077c8;
-}.home-left {
+}
+
+.home-left {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -12,3 +14,4 @@
         display: none;
     }
 }
+
