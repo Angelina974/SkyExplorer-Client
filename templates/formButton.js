@@ -7,6 +7,7 @@ function createDeleteButton(record) {
         backgroundColor: "transparent",
         borderWidth: 0,
         margin: "0 10px 0 0",
+        tip: "Supprimer cette fiche",
         action: async () => {
             createDialog({
                 title: "Supprimer le vol",
