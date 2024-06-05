@@ -24,7 +24,7 @@ kiss.app.defineModel({
             label: "exercice",
             canCreateRecord: true,
             canDeleteLinks: true,
-            canLinkRecords: false,
+            canLinkRecord: false,
             multiple: false,
             link: {
                 modelId: "exercices",

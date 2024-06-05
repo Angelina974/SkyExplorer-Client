@@ -99,9 +99,9 @@ kiss.app.defineModel({
                     id: "plane",
                     type: "link",
                     label: "Avion",
-                    canCreateRecord: true,
+                    canCreateRecord: false,
                     canDeleteLinks: true,
-                    canLinkRecords: false,
+                    canLinkRecord: true,
                     multiple: false,
                     link: {
                         modelId: "plane",
