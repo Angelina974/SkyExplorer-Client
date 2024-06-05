@@ -43,7 +43,8 @@ kiss.app.defineModel({
                 {
                     id: "notes",
                     type: "textarea",
-                    label: "Notes complémentaires"
+                    label: "Notes complémentaires",
+                    rows: 8
                 }
             ]
         },
