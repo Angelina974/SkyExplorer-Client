@@ -59,7 +59,7 @@ kiss.app.defineModel({
             id: "subject",
             type: "selectViewColumns",
             label: "Sujet",
-            collectionId: "training",
+            collectionId: "onlyExercises",
             fieldId: ["subject", "category", "subcategory"]
         },
         // Block category & subcategory

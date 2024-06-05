@@ -29,8 +29,8 @@ kiss.app.defineModel({
         },
         {
             id: "client",
-            type: "text",
-            label: "Client"
+            type: "directory",
+            label: "Pilote"
         },
         {
             id: "instructor",
@@ -44,12 +44,12 @@ kiss.app.defineModel({
             options: [
                 {
                     label: "Formation",
-                    value: "formation",
+                    value: "Formation",
                     color: "#00aaee"
                 },
                 {
                     label: "Loisir",
-                    value: "loisir",
+                    value: "Loisir",
                     color: "#ee3333"
                 }
             ]

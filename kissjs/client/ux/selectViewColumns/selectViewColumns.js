@@ -95,7 +95,7 @@ kiss.ux.SelectViewColumns = class SelectViewColumns extends kiss.ui.Select {
      */
     async _showView() {
         const _this = this
-        let collection, columns, sort, filter, group, viewRecord
+        let collection, columns, sort, sortSyntax, filter, filterSyntax, group, viewRecord
 
         if (this.viewId) {
             viewRecord = await kiss.app.collections.view.findOne(this.viewId)
@@ -110,9 +110,14 @@ kiss.ux.SelectViewColumns = class SelectViewColumns extends kiss.ui.Select {
             collection = kiss.app.collections[this.collectionId]
             this.viewModel = kiss.app.models[collection.modelId]
             columns = this.viewModel.getFieldsAsColumns()
-            sort = []
-            filter = {}
-            group = []
+            sort = collection.sort || []
+            sortSyntax = collection.sortSyntax || "normalized"
+            filter = collection.filter || {}
+            filterSyntax = collection.filterSyntax || "normalized"
+            group = collection.group || []
+            log("###########@@@@@@@@@@@@@")
+            log(collection)
+            log(filter)
         }
         else {
             // Exit if no viewId or collectionId have been provided
@@ -122,9 +127,9 @@ kiss.ux.SelectViewColumns = class SelectViewColumns extends kiss.ui.Select {
         // Build the datatable
         const datatable = createDatatable({
             collection: this.viewModel.collection,
-            sort: sort,
-            filter: filter,
-            group: group,
+            sort,
+            filter,
+            group,
 
             canEdit: false,
             canSelect: false,

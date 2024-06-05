@@ -25,6 +25,7 @@ kiss.app.defineView({
                     startOnMonday: true,
                     showWeekend: true,
                     canCreateRecord: true,
+                    createRecordText: "RESERVER UN NOUVEAU VOL",
                     height: () => kiss.screen.current.height - 60,
                     
                     // Collection and columns (= fields) to display
@@ -47,7 +48,26 @@ kiss.app.defineView({
                         }
                     }
                 }
-            ]
+            ],
+            methods: {
+                async load() {
+                    if (kiss.app.collections["onlyExercises"]) return
+
+                    const filteredCollection = new kiss.data.Collection({
+                        id: "onlyExercises",
+                        model: kiss.app.models["training"],
+                        isMaster: false,
+                        filterSyntax: "mongo",
+                        filter: {
+                            type: "Exercice en vol"
+                        }
+                    })
+
+                    filteredCollection.filterBy({
+                        type: "Exercice en vol"
+                    })
+                }
+            }
         })
     }
 })

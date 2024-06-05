@@ -14,6 +14,7 @@ kiss.app.defineView({
                     color: "var(--buttons-color)",
                     canEdit: true,
                     canCreateRecord: true,
+                    createRecordText: "Ajouter un nouvel avion à la flotte",
                     height: () => kiss.screen.current.height - 60,
                     collection: kiss.app.collections.plane,
 

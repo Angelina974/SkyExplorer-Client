@@ -46,6 +46,7 @@
  * @param {boolean} [config.canAddField] - Can we add a field (= column) to the table?
  * @param {boolean} [config.canEditField] - Can we edit an existing field (= column)?
  * @param {boolean} [config.canCreateRecord] - Can we create new records from the datatable?
+ * @param {boolean} [config.createRecordText] - Optional text to insert in the button to create a new record, instead of the default model's name
  * @param {boolean} [config.iconAction] - Font Awesome icon class to display the "open record" symbol. Defaults to "far fa-file-alt"
  * @param {object[]} [config.actions] - Array of menu actions, where each menu entry is: {text: "abc", icon: "fas fa-check", action: function() {}}
  * @param {object[]} [config.buttons] - Array of custom buttons, where each button is: {position: 3, text: "button 3", icon: "fas fa-check", action: function() {}}
@@ -2350,7 +2351,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             hidden: !this.canCreateRecord,
             class: "datatable-create-record",
             target: "create:" + this.id,
-            text: this.model.name.toTitleCase(),
+            text: this.config.createRecordText || this.model.name.toTitleCase(),
             icon: "fas fa-plus",
             iconColor: this.color,
             borderWidth: "3px",

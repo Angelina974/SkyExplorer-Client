@@ -980,7 +980,7 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
             hidden: !this.canCreateRecord,
             class: "calendar-create-record",
             target: "create:" + this.id,
-            text: this.model.name.toTitleCase(),
+            text: this.config.createRecordText || this.model.name.toTitleCase(),
             icon: "fas fa-plus",
             iconColor: this.color,
             borderWidth: "3px",
