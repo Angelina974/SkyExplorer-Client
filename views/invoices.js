@@ -1,6 +1,15 @@
 kiss.app.defineView({
     id: "invoices",
     renderer: function(id, target) {
+
+        // Cherche la coolonne "Montant" de la facture et active la propriété "summary" pour faire la somme sur cette colonne
+        let columns = kiss.app.models.invoice.getFieldsAsColumns()
+        columns.forEach(column => {
+            if (column.title == "Montant de la facture") {
+                column.summary = "sum"
+            }
+        })
+
         return createBlock({
             id,
             target,
@@ -16,6 +25,11 @@ kiss.app.defineView({
                     canCreateRecord: false,
                     height: () => kiss.screen.current.height - 60,
                     collection: kiss.app.collections.invoice,
+                    columns,
+
+                    // Regroupe les factures par mois
+                    // Cela permettra de voir les sommes aggrégées par mois
+                    group: ["month"],
 
                     actions: [
                         {
