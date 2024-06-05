@@ -11,7 +11,7 @@ function createDeleteButton(record) {
         action: async () => {
             createDialog({
                 title: "Supprimer le vol",
-                message: "Etes-vous sûr de vouloir supprimer le vol?",
+                message: "Etes-vous sûr de vouloir supprimer cette fiche ?",
                 type: "danger",
                 action: async () => {
                     await record.delete()
