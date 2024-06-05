@@ -14,6 +14,7 @@ kiss.app.defineView({
                     color: "var(--buttons-color)",
                     canEdit: true,
                     canCreateRecord: true,
+                    createRecordText: "POSER UNE NOUVELLE QUESTION",
                     height: () => kiss.screen.current.height - 60,
                     collection: kiss.app.collections.question,
 
