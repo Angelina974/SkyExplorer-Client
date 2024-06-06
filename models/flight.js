@@ -19,8 +19,7 @@ kiss.app.defineModel({
                 labelWidth: "25%",
             },
 
-            items: [
-                {
+            items: [{
                     id: "flightId",
                     type: "text",
                     label: "Identifiant du vol",
@@ -63,13 +62,12 @@ kiss.app.defineModel({
                     id: "instructor",
                     type: "directory",
                     label: "Instructeur"
-                },        
+                },
                 {
                     id: "type",
                     type: "select",
                     label: "Type de vol",
-                    options: [
-                        {
+                    options: [{
                             label: "Formation",
                             value: "Formation",
                             color: "#00aaee"
@@ -107,8 +105,7 @@ kiss.app.defineModel({
                 labelWidth: "25%",
             },
 
-            items: [
-                {
+            items: [{
                     id: "plane",
                     type: "link",
                     label: "Avion",
@@ -130,7 +127,7 @@ kiss.app.defineModel({
                         linkId: "plane",
                         fieldId: "planeId"
                     }
-                },        
+                },
                 {
                     id: "planeBrand",
                     type: "lookup",
@@ -178,20 +175,18 @@ kiss.app.defineModel({
                 labelWidth: "25%",
             },
 
-            items: [
-                {
-                    id: "exercises",
-                    type: "link",
-                    label: "Exercices effectués",
-                    multiple: true,
-                    canLinkRecord: false,
-                    canDeleteLinks: true,
-                    link: {
-                        modelId: "exercise",
-                        fieldId: "flight"
-                    }
+            items: [{
+                id: "exercises",
+                type: "link",
+                label: "Exercices effectués",
+                multiple: true,
+                canLinkRecord: false,
+                canDeleteLinks: true,
+                link: {
+                    modelId: "exercise",
+                    fieldId: "flight"
                 }
-            ]
+            }]
         },
         // Section avec les informations sur la facturation
         {
@@ -206,8 +201,7 @@ kiss.app.defineModel({
                 labelWidth: "25%",
             },
 
-            items: [
-                {
+            items: [{
                     id: "totalPrice",
                     type: "number",
                     unit: "€HT",
