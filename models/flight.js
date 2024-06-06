@@ -27,21 +27,34 @@ kiss.app.defineModel({
                     value: "unid"
                 },
                 {
-                    id: "date",
-                    type: "date",
-                    label: "Date du vol",
-                    value: "today"
+                    title: "",
+                    layout: "horizontal",
+
+                    defaultConfig: {
+                        width: "50%",
+                        fieldWidth: "100%",
+                        labelWidth: "25%",
+                    },
+
+                    items: [
+                        {
+                            id: "date",
+                            type: "date",
+                            label: "Date du vol",
+                            value: "today"
+                        },
+                        {
+                            id: "time",
+                            type: "select",
+                            label: "Heure du vol",
+                            template: "time",
+                            min: 7,
+                            max: 19,
+                            interval: 60
+                        }                        
+                    ]
                 },
-                {
-                    id: "time",
-                    type: "select",
-                    label: "Heure du vol",
-                    template: "time",
-                    min: 7,
-                    max: 19,
-                    interval: 60
-                },
-                {
+               {
                     id: "client",
                     type: "directory",
                     label: "Pilote"
