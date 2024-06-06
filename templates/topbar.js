@@ -18,7 +18,15 @@ function createTopBar() {
                 boxShadow: "0 0 5px #000000",
                 fontSize: 18,
                 borderWidth: 0,
-                action: () => kiss.router.navigateTo("home-start")
+                action: () => kiss.router.navigateTo("home-start"),
+                events: {
+                    mouseOver: function () {
+                        this.setAnimation({
+                            name: 'bounceIn',
+                            speed: 'faster'
+                        })
+                    }
+                }
             },
             {
                 type: "spacer",
@@ -43,7 +51,15 @@ function createTopBar() {
                 background: "var(--buttons-color)",
                 boxShadow: "0 0 5px #000000",
                 borderWidth: 0,
-                action: () => kiss.theme.select()
+                action: () => kiss.theme.select(),
+                events: {
+                    mouseOver: function () {
+                        this.setAnimation({
+                            name: 'bounceIn',
+                            speed: 'faster'
+                        })
+                    }
+                }
             },
             {
                 type: "button",
@@ -58,7 +74,15 @@ function createTopBar() {
                 background: "var(--buttons-color)",
                 boxShadow: "0 0 5px #000000",
                 borderWidth: 0,
-                action: () => kiss.session.logout()
+                action: () => kiss.session.logout(),
+                events: {
+                    mouseOver: function () {
+                        this.setAnimation({
+                            name: 'bounceIn',
+                            speed: 'faster'
+                        })
+                    }
+                }
             }
         ]
     }
