@@ -14,37 +14,56 @@ kiss.app.defineModel({
             collapsible: true,
 
             defaultConfig: {
+                labelPosition: "top",
                 width: "100%",
                 fieldWidth: "100%",
                 labelWidth: "25%",
             },
 
-            items: [{
+            items: [
+                // Immatriculation
+                {
                     id: "planeId",
                     type: "text",
                     label: "Immatriculation"
                 },
                 {
-                    id: "planeBrand",
-                    type: "text",
-                    label: "Marque"
+                    layout: "horizontal",
+                    defaultConfig: {
+                        width: "50%",
+                        fieldWidth: "100%",
+                        labelWidth: "100%",
+                        labelPosition: "top"
+                    },
+
+                    items: [
+                        // Marque
+                        {
+                            id: "planeBrand",
+                            type: "text",
+                            label: "Marque"
+                        },
+                        // type de l'avion
+                        {
+                            id: "planeType",
+                            type: "text",
+                            label: "Type"
+                        },
+                    ]
                 },
-                {
-                    id: "planeType",
-                    type: "text",
-                    label: "Type"
-                },
+                // Tarif horaire
                 {
                     id: "hourPrice",
                     type: "number",
                     unit: "€/h",
                     label: "Tarif horaire"
                 },
+                // Notes
                 {
                     id: "notes",
                     type: "textarea",
                     label: "Notes complémentaires",
-                    rows: 8
+                    rows: 5
                 }
             ]
         },
@@ -56,12 +75,15 @@ kiss.app.defineModel({
             collapsible: true,
 
             defaultConfig: {
+                labelPosition: "top",
                 width: "100%",
                 fieldWidth: "100%",
                 labelWidth: "25%",
             },
 
-            items: [{
+            items: [
+                // Total heures des vols
+                {
                     id: "flightHours",
                     type: "summary",
                     label: "Total heures des vols",
@@ -72,12 +94,14 @@ kiss.app.defineModel({
                         operation: "SUM"
                     }
                 },
+                // Report des heures précédentes
                 {
                     id: "initialHours",
                     type: "number",
                     label: "Report des heures précédentes",
                     unit: "h"
                 },
+                // Total général du nombre d'heures de vol
                 {
                     id: "totalHours",
                     type: "number",
@@ -86,6 +110,7 @@ kiss.app.defineModel({
                     computed: true,
                     formula: `{{Total heures des vols}} + {{Report des heures précédentes}}`
                 },
+                // Liste des vols
                 {
                     id: "flights",
                     type: "link",
