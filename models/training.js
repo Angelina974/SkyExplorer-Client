@@ -4,7 +4,9 @@ kiss.app.defineModel({
     icon: "fas fa-clipboard",
     color: "var(--buttons-color)",
 
-    items: [{
+    items: [
+        // Type de formation
+        {
             id: "type",
             type: "select",
             label: "Type",
@@ -29,21 +31,35 @@ kiss.app.defineModel({
             ]
         },
         {
-            id: "category",
-            type: "select",
-            label: "Catégorie",
-            labelPosition: "top",
-            allowValuesNotInList: true,
-            options: ["Apprentissage", "Maniabilité", "Pilotage", "Procédures particulières"]
+            layout: "horizontal",
+            defaultConfig: {
+                width: "50%",
+                fieldWidth: "100%",
+                labelWidth: "100%",
+                labelPosition: "top"
+            },
+            items: [
+                // Catégorie de formation
+                {
+                    id: "category",
+                    type: "select",
+                    label: "Catégorie",
+                    labelPosition: "top",
+                    allowValuesNotInList: true,
+                    options: ["Apprentissage", "Maniabilité", "Pilotage", "Procédures particulières"]
+                },
+                // Sous-catégorie de formation
+                {
+                    id: "subcategory",
+                    type: "select",
+                    label: "Sous-catégorie",
+                    labelPosition: "top",
+                    allowValuesNotInList: true,
+                    options: ["Croisière", "Décollage", "Mise en oeuvre / Roulage / Effet primaire des gouvernes", "Montée", "Opérations au sol"]
+                },
+            ]
         },
-        {
-            id: "subcategory",
-            type: "select",
-            label: "Sous-catégorie",
-            labelPosition: "top",
-            allowValuesNotInList: true,
-            options: ["Croisière", "Décollage", "Mise en oeuvre / Roulage / Effet primaire des gouvernes", "Montée", "Opérations au sol"]
-        },
+        // Sujet
         {
             id: "subject",
             type: "text",
@@ -51,6 +67,7 @@ kiss.app.defineModel({
             label: "Sujet",
             labelPosition: "top"
         },
+        // Ordre
         {
             id: "order",
             type: "number",
