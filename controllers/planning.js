@@ -1,5 +1,5 @@
 /**
- * Méthode du modèle pour vérifier si l'avion est disponible au jour et à l'heure demandée
+ * Méthode pour vérifier si un avion est disponible au jour et à l'heure demandée
  * 
  * @async
  * @returns {boolean} true si l'avion est disponible, false sinon
