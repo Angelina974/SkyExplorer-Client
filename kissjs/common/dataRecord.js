@@ -400,11 +400,18 @@ kiss.data.RecordFactory = function (modelId) {
             }
         }
 
+        /**
+         * Check the validation rules of a field if they exist
+         * 
+         * @param {string} fieldId 
+         * @param {*} value 
+         * @returns {boolean} true if the value is valid or if there is no validation rule
+         */
         async checkValidationRules(fieldId, value) {
             const field = this.model.getField(fieldId)
-            if (!field.validator) return true
+            if (!field.validationFunction) return true
 
-            const result = await field.validator(value)
+            const result = await field.validationFunction(value)
             return !!result
         }
 
