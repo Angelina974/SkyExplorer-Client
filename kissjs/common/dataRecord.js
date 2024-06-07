@@ -355,7 +355,8 @@ kiss.data.RecordFactory = function (modelId) {
         /**
          * Update a single field of the record
          * 
-         * This update propagates other mutations inside the same record and also in foreign records
+         * This update propagates other mutations inside the same record and also in foreign records.
+         * It also check the new field value against custom validation function, if it exists.
          * 
          * @async
          * @param {string} fieldId

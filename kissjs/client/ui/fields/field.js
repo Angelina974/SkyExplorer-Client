@@ -26,7 +26,7 @@
  * @param {string} [config.formula] - For computed fields only
  * @param {string} [config.validationType] - Pre-built validation type: alpha | alphanumeric | email | url | ip
  * @param {*} [config.validationRegex] - Regexp
- * @param {*} [config.validationFunction] - Async function that returns true if the value is valid
+ * @param {function} [config.validationFunction] - Async function that returns true if the value is valid
  * @param {string} [config.validationMessage] - TODO
  * @param {string} [config.placeholder]
  * @param {boolean} [config.autocomplete] - Set "off" to disable
@@ -437,7 +437,12 @@ kiss.ui.Field = class Field extends kiss.ui.Component {
             this.record.updateFieldDeep(this.id, newValue).then(success => {
 
                 // Rollback the initial value if the update failed (ACL)
-                if (!success) this.field.value = this.initialValue || ""
+                if (!success) {
+                    this.field.value = this.initialValue || ""
+                }
+                else {
+                    this.initialValue = newValue
+                }
             })
         } else {
             // Otherwise, we just change the field value

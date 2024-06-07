@@ -47,6 +47,15 @@ kiss.app.defineView({
 ;kiss.app.defineView({
     id: "invoices",
     renderer: function(id, target) {
+
+        // Cherche la coolonne "Montant" de la facture et active la propriété "summary" pour faire la somme sur cette colonne
+        let columns = kiss.app.models.invoice.getFieldsAsColumns()
+        columns.forEach(column => {
+            if (column.title == "Montant de la facture") {
+                column.summary = "sum"
+            }
+        })
+
         return createBlock({
             id,
             target,
@@ -62,6 +71,11 @@ kiss.app.defineView({
                     canCreateRecord: false,
                     height: () => kiss.screen.current.height - 60,
                     collection: kiss.app.collections.invoice,
+                    columns,
+
+                    // Regroupe les factures par mois
+                    // Cela permettra de voir les sommes aggrégées par mois
+                    group: ["month"],
 
                     actions: [
                         {
@@ -467,7 +481,7 @@ kiss.app.defineView({
                     color: "var(--buttons-color)",
                     canEdit: true,
                     canCreateRecord: true,
-                    createRecordText: "Ajouter un nouvel avion à la flotte",
+                    createRecordText: "AJOUTER UN NOUVEL AVION A LA FLOTTE",
                     height: () => kiss.screen.current.height - 60,
                     collection: kiss.app.collections.plane,
 
@@ -588,6 +602,7 @@ kiss.app.defineView({
                     color: "var(--buttons-color)",
                     canEdit: true,
                     canCreateRecord: true,
+                    createRecordText: "POSER UNE NOUVELLE QUESTION",
                     height: () => kiss.screen.current.height - 60,
                     collection: kiss.app.collections.question,
 
@@ -1130,6 +1145,7 @@ kiss.app.defineView({
                     color: "var(--buttons-color)",
                     canEdit: true,
                     canCreateRecord: true,
+                    createRecordText: "AJOUTER UN NOUVEL ELEMENT A LA FORMATION",
                     height: () => kiss.screen.current.height - 60,
                     collection: kiss.app.collections.training,
 
@@ -1504,101 +1520,199 @@ kiss.app.defineModel({
             icon: "fas fa-clipboard",
             collapsible: true,
 
-            defaultConfig: {
-                width: "100%",
-                fieldWidth: "100%",
-                labelWidth: "25%",
-            },
-
             items: [
+                // Numéro de vol
                 {
                     id: "flightId",
                     type: "text",
                     label: "Identifiant du vol",
-                    value: "unid"
+                    value: "unid",
+                    width: "50%",
+                    fieldWidth: "100%",
+                    labelWidth: "100%",
+                    labelPosition: "top"
                 },
+
+                // Section "Pilote & Instructeur"
                 {
-                    id: "date",
-                    type: "date",
-                    label: "Date du vol",
-                    value: "today"
-                },
-                {
-                    id: "time",
-                    type: "select",
-                    label: "Heure du vol",
-                    template: "time",
-                    min: 7,
-                    max: 19,
-                    interval: 60
-                },
-                {
-                    id: "client",
-                    type: "directory",
-                    label: "Pilote"
-                },
-                {
-                    id: "instructor",
-                    type: "directory",
-                    label: "Instructeur"
-                },        
-                {
-                    id: "type",
-                    type: "select",
-                    label: "Type de vol",
-                    options: [
+                    layout: "horizontal",
+                    defaultConfig: {
+                        width: "50%",
+                        fieldWidth: "100%",
+                        labelWidth: "100%",
+                        labelPosition: "top"
+                    },
+
+                    items: [
+                        // Pilote
                         {
-                            label: "Formation",
-                            value: "Formation",
-                            color: "#00aaee"
+                            id: "client",
+                            type: "directory",
+                            label: "Pilote"
                         },
+                        // Instructeur
                         {
-                            label: "Loisir",
-                            value: "Loisir",
-                            color: "#ee3333"
+                            id: "instructor",
+                            type: "directory",
+                            label: "Instructeur"
                         }
                     ]
                 },
+
+                // Section avec la description du vol et sa durée finale
                 {
-                    id: "description",
-                    type: "text",
-                    label: "Description du vol"
+                    layout: "horizontal",
+                    defaultConfig: {
+                        width: "50%",
+                        fieldWidth: "100%",
+                        labelWidth: "100%",
+                        labelPosition: "top"
+                    },
+
+                    items: [
+                        // Description
+                        {
+                            id: "description",
+                            type: "text",
+                            label: "Description du vol"
+                        },
+                        // Durée
+                        {
+                            id: "duration",
+                            type: "number",
+                            unit: "mn",
+                            label: "Durée du vol"
+                        }
+                    ]
                 },
-                {
-                    id: "duration",
-                    type: "number",
-                    unit: "mn",
-                    label: "Durée du vol"
-                }
             ]
         },
+
+        // Panel pour la réservation
+        {
+            type: "panel",
+            title: "Réservation",
+            colored: false,
+            items: [
+                // Section pour choisir l'avion et le type de vol
+                {
+                    layout: "horizontal",
+                    defaultConfig: {
+                        width: "50%",
+                        fieldWidth: "100%",
+                        labelWidth: "100%",
+                        labelPosition: "top"
+                    },
+
+                    items: [
+                        // Avion
+                        {
+                            id: "plane",
+                            type: "link",
+                            label: "Avion",
+                            canCreateRecord: false,
+                            canDeleteLinks: true,
+                            canLinkRecord: true,
+                            multiple: false,
+                            linkStyle: "compact",
+                            link: {
+                                modelId: "plane",
+                                fieldId: "flights"
+                            }
+                        },
+                        // Type de vol
+                        {
+                            id: "type",
+                            type: "select",
+                            label: "Type de vol",
+                            options: [{
+                                    label: "Formation",
+                                    value: "Formation",
+                                    color: "#00aaee"
+                                },
+                                {
+                                    label: "Loisir",
+                                    value: "Loisir",
+                                    color: "#ee3333"
+                                }
+                            ]
+                        }
+                    ]
+                },
+
+                // Section pour choisir la date et l'heure du vol
+                {
+                    layout: "horizontal",
+                    defaultConfig: {
+                        width: "50%",
+                        fieldWidth: "100%",
+                        labelWidth: "100%",
+                        labelPosition: "top"
+                    },
+
+                    items: [
+                        // Date
+                        {
+                            id: "date",
+                            type: "date",
+                            label: "Date du vol",
+                            value: "today"
+                        },
+                        // Heure
+                        {
+                            id: "time",
+                            type: "select",
+                            label: "Heure du vol",
+                            template: "time",
+                            min: 7,
+                            max: 19,
+                            interval: 60,
+
+                            // Vériication de la disponibilité de l'avion à la date et l'heure choisies
+                            validationFunction: async function () {
+                                const planeId = $("planeId").getValue()
+                                if (!planeId) {
+                                    createNotification("Merci de choisir un avion pour pouvoir vérifier sa dispoinibilité à cette heure")
+                                    return false
+                                }
+
+                                const hour = $("time").getValue()
+                                const date = $("date").getValue()
+
+                                const flights = kiss.app.collections.flight.records
+                                const planeFlights = flights.filter(flight => flight.planeId === planeId)
+                                const reservationsAtTheSameDateAndTime = planeFlights.filter(flight => flight.date === date && flight.time === hour)
+                                
+                                if (reservationsAtTheSameDateAndTime.length > 0) {
+                                    createNotification("Désolé, l'avion est déjà réservé à cette heure !")
+                                    return false
+                                }
+
+                                return true
+                            }
+                        }
+                    ]
+                }
+            ]
+        },        
 
         // Section avec les informations sur l'avion
         {
             type: "panel",
             title: "Informations sur l'avion",
             icon: "fas fa-fighter-jet",
+            colored: false,
+            collapsible: true,
+            collapsed: true,
 
             defaultConfig: {
                 width: "100%",
-                fieldWidth: "100%",
+                fieldWidth: "75%",
                 labelWidth: "25%",
             },
 
             items: [
-                {
-                    id: "plane",
-                    type: "link",
-                    label: "Avion",
-                    canCreateRecord: true,
-                    canDeleteLinks: true,
-                    canLinkRecords: false,
-                    multiple: false,
-                    link: {
-                        modelId: "plane",
-                        fieldId: "flights"
-                    }
-                },
+                // Immatriculation
                 {
                     id: "planeId",
                     type: "lookup",
@@ -1608,7 +1722,8 @@ kiss.app.defineModel({
                         linkId: "plane",
                         fieldId: "planeId"
                     }
-                },        
+                },
+                // Marque
                 {
                     id: "planeBrand",
                     type: "lookup",
@@ -1619,6 +1734,7 @@ kiss.app.defineModel({
                         fieldId: "planeBrand"
                     }
                 },
+                // Type
                 {
                     id: "planeType",
                     type: "lookup",
@@ -1629,6 +1745,7 @@ kiss.app.defineModel({
                         fieldId: "planeType"
                     }
                 },
+                // Tarif horaire
                 {
                     id: "hourPrice",
                     type: "lookup",
@@ -1643,6 +1760,7 @@ kiss.app.defineModel({
                 }
             ]
         },
+
         // Section pour les exercices en vol
         {
             type: "panel",
@@ -1657,6 +1775,7 @@ kiss.app.defineModel({
             },
 
             items: [
+                // Liaison vers les exercices effectués
                 {
                     id: "exercises",
                     type: "link",
@@ -1671,6 +1790,7 @@ kiss.app.defineModel({
                 }
             ]
         },
+
         // Section avec les informations sur la facturation
         {
             type: "panel",
@@ -1685,6 +1805,7 @@ kiss.app.defineModel({
             },
 
             items: [
+                // Prix total du vol = tarif horaire * durée du vol / 60
                 {
                     id: "totalPrice",
                     type: "number",
@@ -1693,6 +1814,7 @@ kiss.app.defineModel({
                     computed: true,
                     formula: "ROUND ( {{Tarif horaire}} * {{Durée du vol}} / 60, 2 )"
                 },
+                // Liaison vers la facture
                 {
                     id: "invoice",
                     type: "link",
@@ -1737,7 +1859,7 @@ kiss.app.defineModel({
             label: "exercice",
             canCreateRecord: true,
             canDeleteLinks: true,
-            canLinkRecords: false,
+            canLinkRecord: false,
             multiple: false,
             link: {
                 modelId: "exercices",
@@ -1825,118 +1947,158 @@ kiss.app.defineModel({
     icon: "fas fa-check-circle",
     color: "#9700ee",
 
-    items: [
-        {
-            id: "invoiceId",
-            type: "text",
-            label: "Référence",
-            value: "unid"
+    items: [{
+            type: "panel",
+            title: "Informations sur la facture",
+            icon: "fas fa-clipboard",
+            collapsible: true,
+
+            defaultConfig: {
+                width: "100%",
+                fieldWidth: "100%",
+                labelWidth: "25%",
+            },
+
+            items: [
+                // NUméro de facture
+                {
+                    id: "invoiceId",
+                    type: "text",
+                    label: "Référence",
+                    value: "unid"
+                },
+                // Date de la facture
+                {
+                    id: "date",
+                    type: "date",
+                    label: "Date de la facture",
+                    value: "today"
+                },
+                // Calcul année / mois pour les regroupements
+                {
+                    id: "month",
+                    type: "text",
+                    label: "Année / Mois",
+                    computed: true,
+                    formula: `YEAR_MONTH( {{Date de la facture}} )`
+                },
+                // - Client
+                {
+                    id: "client",
+                    type: "lookup",
+                    label: "Client",
+                    computed: true,
+                    lookup: {
+                        linkId: "flight",
+                        fieldId: "client",
+                        type: "text"
+                    }
+                },
+                // - Prix du vol
+                {
+                    id: "totalPrice",
+                    type: "lookup",
+                    label: "Montant de la facture",
+                    unit: "€HT/h",
+                    computed: true,
+                    lookup: {
+                        linkId: "flight",
+                        fieldId: "totalPrice",
+                        type: "number"
+                    }
+                }
+            ]
         },
         {
-            id: "date",
-            type: "date",
-            label: "Date de la facture",
-            value: "today"
-        },
-        // Liaison avec le modèle flight avec un champ "link"
-        {
-            id: "flight",
-            type: "link",
-            label: "Vol",
-            canCreateRecord: false,
-            canDeleteLinks: true,
-            canLinkRecord: true,
-            multiple: false,
-            link: {
-                modelId: "flight",
-                fieldId: "invoice"
-            }
-        },
-        // Récupération des informations du vol avec des champs "lookup"
-        // - ID du vol
-        {
-            id: "flightId",
-            type: "lookup",
-            label: "ID du vol",
-            computed: true,
-            lookup: {
-                linkId: "flight",
-                fieldId: "flightId",
-                type: "text"
-            }
-        },
-        // - ID de l'avion
-        {
-            id: "flightPlaneId",
-            type: "lookup",
-            label: "Avion",
-            computed: true,
-            lookup: {
-                linkId: "flight",
-                fieldId: "planeId",
-                type: "text"
-            }
-        },
-        // - Date du vol
-        {
-            id: "flightDate",
-            type: "lookup",
-            label: "Date du vol",
-            computed: true,
-            lookup: {
-                linkId: "flight",
-                fieldId: "date",
-                type: "date"
-            }
-        },
-        // - Type du vol
-        {
-            id: "flightType",
-            type: "lookup",
-            label: "Type du vol",
-            computed: true,
-            lookup: {
-                linkId: "flight",
-                fieldId: "type",
-                type: "select"
-            }
-        },
-        // - Durée du vol
-        {
-            id: "flightDuration",
-            type: "lookup",
-            label: "Durée du vol",
-            computed: true,
-            lookup: {
-                linkId: "flight",
-                fieldId: "duration",
-                type: "number"
-            }
-        },                    
-        // - Client
-        {
-            id: "client",
-            type: "lookup",
-            label: "Client",
-            computed: true,
-            lookup: {
-                linkId: "flight",
-                fieldId: "client",
-                type: "text"
-            }
-        },
-        // - Prix du vol
-        {
-            id: "totalPrice",
-            type: "lookup",
-            label: "Montant de la facture",
-            unit: "€HT/h",
-            computed: true,
-            lookup: {
-                linkId: "flight",
-                fieldId: "totalPrice",
-                type: "number"
-            }
+            type: "panel",
+            title: "Informations sur le vol",
+            icon: "fas fa-fighter-jet",
+            collapsible: true,
+
+            defaultConfig: {
+                width: "100%",
+                fieldWidth: "100%",
+                labelWidth: "25%",
+            },
+
+            items: [
+                // Liaison avec le modèle flight avec un champ "link"
+                {
+                    id: "flight",
+                    type: "link",
+                    label: "Vol",
+                    canCreateRecord: false,
+                    canDeleteLinks: true,
+                    canLinkRecord: true,
+                    multiple: false,
+                    link: {
+                        modelId: "flight",
+                        fieldId: "invoice"
+                    }
+                },
+
+                // Récupération des informations du vol avec des champs "lookup"
+                // - ID du vol
+                {
+                    id: "flightId",
+                    type: "lookup",
+                    label: "ID du vol",
+                    computed: true,
+                    lookup: {
+                        linkId: "flight",
+                        fieldId: "flightId",
+                        type: "text"
+                    }
+                },
+                // - ID de l'avion
+                {
+                    id: "flightPlaneId",
+                    type: "lookup",
+                    label: "Avion",
+                    computed: true,
+                    lookup: {
+                        linkId: "flight",
+                        fieldId: "planeId",
+                        type: "text"
+                    }
+                },
+                // - Date du vol
+                {
+                    id: "flightDate",
+                    type: "lookup",
+                    label: "Date du vol",
+                    computed: true,
+                    lookup: {
+                        linkId: "flight",
+                        fieldId: "date",
+                        type: "date"
+                    }
+                },
+                // - Type du vol
+                {
+                    id: "flightType",
+                    type: "lookup",
+                    label: "Type du vol",
+                    computed: true,
+                    lookup: {
+                        linkId: "flight",
+                        fieldId: "type",
+                        type: "select"
+                    }
+                },
+                // - Durée du vol
+                {
+                    id: "flightDuration",
+                    type: "lookup",
+                    label: "Durée du vol",
+                    computed: true,
+                    lookup: {
+                        linkId: "flight",
+                        fieldId: "duration",
+                        type: "number"
+                    }
+                },
+            ]
         }
     ]
 })
@@ -2360,39 +2522,100 @@ kiss.app.defineModel({
     color: "#00aaee",
 
     items: [
+        // Section pour les infos de l'avion
         {
-            id: "planeId",
-            type: "text",
-            label: "Immatriculation"
+            type: "panel",
+            title: "Informations sur l'avion'",
+            icon: "fas fa-clipboard",
+            collapsible: true,
+
+            defaultConfig: {
+                width: "100%",
+                fieldWidth: "100%",
+                labelWidth: "25%",
+            },
+
+            items: [{
+                    id: "planeId",
+                    type: "text",
+                    label: "Immatriculation"
+                },
+                {
+                    id: "planeBrand",
+                    type: "text",
+                    label: "Marque"
+                },
+                {
+                    id: "planeType",
+                    type: "text",
+                    label: "Type"
+                },
+                {
+                    id: "hourPrice",
+                    type: "number",
+                    unit: "€/h",
+                    label: "Tarif horaire"
+                },
+                {
+                    id: "notes",
+                    type: "textarea",
+                    label: "Notes complémentaires",
+                    rows: 8
+                }
+            ]
         },
+        // Section pour la liste des vols
         {
-            id: "planeBrand",
-            type: "text",
-            label: "Marque"
-        },
-        {
-            id: "planeType",
-            type: "text",
-            label: "Type"
-        },
-        {
-            id: "hourPrice",
-            type: "number",
-            unit: "€/h",
-            label: "Tarif horaire"
-        },
-        {
-            id: "flights",
-            type: "link",
-            label: "Vols",
-            canCreateRecord: false,
-            canDeleteLinks: false,
-            canLinkRecord: false,
-            multiple: true,
-            link: {
-                modelId: "flight",
-                fieldId: "plane"
-            }
+            type: "panel",
+            title: "Informations sur les vols",
+            icon: "fas fa-clipboard",
+            collapsible: true,
+
+            defaultConfig: {
+                width: "100%",
+                fieldWidth: "100%",
+                labelWidth: "25%",
+            },
+
+            items: [{
+                    id: "flightHours",
+                    type: "summary",
+                    label: "Total heures des vols",
+                    unit: "h",
+                    summary: {
+                        linkId: "flights",
+                        fieldId: "duration",
+                        operation: "SUM"
+                    }
+                },
+                {
+                    id: "initialHours",
+                    type: "number",
+                    label: "Report des heures précédentes",
+                    unit: "h"
+                },
+                {
+                    id: "totalHours",
+                    type: "number",
+                    label: "Total général",
+                    unit: "h",
+                    computed: true,
+                    formula: `{{Total heures des vols}} + {{Report des heures précédentes}}`
+                },
+                {
+                    id: "flights",
+                    type: "link",
+                    label: "Liste des vols",
+                    canCreateRecord: false,
+                    canDeleteLinks: false,
+                    canLinkRecord: false,
+                    multiple: true,
+                    link: {
+                        modelId: "flight",
+                        fieldId: "plane"
+                    }
+                }
+            ]
         }
     ]
 })
@@ -2933,7 +3156,7 @@ kiss.app.defineModel({
         action: async () => {
             createDialog({
                 title: "Supprimer le vol",
-                message: "Etes-vous sûr de vouloir supprimer le vol?",
+                message: "Etes-vous sûr de vouloir supprimer cette fiche ?",
                 type: "danger",
                 action: async () => {
                     await record.delete()
@@ -2964,7 +3187,15 @@ kiss.app.defineModel({
                 boxShadow: "0 0 5px #000000",
                 fontSize: 18,
                 borderWidth: 0,
-                action: () => kiss.router.navigateTo("home-start")
+                action: () => kiss.router.navigateTo("home-start"),
+                events: {
+                    mouseOver: function () {
+                        this.setAnimation({
+                            name: 'bounceIn',
+                            speed: 'faster'
+                        })
+                    }
+                }
             },
             {
                 type: "spacer",
@@ -2989,7 +3220,15 @@ kiss.app.defineModel({
                 background: "var(--buttons-color)",
                 boxShadow: "0 0 5px #000000",
                 borderWidth: 0,
-                action: () => kiss.theme.select()
+                action: () => kiss.theme.select(),
+                events: {
+                    mouseOver: function () {
+                        this.setAnimation({
+                            name: 'bounceIn',
+                            speed: 'faster'
+                        })
+                    }
+                }
             },
             {
                 type: "button",
@@ -3004,7 +3243,15 @@ kiss.app.defineModel({
                 background: "var(--buttons-color)",
                 boxShadow: "0 0 5px #000000",
                 borderWidth: 0,
-                action: () => kiss.session.logout()
+                action: () => kiss.session.logout(),
+                events: {
+                    mouseOver: function () {
+                        this.setAnimation({
+                            name: 'bounceIn',
+                            speed: 'faster'
+                        })
+                    }
+                }
             }
         ]
     }

@@ -251,6 +251,9 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
      */
     async _reloadWhenNeeded(msgData, delay) {
 
+        log("++++++++++++++++++++++")
+        log(msgData)
+
         // If the datatable exists but is not connected, it means it's in the cache.
         // We can't reload it, but we put a flag on it so it will be reloaded when displayed again
         if (!this.isConnected) {
