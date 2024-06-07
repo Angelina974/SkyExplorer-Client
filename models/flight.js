@@ -160,19 +160,28 @@ kiss.app.defineModel({
                             min: 7,
                             max: 19,
                             interval: 60,
-                            validator: async function (value) {
 
+                            // Vériication de la disponibilité de l'avion à la date et l'heure choisies
+                            validationFunction: async function () {
                                 const planeId = $("planeId").getValue()
                                 if (!planeId) {
                                     createNotification("Merci de choisir un avion pour pouvoir vérifier sa dispoinibilité à cette heure")
                                     return false
                                 }
 
+                                const hour = $("time").getValue()
+                                const date = $("date").getValue()
+
                                 const flights = kiss.app.collections.flight.records
                                 const planeFlights = flights.filter(flight => flight.planeId === planeId)
-                                log(planeFlights)
+                                const reservationsAtTheSameDateAndTime = planeFlights.filter(flight => flight.date === date && flight.time === hour)
+                                
+                                if (reservationsAtTheSameDateAndTime.length > 0) {
+                                    createNotification("Désolé, l'avion est déjà réservé à cette heure !")
+                                    return false
+                                }
 
-                                return false
+                                return true
                             }
                         }
                     ]

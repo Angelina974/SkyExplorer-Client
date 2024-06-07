@@ -569,7 +569,12 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
             this.record.updateFieldDeep(this.id, this.value).then(success => {
 
                 // Rollback the initial value if the update failed (ACL)
-                if (!success) this._updateValue(this.initialValue)
+                if (!success) {
+                    this._updateValue(this.initialValue)
+                }
+                else {
+                    this.initialValue = newValue
+                }
             })
         }
 
