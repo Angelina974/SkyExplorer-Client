@@ -30,7 +30,6 @@ kiss.app.defineView({
                     methods: {
                         createRecord: async function() {
                             const newPlane = kiss.app.models.plane.create()
-                            await newPlane.save()
                             createForm(newPlane)
                             createDeleteButton(newPlane)
                         },

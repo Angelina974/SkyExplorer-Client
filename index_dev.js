@@ -2,79 +2,66 @@
  * Entry point of the application while in development.
  * 
  * In development :
- * - KissJS library is loaded dynamically from the local folder, using its non-minified version to ease the debugging
  * - Your custom application scripts and styles are loaded dynamically and must be added to the list below
  * - HTTPs is disabled
  */
-kiss
-    .loader.loadLibrary({
-        libraryPath: "./kissjs"
-    })
-    .then(() => {
-        // Load scripts dynamically
-        kiss.loader.loadScripts([
-            // KissJS extensions
-            "kissjs/client/ux/link/link",
-            "kissjs/client/ux/directory/directory",
-            "kissjs/client/ux/selectViewColumn/selectViewColumn",
-            "kissjs/client/ux/selectViewColumns/selectViewColumns",
 
-            // VIEWS
-            "views/start",
-            "views/planes",
-            "views/planning",
-            "views/users",
-            "views/invoices",
-            "views/training",
-            "views/exercises",
-            "views/questions",
-            "views/login",
-            "views/register",
+// Load scripts dynamically
+kiss.loader.loadScripts([
+    
+    // KISSJS BUILT-IN MODELS
+    "models/account",
+    "models/user",
+    "models/group",
+    "models/model",
+    "models/view",
+    "models/file",
+    "models/link",
+    "models/trash",
 
-            // TEMPLATES
-            "templates/topbar",
-            "templates/formButton",
-            
-            // TEXTS
-            "resources/texts"
+    // MODELS
+    "models/flight",
+    "models/plane",
+    "models/user",
+    "models/invoice",
+    "models/formation",
+    "models/exercise",
+    "models/training",
+    "models/question",
 
-        ]).then(() => {
+    // VIEWS
+    "views/start",
+    "views/planes",
+    "views/planning",
+    "views/users",
+    "views/invoices",
+    "views/training",
+    "views/exercises",
+    "views/questions",
+    "views/login",
+    "views/register",
 
-            // Load models & plugins at the last moment because they rely on other libraries (like their renderers)
-            kiss.loader.loadScripts([
-                // MODELS
-                "models/account",
-                "models/user",
-                "models/group",
-                "models/model",
-                "models/view",
-                "models/file",
-                "models/link",
-                "models/trash",
-                "models/flight",
-                "models/plane",
-                "models/user",
-                "models/invoice",
-                "models/formation",
-                "models/exercise",
-                "models/training",
-                "models/question",
-            ])
+    // TEMPLATES
+    "templates/topbar",
+    "templates/formButton",
 
-            // Load styles dynamically
-            kiss.loader.loadStyles([
-                // KissJS extensions
-                "kissjs/client/ux/link/link",
-                "kissjs/client/ux/directory/directory",
+    // CONTROLLERS
+    "controllers/planning"
+])
 
-                // VIEWS
-                "views/start",
-                "views/parameters"
-            ])
-        })
-    })
+// Load styles dynamically
+kiss.loader.loadStyles([
 
+    // VIEWS
+    "views/start",
+    "views/parameters"
+])
+
+/**
+ * Your application starts here
+ */
 window.onload = async function () {
+
     // Switch http instead of https for local dev
     kiss.session.secure = false
     

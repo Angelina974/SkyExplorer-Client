@@ -3,7 +3,7 @@ kiss.app.defineView({
     renderer: function(id, target) {
 
         // Restrict the columns to the ones we want to display
-        let visibleColumns = ["time", "client", "type", "duration", "planeId"]
+        let visibleColumns = ["client", "planeId", "duration", "type"]
         let columns = kiss.app.models.flight.getFieldsAsColumns()
         columns.forEach(column => {
             column.hidden = !visibleColumns.includes(column.id)
@@ -38,6 +38,7 @@ kiss.app.defineView({
                         createRecord: async function() {
                             const newFlight = kiss.app.models.flight.create()
                             await newFlight.save()
+
                             createForm(newFlight)
                             createDeleteButton(newFlight)
                         },

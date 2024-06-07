@@ -1,1215 +1,4 @@
-kiss.app.defineView({
-    id: "exercises",
-    renderer: function(id, target) {
-        return createBlock({
-            id,
-            target,
-            fullscreen: true,
-            layout: "vertical",
-            items: [
-                createTopBar(),
-                {
-                    id: "exercises-list",
-                    type: "datatable",
-                    color: "var(--buttons-color)",
-                    canEdit: true,
-                    canCreateRecord: false,
-                    height: () => kiss.screen.current.height - 60,
-                    collection: kiss.app.collections.exercise,
-
-                    actions: [
-                        {
-                            text: txtTitleCase("Supprimer les exercices sélectionnés"),
-                            icon: "fas fa-trash",
-                            iconColor: "var(--red)",
-                            action: () => kiss.selection.deleteSelectedRecords()
-                        }                        
-                    ],
-
-                    methods: {
-                        createRecord: async function() {
-                            const newExercise = kiss.app.models.exercise.create()
-                            await newExercise.save()
-                            createForm(newExercise)
-                            createDeleteButton(newExercise)
-                        },
-                        selectRecord: function(record) {
-                            createForm(record)
-                            createDeleteButton(record)
-                        }
-                    }
-                }
-            ]
-        })
-    }
-})
-
-;kiss.app.defineView({
-    id: "invoices",
-    renderer: function(id, target) {
-
-        // Cherche la coolonne "Montant" de la facture et active la propriété "summary" pour faire la somme sur cette colonne
-        let columns = kiss.app.models.invoice.getFieldsAsColumns()
-        columns.forEach(column => {
-            if (column.title == "Montant de la facture") {
-                column.summary = "sum"
-            }
-        })
-
-        return createBlock({
-            id,
-            target,
-            fullscreen: true,
-            layout: "vertical",
-            items: [
-                createTopBar(),
-                {
-                    id: "invoices-list",
-                    type: "datatable",
-                    color: "var(--buttons-color)",
-                    canEdit: true,
-                    canCreateRecord: false,
-                    height: () => kiss.screen.current.height - 60,
-                    collection: kiss.app.collections.invoice,
-                    columns,
-
-                    // Regroupe les factures par mois
-                    // Cela permettra de voir les sommes aggrégées par mois
-                    group: ["month"],
-
-                    actions: [
-                        {
-                            text: txtTitleCase("Supprimer les factures sélectionnés"),
-                            icon: "fas fa-trash",
-                            iconColor: "var(--red)",
-                            action: () => kiss.selection.deleteSelectedRecords()
-                        }                        
-                    ],
-
-                    methods: {
-                        createRecord: async function() {
-                            const newInvoice = kiss.app.models.invoice.create()
-                            await newInvoice.save()
-                            createForm(newInvoice)
-                            createDeleteButton(newInvoice)
-                        },
-                        selectRecord: function(record) {
-                            createForm(record)
-                            createDeleteButton(record)
-                        }
-                    }
-                }
-            ]
-        })
-    }
-})
-
-;/**
- * Authentication => login
- */
-kiss.app.defineView({
-    id: "authentication-login",
-    renderer: function (id, target) {
-
-        // Define the possible login methods and build connection buttons accordingly
-        let loginMethods = kiss.router.getRoute().lm
-        if (!loginMethods) loginMethods = kiss.session.getLoginMethods()
-
-        const allLoginButtons = kiss.session.getLoginMethodTypes().slice(1).map(loginMethod => {
-            return {
-                type: "button",
-                alias: loginMethod.alias,
-                text: loginMethod.text,
-                icon: loginMethod.icon,
-                action: async () => {
-
-                    // Some environment (ex: docker) don't allow external auth
-                    const serverEnvironment = await kiss.session.getServerEnvironment()
-                    if (serverEnvironment == "docker") {
-                        return createNotification(txtTitleCase("#feature not available"))
-                    }
-
-                    $("login").showLoading({
-                        fullscreen: true,
-                        spinnerSize: 128
-                    })
-
-                    let acceptInvitationOf = kiss.context.acceptInvitationOf || ''
-                    if (acceptInvitationOf) acceptInvitationOf = '?acceptInvitationOf=' + acceptInvitationOf
-
-                    document.location = loginMethod.callback + acceptInvitationOf
-                }
-            }
-        })
-
-        const loginButtons = Array.from(loginMethods).map(loginMethodAlias => allLoginButtons.find(button => button.alias == loginMethodAlias))
-        const hasInternalLogin = loginMethods.includes("i")
-        const hasExternalLogin = loginMethods.includes("g")
-
-        // Default login infos (useful for test mode)
-        const username = kiss.router.getRoute().username
-        const password = kiss.router.getRoute().password
-
-        // Get the required redirection after login, if any, or points to the default home page
-        const redirectTo = kiss.context.redirectTo || {
-            ui: kiss.session.defaultViews.home
-        }
-        delete kiss.context.redirectTo
-
-        /**
-         * Generates the panel containing the login infos
-         */
-        return createBlock({
-            id,
-            target,
-
-            items: [
-                // Fullscreen background with cover image
-                {
-                    id: "login-page",
-                    fullscreen: true,
-                    layout: "horizontal",
-                    overflow: "auto",
-
-                    items: [
-                        // White color + logo
-                        {
-                            flex: 1,
-                            background: "white"
-                        },
-                        // Blue color
-                        {
-                            flex: 1,
-                            background: "var(--skyexplorer-color)",
-                        }
-                    ]
-                },
-
-                // Logo and login window
-                {
-                    items: [
-                        // Logo
-                        {
-                            hidden: !app.logo,
-                            position: "absolute",
-                            top: "calc(50% - 75px)",
-                            left: "calc(25% - 175px)",
-                            
-                            type: "image",
-                            src: app.logo,
-                            alt: "Logo",
-
-                        },
-                        {
-                            id: "login",
-                            type: "panel",
-                            icon: "fas fa-key",
-                            title: "Identifiez-vous",
-                            headerBackgroundColor: "var(--skyexplorer-color)",
-                            draggable: true,
-                            
-
-                            width: 800,
-                            maxHeight: () => kiss.screen.current.height,
-                            
-                            align: "center",
-                            verticalAlign: "center",
-                            layout: "horizontal",
-                            overflowY: "auto",
-
-                            // Language buttons
-                            // headerButtons: kiss.templates.authLanguageButtons(),
-
-                            items: [
-                                // LOCAL LOGIN METHOD
-                                {
-                                    hidden: !hasInternalLogin,
-
-                                    flex: 1,
-                                    class: "auth-block",
-                                    overflow: "hidden",
-
-                                    defaultConfig: {
-                                        width: "100%",
-                                        fieldWidth: "100%",
-                                        labelPosition: "top",
-                                        padding: 0
-                                    },
-
-                                    items: [
-                                        // EMAIL
-                                        {
-                                            type: "text",
-                                            id: "username",
-                                            label: txtTitleCase("email"),
-                                            required: true,
-                                            validationType: "email",
-                                            value: username
-                                        },
-                                        // PASSWORD
-                                        {
-                                            type: "password",
-                                            id: "password",
-                                            label: txtTitleCase("password"),
-                                            value: password,
-                                            events: {
-                                                keydown: (event) => {
-                                                    if (event.key == "Enter") {
-                                                        $("login").login()
-                                                    }
-                                                }
-                                            }
-                                        },
-                                        // LOGIN button
-                                        {
-                                            type: "button",
-                                            icon: "fa fa-check",
-                                            text: txtTitleCase("login"),
-                                            iconColor: "#00aaee",
-                                            height: 40,
-                                            margin: "20px 0",
-                                            events: {
-                                                click: () => $("login").login()
-                                            }
-                                        },
-                                        // LINK TO PASSWORD RESET
-                                        {
-                                            type: "html",
-                                            html: `
-                                            <div class="auth-reset-password">${txtTitleCase("forgot password?")}</div>
-                                        `,
-                                            events: {
-                                                click: () => $("login").requestPasswordReset()
-                                            }
-                                        },                                        
-                                        // LINK TO REGISTER PAGE
-                                        {
-                                            hidden: kiss.screen.isMobile,
-                                            type: "html",
-                                            html: `
-                                            <div class="auth-create-account">${txtTitleCase("#no account")}</div>
-                                        `,
-                                            events: {
-                                                click: () => kiss.router.navigateTo({
-                                                    ui: "authentication-register",
-                                                    lm: loginMethods
-                                                }, true)
-                                            }
-                                        }
-                                    ]
-                                },
-
-                                // Separation between login methods
-                                {
-                                    hidden: !hasInternalLogin || !hasExternalLogin,
-
-                                    id: "auth-login-separator",
-                                    class: "auth-separator",
-
-                                    layout: "vertical",
-                                    items: [{
-                                            type: "spacer",
-                                            flex: 1
-                                        },
-                                        {
-                                            type: "html",
-                                            class: "auth-separator-text",
-                                            html: txtUpperCase("or")
-                                        },
-                                        {
-                                            type: "spacer",
-                                            flex: 1
-                                        }
-                                    ]
-                                },
-
-                                // OTHER LOGIN METHODS
-                                {
-                                    hidden: !hasExternalLogin,
-                                    id: "auth-login-external",
-                                    flex: 1,
-                                    class: "auth-block",
-                                    layout: "vertical",
-                                    justifyContent: "center",
-
-                                    defaultConfig: {
-                                        margin: "5px",
-                                        colorHover: "#00aaee",
-                                        backgroundColorHover: "#ffffff",
-                                        iconSize: "20px",
-                                        iconColorHover: "#00aaee",
-                                        height: 40
-                                    },
-
-                                    items: loginButtons.concat({
-                                        hidden: hasInternalLogin,
-                                        type: "html",
-                                        html: `<div class="auth-create-account">${txtTitleCase("#no account")}</div>`,
-                                        events: {
-                                            click: () => kiss.router.navigateTo({
-                                                ui: "authentication-register",
-                                                lm: loginMethods
-                                            }, true)
-                                        }
-                                    })
-                                }
-                            ],
-
-                            methods: {
-                                async load() {
-                                    // Check if a token was returned from a 3rd party service (Microsoft, Google, ...)
-                                    // If yes, update the session with the token before routing
-                                    const token = kiss.router.getRoute().token
-                                    if (token) {
-                                        this.hide()
-                                        const success = await kiss.session.login({
-                                            token: token
-                                        })
-
-                                        if (success) {
-                                            await kiss.router.navigateTo(redirectTo, true)
-                                        } else {
-                                            $("login").setAnimation("shakeX")
-                                        }
-                                    } else {
-
-                                        // Responsiveness
-                                        this.adjustToScreen()
-                                    }
-                                },
-
-                                /**
-                                 * Try to login
-                                 */
-                                async login() {
-                                    const fieldUsername = $("username")
-                                    const fieldPassword = $("password")
-
-                                    if (fieldUsername.isValid && fieldPassword.isValid) {
-                                        const success = await kiss.session.login({
-                                            username: fieldUsername.getValue(),
-                                            password: fieldPassword.getValue()
-                                        })
-
-                                        if (success) {
-                                            await kiss.router.navigateTo(redirectTo, true)
-                                        } else {
-                                            $("login").setAnimation("shakeX")
-                                        }
-                                    } else {
-                                        $("login").setAnimation("shakeX")
-                                    }
-                                },
-
-                                /**
-                                 * Send a request to reset the password
-                                 */
-                                async requestPasswordReset() {
-                                    const fieldUsername = $("username")
-                                    if (!fieldUsername.isValid) {
-                                        createNotification(txtTitleCase("#email missing"))
-                                        return
-                                    }
-
-                                    await kiss.ajax.request({
-                                        url: "/requestPasswordReset",
-                                        method: "post",
-                                        showLoading: true,
-                                        body: JSON.stringify({
-                                            username: fieldUsername.getValue(),
-                                            language: kiss.language.current
-                                        })
-                                    })
-
-                                    createDialog({
-                                        type: "message",
-                                        message: txtTitleCase("#password reset request")
-                                    })
-                                },
-
-                                /**
-                                 * Adjust layout to screen size
-                                 */
-                                adjustToScreen() {
-                                    if (!$("authentication-login")) return
-
-                                    if (kiss.screen.isVertical()) {
-                                        // $("common-matrix").hide()
-                                        $("login").config.width = "380px"
-                                        $("panel-body-login").style.flexFlow = "column"
-                                        $("auth-login-separator").style.flexFlow = "row"
-                                    } else {
-                                        // $("common-matrix").show()
-                                        $("login").config.width = "760px"    
-                                        $("panel-body-login").style.flexFlow = "row"
-                                        $("auth-login-separator").style.flexFlow = "column"
-                                    }
-                                    
-                                    if (kiss.screen.isMobile) {
-                                        $("login").config.width = "95%" 
-                                    }
-                                }
-                            },
-
-                            // Responsiveness
-                            subscriptions: {
-                                EVT_WINDOW_RESIZED: function () {
-                                    this.adjustToScreen()
-                                }
-                            }
-                        }
-                    ]
-                }
-            ]
-        })
-    }
-})
-
-;kiss.app.defineView({
-    id: "planes",
-    renderer: function(id, target) {
-        return createBlock({
-            id,
-            target,
-            fullscreen: true,
-            layout: "vertical",
-            items: [
-                createTopBar(),
-                {
-                    id: "planes-list",
-                    type: "datatable",
-                    color: "var(--buttons-color)",
-                    canEdit: true,
-                    canCreateRecord: true,
-                    createRecordText: "AJOUTER UN NOUVEL AVION A LA FLOTTE",
-                    height: () => kiss.screen.current.height - 60,
-                    collection: kiss.app.collections.plane,
-
-                    actions: [
-                        {
-                            text: txtTitleCase("Supprimer les avions sélectionnés"),
-                            icon: "fas fa-trash",
-                            iconColor: "var(--red)",
-                            action: () => kiss.selection.deleteSelectedRecords()
-                        }                        
-                    ],
-
-                    methods: {
-                        createRecord: async function() {
-                            const newPlane = kiss.app.models.plane.create()
-                            await newPlane.save()
-                            createForm(newPlane)
-                            createDeleteButton(newPlane)
-                        },
-                        selectRecord: function(record) {
-                            createForm(record)
-                            createDeleteButton(record)
-                        }
-                    }
-                }
-            ]
-        })
-    }
-})
-
-;kiss.app.defineView({
-    id: "planning",
-    renderer: function(id, target) {
-
-        // Restrict the columns to the ones we want to display
-        let visibleColumns = ["time", "client", "type", "duration", "planeId"]
-        let columns = kiss.app.models.flight.getFieldsAsColumns()
-        columns.forEach(column => {
-            column.hidden = !visibleColumns.includes(column.id)
-        })
-
-        return createBlock({
-            id, 
-            target,
-            fullscreen: true,
-            layout: "vertical",
-            items: [
-                createTopBar(),
-                {
-                    type: "calendar",
-                    color: "var(--buttons-color)",
-
-                    // Calendar options
-                    period: "1 week + details",
-                    startOnMonday: true,
-                    showWeekend: true,
-                    canCreateRecord: true,
-                    createRecordText: "RESERVER UN NOUVEAU VOL",
-                    height: () => kiss.screen.current.height - 60,
-                    
-                    // Collection and columns (= fields) to display
-                    collection: kiss.app.collections.flight,
-                    columns,
-
-                    // Defines what happens when:
-                    methods: {
-                        // - the user clicks on the "Create" button at the top left
-                        createRecord: async function() {
-                            const newFlight = kiss.app.models.flight.create()
-                            await newFlight.save()
-                            createForm(newFlight)
-                            createDeleteButton(newFlight)
-                        },
-                        // - the user clicks on a flight in the calendar
-                        selectRecord: function(record) {
-                            createForm(record)
-                            createDeleteButton(record)
-                        }
-                    }
-                }
-            ],
-            methods: {
-                async load() {
-                    if (kiss.app.collections["onlyExercises"]) return
-
-                    const filteredCollection = new kiss.data.Collection({
-                        id: "onlyExercises",
-                        model: kiss.app.models["training"],
-                        isMaster: false,
-                        filterSyntax: "mongo",
-                        filter: {
-                            type: "Exercice en vol"
-                        }
-                    })
-
-                    filteredCollection.filterBy({
-                        type: "Exercice en vol"
-                    })
-                }
-            }
-        })
-    }
-})
-
-;kiss.app.defineView({
-    id: "questions",
-    renderer: function(id, target) {
-        return createBlock({
-            id,
-            target,
-            fullscreen: true,
-            layout: "vertical",
-            items: [
-                createTopBar(),
-                {
-                    id: "questions-list",
-                    type: "datatable",
-                    color: "var(--buttons-color)",
-                    canEdit: true,
-                    canCreateRecord: true,
-                    createRecordText: "POSER UNE NOUVELLE QUESTION",
-                    height: () => kiss.screen.current.height - 60,
-                    collection: kiss.app.collections.question,
-
-                    actions: [
-                        {
-                            text: txtTitleCase("Supprimer les questions sélectionnés"),
-                            icon: "fas fa-trash",
-                            iconColor: "var(--red)",
-                            action: () => kiss.selection.deleteSelectedRecords()
-                        }                        
-                    ],
-
-                    methods: {
-                        createRecord: async function() {
-                            const newQuestion = kiss.app.models.question.create()
-                            await newQuestion.save()
-                            createForm(newQuestion)
-                            createDeleteButton(newQuestion)
-                        },
-                        selectRecord: function(record) {
-                            createForm(record)
-                            createDeleteButton(record)
-                        }
-                    }
-                }
-            ]
-        })
-    }
-})
-
-;/**
- * Authentication => registration process
- */
-kiss.app.defineView({
-    id: "authentication-register",
-    renderer: function (id, target) {
-        // Grab parameters sent through URL
-        const userEmail = kiss.router.getRoute().email
-        const pendingUserId = kiss.router.getRoute().userId
-
-        // Define the possible login methods and build registration buttons accordingly
-        let loginMethods = kiss.router.getRoute().lm
-        if (!loginMethods) loginMethods = kiss.session.getLoginMethods()
-
-        const allLoginButtons = kiss.session.getLoginMethodTypes().slice(1).map(loginMethod => {
-            return {
-                type: "button",
-                alias: loginMethod.alias,
-                text: loginMethod.text,
-                icon: loginMethod.icon,
-                action: async () => {
-
-                    // Some environment (ex: docker) don't allow external registration
-                    const serverEnvironment = await kiss.session.getServerEnvironment()
-                    if (serverEnvironment == "docker") {
-                        return createNotification(txtTitleCase("#feature not available"))
-                    }
-
-                    document.location = loginMethod.callback
-                }
-            }
-        })
-
-        const loginButtons = Array.from(loginMethods).map(loginMethodAlias => allLoginButtons.find(button => button.alias == loginMethodAlias))
-        const hasInternalLogin = loginMethods.includes("i")
-        const hasExternalLogin = loginMethods.includes("g")
-
-        /**
-         * Show a welcome popup once the registration is complete
-         */
-        const showWelcome = () => {
-            $("register").hide()
-
-            createPanel({
-                type: "panel",
-                title: txtUpperCase("welcome onboard"),
-                icon: "fas fa-handshake",
-                headerBackgroundColor: "var(--background-blue)",
-                position: "absolute",
-                top: () => ((window.innerHeight - 128) / 2) + "px",
-                width: () => Math.min(window.innerWidth - 100, 600),
-                align: "center",
-
-                items: [{
-                    type: "html",
-                    html: "<center>" + txtTitleCase("#thanks for registration") + "</center>",
-                    padding: "32px"
-                }]
-            }).render()
-        }
-
-        /**
-         * Generates the panel containing the login infos
-         */
-        return createBlock({
-            id,
-            target,
-
-            items: [
-                // Fullscreen background with cover image
-                {
-                    id: "register-page",
-                    fullscreen: true,
-                    layout: "horizontal",
-                    overflow: "auto",
-
-                    items: [
-                        // White color + logo
-                        {
-                            flex: 1,
-                            background: "white"
-                        },
-                        // Blue color
-                        {
-                            id: "welcome-image",
-                            flex: 1,
-                            background: "var(--skyexplorer-color)",
-                        }
-                    ]
-                },
-
-                // Logo and register window
-                {
-                    margin: "0px 0px 200px 0px",
-
-                    items: [
-                        // Logo
-                        {
-                            hidden: !app.logo,
-                            position: "absolute",
-                            top: "calc(50% - 75px)",
-                            left: "calc(25% - 175px)",
-
-                            type: "image",
-                            src: app.logo,
-                            alt: "Logo"
-                        },
-                        {
-                            id: "register",
-                            type: "panel",
-                            icon: "fas fa-key",
-                            title: "Enregistez-vous",
-                            headerBackgroundColor: "var(--skyexplorer-color)",
-                            draggable: true,
-
-                            width: 800,
-                            align: "center",
-                            verticalAlign: "center",
-                            layout: "horizontal",
-
-                            // Language buttons
-                            // headerButtons: kiss.templates.authLanguageButtons(),
-
-                            items: [
-                                // LOCAL REGISTRATION METHOD
-                                {
-                                    hidden: !hasInternalLogin,
-
-                                    flex: 1,
-                                    class: "auth-block",
-
-                                    defaultConfig: {
-                                        width: "100%",
-                                        fieldWidth: "100%",
-                                        labelPosition: "top",
-                                        padding: "2px 0"
-                                    },
-
-                                    items: [
-                                        // FIRST NAME
-                                        {
-                                            type: "text",
-                                            id: "firstName",
-                                            placeholder: txtTitleCase("first name"),
-                                            required: true
-                                        },
-                                        // LAST NAME
-                                        {
-                                            type: "text",
-                                            id: "lastName",
-                                            placeholder: txtTitleCase("last name"),
-                                            required: true
-                                        },
-                                        // COMPANY
-                                        {
-                                            hidden: (pendingUserId) ? true : false,
-                                            type: "text",
-                                            id: "company",
-                                            placeholder: txtTitleCase("company")
-                                        },
-                                        // TELEPHONE
-                                        {
-                                            hidden: (pendingUserId) ? true : false,
-                                            type: "text",
-                                            id: "telephone",
-                                            placeholder: txtTitleCase("telephone")
-                                        },
-                                        // EMAIL
-                                        {
-                                            type: "text",
-                                            id: "email",
-                                            placeholder: txtTitleCase("email"),
-                                            required: true,
-                                            validationType: "email",
-                                            value: userEmail
-                                        },
-                                        // PASSWORD
-                                        {
-                                            type: "password",
-                                            id: "password",
-                                            placeholder: txtTitleCase("password"),
-                                            required: true
-                                        },
-                                        // PASSWORD CONFIRMATION
-                                        {
-                                            type: "password",
-                                            id: "passwordConfirmation",
-                                            placeholder: txtTitleCase("password confirmation"),
-                                            required: true
-                                        },
-                                        // BUTTONS
-                                        {
-                                            layout: "horizontal",
-                                            margin: "20px 0px 0px 0px",
-                                            items: [
-                                                // REGISTER button
-                                                {
-                                                    type: "button",
-                                                    icon: "fa fa-check",
-                                                    text: txtTitleCase("register"),
-                                                    iconColor: "#00aaee",
-                                                    flex: 1,
-                                                    height: 40,
-                                                    events: {
-                                                        click: async function () {
-                                                            let fieldFirstName = $("firstName")
-                                                            let fieldLastName = $("lastName")
-                                                            let fieldEmail = $("email")
-                                                            let fieldPassword = $("password")
-                                                            let fieldPasswordConfirmation = $("passwordConfirmation")
-
-                                                            fieldFirstName.validate()
-                                                            fieldLastName.validate()
-                                                            fieldEmail.validate()
-                                                            fieldPassword.validate()
-                                                            fieldPasswordConfirmation.validate()
-
-                                                            if (fieldFirstName.isValid && fieldLastName.isValid && fieldEmail.isValid && fieldPassword.isValid && fieldPasswordConfirmation.isValid) {
-                                                                let firstName = fieldFirstName.getValue()
-                                                                let lastName = fieldLastName.getValue()
-                                                                let email = fieldEmail.getValue()
-                                                                let password = fieldPassword.getValue()
-                                                                let passwordConfirmation = fieldPasswordConfirmation.getValue()
-
-                                                                if (password != passwordConfirmation) {
-                                                                    createNotification(txtTitleCase("#password don't match"))
-                                                                    return $("register").setAnimation("shakeX")
-                                                                }
-
-                                                                kiss.ajax.request({
-                                                                        url: "/register",
-                                                                        method: "post",
-                                                                        body: JSON.stringify({
-                                                                            userId: pendingUserId,
-                                                                            firstName: firstName,
-                                                                            lastName: lastName,
-                                                                            language: kiss.language.current,
-                                                                            email: email,
-                                                                            password: password,
-                                                                            passwordConfirmation: passwordConfirmation
-                                                                        })
-                                                                    })
-                                                                    .then(response => {
-                                                                        if (response.error) {
-                                                                            $("register").setAnimation("shakeX")
-
-                                                                            // Beta closed!
-                                                                            if (response.error == "#beta closed") {
-                                                                                createDialog({
-                                                                                    title: "Beta test is closed",
-                                                                                    message: response.msg,
-                                                                                    noCancel: true
-                                                                                })
-                                                                            }
-                                                                        } else {
-                                                                            // Jump to welcome page
-                                                                            showWelcome()
-                                                                        }
-                                                                    }).catch(err => {
-                                                                        $("register").setAnimation("shakeX")
-                                                                    })
-                                                            } else {
-                                                                $("register").setAnimation("shakeX")
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            ]
-                                        },
-                                        // LINK TO LOGIN PAGE
-                                        {
-                                            type: "html",
-                                            html: `
-                                            <div class="auth-create-account">${txtTitleCase("#already an account")}</div>
-                                        `,
-                                            events: {
-                                                click: () => kiss.router.navigateTo({
-                                                    ui: "authentication-login",
-                                                    lm: loginMethods
-                                                }, true)
-                                            }
-                                        }
-                                    ]
-                                },
-
-                                // Separation between registration methods
-                                {
-                                    hidden: !hasInternalLogin || !hasExternalLogin,
-
-                                    id: "auth-separator",
-                                    class: "auth-separator",
-
-                                    layout: "vertical",
-                                    items: [{
-                                            type: "spacer",
-                                            flex: 1
-                                        },
-                                        {
-                                            type: "html",
-                                            class: "auth-separator-text",
-                                            html: txtUpperCase("or")
-                                        },
-                                        {
-                                            type: "spacer",
-                                            flex: 1
-                                        }
-                                    ]
-                                },
-
-                                // OTHER REGISTRATION METHODS
-                                {
-                                    hidden: !hasExternalLogin,
-                                    flex: 1,
-                                    class: "auth-block",
-                                    layout: "vertical",
-                                    justifyContent: "center",
-
-                                    defaultConfig: {
-                                        margin: "5px",
-                                        colorHover: "#00aaee",
-                                        backgroundColorHover: "#ffffff",
-                                        iconSize: "20px",
-                                        iconColorHover: "#00aaee",
-                                        height: 40
-                                    },
-
-                                    items: loginButtons.concat({
-                                        hidden: hasInternalLogin,
-                                        type: "html",
-                                        html: `<div class="auth-create-account">${txtTitleCase("#already an account")}</div>`,
-                                        events: {
-                                            click: () => kiss.router.navigateTo({
-                                                ui: "authentication-login",
-                                                lm: loginMethods
-                                            }, true)
-                                        }
-                                    })
-                                }
-                            ],
-
-                            methods: {
-                                load: function () {
-                                    this.adjustToScreen()
-                                },
-
-                                /**
-                                 * Adjust layout to screen size
-                                 */
-                                adjustToScreen: () => {
-                                    if (kiss.context.ui != "authentication-register") return
-
-                                    if (kiss.screen.isVertical()) {
-                                        $("welcome-image").hide()
-                                        $("register").config.width = (kiss.screen.isMobile) ? "320px" : "380px"
-                                        $("panel-body-register").style.flexFlow = "column"
-                                        $("auth-separator").style.flexFlow = "row"
-                                    } else {
-                                        $("welcome-image").show()
-                                        $("register").config.width = "760px"
-                                        $("panel-body-register").style.flexFlow = "row"
-                                        $("auth-separator").style.flexFlow = "column"
-                                    }
-                                }
-                            },
-
-                            // Responsiveness
-                            subscriptions: {
-                                EVT_WINDOW_RESIZED: function () {
-                                    this.adjustToScreen()
-                                }
-                            }
-                        }
-                    ]
-                }
-
-            ]
-        })
-    }
-})
-
-;/**
- * Home start.
- * This is the entry point of pickaform.
- */
-kiss.app.defineView({
-    id: "home-start",
-    renderer: function (id, target) {
-        return createBlock({
-            id,
-            target,
-            fullscreen: true,
-            layout: "horizontal",
-            items: [
-                {
-                    class: "home-left",
-                    type: "html",
-                    width: "50%",
-                    html: `<img src="./resources/img/skyExplorer.svg">`
-                },
-                {
-                    layout: "vertical",
-                    background: "#000055",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    flex: 1,
-                    defaultConfig: {
-                        iconSize: 22,
-                        iconColor: "var(--buttons-color)",
-                        height: 50,
-                        width: 300,
-                        margin: 20,
-                        borderRadius: "var(--panel-border-radius)",
-                        fontSize: 16,
-                        boxShadow: "none",
-                        boxShadowHover: "0 0 20px #0077c8"
-                    },
-                    items: [
-                        {
-                            type: "button",
-                            icon: "fas fa-clipboard",
-                            text: "Voir le planning des vols",
-                            action: () => kiss.router.navigateTo("planning")
-                        },
-                        {
-                            type: "button",
-                            icon: "fas fa-chart-line",
-                            text: "Ma progression (exercices)",
-                            action: () => kiss.router.navigateTo({
-                                ui: "exercises",
-                                modelId: "exercise",
-                                viewId: "exercises-list"
-                            })
-                        },
-                        {
-                            type: "button",
-                            icon: "fas fa-dollar-sign",
-                            text: "Factures",
-                            action: () => kiss.router.navigateTo({
-                                ui: "invoices",
-                                modelId: "invoice",
-                                viewId: "invoices-list"
-                            })
-                        },
-                        {
-                            type: "button",
-                            icon: "fas fa-user-graduate",
-                            text: "Gérer le plan de formation",
-                            action: () => kiss.router.navigateTo({
-                                ui: "training",
-                                modelId: "training",
-                                viewId: "training-list"
-                            })
-                        },
-                        {
-                            type: "button",
-                            icon: "fas fa-fighter-jet",
-                            text: "Suivi des avions",
-                            action: () => kiss.router.navigateTo({
-                                ui: "planes",
-                                modelId: "plane",
-                                viewId: "planes-list"
-                            })
-                        },
-                        {
-                            type: "button",
-                            icon: "fas fa-users",
-                            text: "Gestion des utilisateurs",
-                            action: () => kiss.router.navigateTo({
-                                ui: "users",
-                                modelId: "user",
-                                viewId: "users-list"
-                            })
-                        },
-                        {
-                            type: "button",
-                            icon: "fas fa-question",
-                            text: "Questions & Réponses",
-                            action: () => kiss.router.navigateTo({
-                                ui: "questions",
-                                modelId: "question",
-                                viewId: "questions-list"
-                            })
-                        },                                             
-                        {
-                            type: "button",
-                            icon: "fas fa-power-off",
-                            text: "Se déconnecter",
-                            action: () => kiss.session.logout()
-                        }
-                    ]
-                }
-            ]
-        })
-    }
-})
-
-;kiss.app.defineView({
-    id: "training",
-    renderer: function(id, target) {
-        return createBlock({
-            id,
-            target,
-            fullscreen: true,
-            layout: "vertical",
-            items: [
-                createTopBar(),
-                {
-                    id: "training-list",
-                    type: "datatable",
-                    color: "var(--buttons-color)",
-                    canEdit: true,
-                    canCreateRecord: true,
-                    createRecordText: "AJOUTER UN NOUVEL ELEMENT A LA FORMATION",
-                    height: () => kiss.screen.current.height - 60,
-                    collection: kiss.app.collections.training,
-
-                    actions: [
-                        {
-                            text: txtTitleCase("Supprimer les formations sélectionnées"),
-                            icon: "fas fa-trash",
-                            iconColor: "var(--red)",
-                            action: () => kiss.selection.deleteSelectedRecords()
-                        }                        
-                    ],
-
-                    methods: {
-                        createRecord: async function() {
-                            const newTraining = kiss.app.models.training.create()
-                            await newTraining.save()
-                            createForm(newTraining)
-                            createDeleteButton(newTraining)
-                            
-                        },
-                        selectRecord: function(record) {
-                            createForm(record)
-                            createDeleteButton(record)
-                        }
-                    }
-                }
-            ]
-        })
-    }
-})
-
-;kiss.app.defineView({
-    id: "users",
-    renderer: function(id, target) {
-        return createBlock({
-            id,
-            target,
-            fullscreen: true,
-            layout: "vertical",
-            items: [
-                createTopBar(),
-                {
-                    id: "users-list",
-                    type: "datatable",
-                    color: "var(--buttons-color)",
-                    canEdit: false,
-                    canCreateRecord: false,
-                    canSelect: false,
-                    showAction: false,
-                    height: () => kiss.screen.current.height - 60,
-                    collection: kiss.app.collections.user,
-
-                    methods: {
-                        selectRecord: function(record) {
-                            createForm(record)
-                        }
-                    }
-                }
-            ]
-        })
-    }
-})
-
-;kiss.app.defineModel({
+kiss.app.defineModel({
     id: "account",
     name: "Account",
     namePlural: "Accounts",
@@ -1659,8 +448,8 @@ kiss.app.defineModel({
                             value: "today",
 
                             // Vériication de la disponibilité de l'avion à la date et l'heure choisies
-                            validationFunction: async function () {
-                                return await this.record.checkAvailability()
+                            validationFunction: async function() {
+                                return await checkAvailability()
                             }
                         },
                         // Heure
@@ -1675,7 +464,7 @@ kiss.app.defineModel({
 
                             // Vériication de la disponibilité de l'avion à la date et l'heure choisies
                             validationFunction: async function () {
-                                return await this.record.checkAvailability()
+                                return await checkAvailability()
                             }
                         }
                     ]
@@ -1817,37 +606,7 @@ kiss.app.defineModel({
                 }
             ]
         }
-    ],
-
-    methods: {
-        /**
-         * Méthode du modèle pour vérifier si l'avion est disponible au jour et à l'heure demandée
-         * 
-         * @async
-         * @returns {boolean} true si l'avion est disponible, false sinon
-         */
-        async checkAvailability() {
-            const planeId = $("planeId").getValue()
-            if (!planeId) {
-                createNotification("Merci de choisir un avion pour pouvoir vérifier sa disponibilité à cette date & heure")
-                return false
-            }
-
-            const hour = $("time").getValue()
-            const date = $("date").getValue()
-
-            const flights = kiss.app.collections.flight.records
-            const planeFlights = flights.filter(flight => flight.planeId === planeId)
-            const reservationsAtTheSameDateAndTime = planeFlights.filter(flight => flight.date === date && flight.time === hour)
-            
-            if (reservationsAtTheSameDateAndTime.length > 0) {
-                createNotification("Désolé, l'avion est déjà réservé à cette date & heure !")
-                return false
-            }
-
-            return true
-        }
-    }
+    ]
 })
 
 ;kiss.app.defineModel({
@@ -3284,6 +2043,1217 @@ kiss.app.defineModel({
     }
 })
 
+;kiss.app.defineView({
+    id: "exercises",
+    renderer: function(id, target) {
+        return createBlock({
+            id,
+            target,
+            fullscreen: true,
+            layout: "vertical",
+            items: [
+                createTopBar(),
+                {
+                    id: "exercises-list",
+                    type: "datatable",
+                    color: "var(--buttons-color)",
+                    canEdit: true,
+                    canCreateRecord: false,
+                    height: () => kiss.screen.current.height - 60,
+                    collection: kiss.app.collections.exercise,
+
+                    actions: [
+                        {
+                            text: txtTitleCase("Supprimer les exercices sélectionnés"),
+                            icon: "fas fa-trash",
+                            iconColor: "var(--red)",
+                            action: () => kiss.selection.deleteSelectedRecords()
+                        }                        
+                    ],
+
+                    methods: {
+                        createRecord: async function() {
+                            const newExercise = kiss.app.models.exercise.create()
+                            await newExercise.save()
+                            createForm(newExercise)
+                            createDeleteButton(newExercise)
+                        },
+                        selectRecord: function(record) {
+                            createForm(record)
+                            createDeleteButton(record)
+                        }
+                    }
+                }
+            ]
+        })
+    }
+})
+
+;kiss.app.defineView({
+    id: "invoices",
+    renderer: function(id, target) {
+
+        // Cherche la coolonne "Montant" de la facture et active la propriété "summary" pour faire la somme sur cette colonne
+        let columns = kiss.app.models.invoice.getFieldsAsColumns()
+        columns.forEach(column => {
+            if (column.title == "Montant de la facture") {
+                column.summary = "sum"
+            }
+        })
+
+        return createBlock({
+            id,
+            target,
+            fullscreen: true,
+            layout: "vertical",
+            items: [
+                createTopBar(),
+                {
+                    id: "invoices-list",
+                    type: "datatable",
+                    color: "var(--buttons-color)",
+                    canEdit: true,
+                    canCreateRecord: false,
+                    height: () => kiss.screen.current.height - 60,
+                    collection: kiss.app.collections.invoice,
+                    columns,
+
+                    // Regroupe les factures par mois
+                    // Cela permettra de voir les sommes aggrégées par mois
+                    group: ["month"],
+
+                    actions: [
+                        {
+                            text: txtTitleCase("Supprimer les factures sélectionnés"),
+                            icon: "fas fa-trash",
+                            iconColor: "var(--red)",
+                            action: () => kiss.selection.deleteSelectedRecords()
+                        }                        
+                    ],
+
+                    methods: {
+                        createRecord: async function() {
+                            const newInvoice = kiss.app.models.invoice.create()
+                            await newInvoice.save()
+                            createForm(newInvoice)
+                            createDeleteButton(newInvoice)
+                        },
+                        selectRecord: function(record) {
+                            createForm(record)
+                            createDeleteButton(record)
+                        }
+                    }
+                }
+            ]
+        })
+    }
+})
+
+;/**
+ * Authentication => login
+ */
+kiss.app.defineView({
+    id: "authentication-login",
+    renderer: function (id, target) {
+
+        // Define the possible login methods and build connection buttons accordingly
+        let loginMethods = kiss.router.getRoute().lm
+        if (!loginMethods) loginMethods = kiss.session.getLoginMethods()
+
+        const allLoginButtons = kiss.session.getLoginMethodTypes().slice(1).map(loginMethod => {
+            return {
+                type: "button",
+                alias: loginMethod.alias,
+                text: loginMethod.text,
+                icon: loginMethod.icon,
+                action: async () => {
+
+                    // Some environment (ex: docker) don't allow external auth
+                    const serverEnvironment = await kiss.session.getServerEnvironment()
+                    if (serverEnvironment == "docker") {
+                        return createNotification(txtTitleCase("#feature not available"))
+                    }
+
+                    $("login").showLoading({
+                        fullscreen: true,
+                        spinnerSize: 128
+                    })
+
+                    let acceptInvitationOf = kiss.context.acceptInvitationOf || ''
+                    if (acceptInvitationOf) acceptInvitationOf = '?acceptInvitationOf=' + acceptInvitationOf
+
+                    document.location = loginMethod.callback + acceptInvitationOf
+                }
+            }
+        })
+
+        const loginButtons = Array.from(loginMethods).map(loginMethodAlias => allLoginButtons.find(button => button.alias == loginMethodAlias))
+        const hasInternalLogin = loginMethods.includes("i")
+        const hasExternalLogin = loginMethods.includes("g")
+
+        // Default login infos (useful for test mode)
+        const username = kiss.router.getRoute().username
+        const password = kiss.router.getRoute().password
+
+        // Get the required redirection after login, if any, or points to the default home page
+        const redirectTo = kiss.context.redirectTo || {
+            ui: kiss.session.defaultViews.home
+        }
+        delete kiss.context.redirectTo
+
+        /**
+         * Generates the panel containing the login infos
+         */
+        return createBlock({
+            id,
+            target,
+
+            items: [
+                // Fullscreen background with cover image
+                {
+                    id: "login-page",
+                    fullscreen: true,
+                    layout: "horizontal",
+                    overflow: "auto",
+
+                    items: [
+                        // White color + logo
+                        {
+                            flex: 1,
+                            background: "white"
+                        },
+                        // Blue color
+                        {
+                            flex: 1,
+                            background: "var(--skyexplorer-color)",
+                        }
+                    ]
+                },
+
+                // Logo and login window
+                {
+                    items: [
+                        // Logo
+                        {
+                            hidden: !app.logo,
+                            position: "absolute",
+                            top: "calc(50% - 75px)",
+                            left: "calc(25% - 175px)",
+                            
+                            type: "image",
+                            src: app.logo,
+                            alt: "Logo",
+
+                        },
+                        {
+                            id: "login",
+                            type: "panel",
+                            icon: "fas fa-key",
+                            title: "Identifiez-vous",
+                            headerBackgroundColor: "var(--skyexplorer-color)",
+                            draggable: true,
+                            
+
+                            width: 800,
+                            maxHeight: () => kiss.screen.current.height,
+                            
+                            align: "center",
+                            verticalAlign: "center",
+                            layout: "horizontal",
+                            overflowY: "auto",
+
+                            // Language buttons
+                            // headerButtons: kiss.templates.authLanguageButtons(),
+
+                            items: [
+                                // LOCAL LOGIN METHOD
+                                {
+                                    hidden: !hasInternalLogin,
+
+                                    flex: 1,
+                                    class: "auth-block",
+                                    overflow: "hidden",
+
+                                    defaultConfig: {
+                                        width: "100%",
+                                        fieldWidth: "100%",
+                                        labelPosition: "top",
+                                        padding: 0
+                                    },
+
+                                    items: [
+                                        // EMAIL
+                                        {
+                                            type: "text",
+                                            id: "username",
+                                            label: txtTitleCase("email"),
+                                            required: true,
+                                            validationType: "email",
+                                            value: username
+                                        },
+                                        // PASSWORD
+                                        {
+                                            type: "password",
+                                            id: "password",
+                                            label: txtTitleCase("password"),
+                                            value: password,
+                                            events: {
+                                                keydown: (event) => {
+                                                    if (event.key == "Enter") {
+                                                        $("login").login()
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        // LOGIN button
+                                        {
+                                            type: "button",
+                                            icon: "fa fa-check",
+                                            text: txtTitleCase("login"),
+                                            iconColor: "#00aaee",
+                                            height: 40,
+                                            margin: "20px 0",
+                                            events: {
+                                                click: () => $("login").login()
+                                            }
+                                        },
+                                        // LINK TO PASSWORD RESET
+                                        {
+                                            type: "html",
+                                            html: `
+                                            <div class="auth-reset-password">${txtTitleCase("forgot password?")}</div>
+                                        `,
+                                            events: {
+                                                click: () => $("login").requestPasswordReset()
+                                            }
+                                        },                                        
+                                        // LINK TO REGISTER PAGE
+                                        {
+                                            hidden: kiss.screen.isMobile,
+                                            type: "html",
+                                            html: `
+                                            <div class="auth-create-account">${txtTitleCase("#no account")}</div>
+                                        `,
+                                            events: {
+                                                click: () => kiss.router.navigateTo({
+                                                    ui: "authentication-register",
+                                                    lm: loginMethods
+                                                }, true)
+                                            }
+                                        }
+                                    ]
+                                },
+
+                                // Separation between login methods
+                                {
+                                    hidden: !hasInternalLogin || !hasExternalLogin,
+
+                                    id: "auth-login-separator",
+                                    class: "auth-separator",
+
+                                    layout: "vertical",
+                                    items: [{
+                                            type: "spacer",
+                                            flex: 1
+                                        },
+                                        {
+                                            type: "html",
+                                            class: "auth-separator-text",
+                                            html: txtUpperCase("or")
+                                        },
+                                        {
+                                            type: "spacer",
+                                            flex: 1
+                                        }
+                                    ]
+                                },
+
+                                // OTHER LOGIN METHODS
+                                {
+                                    hidden: !hasExternalLogin,
+                                    id: "auth-login-external",
+                                    flex: 1,
+                                    class: "auth-block",
+                                    layout: "vertical",
+                                    justifyContent: "center",
+
+                                    defaultConfig: {
+                                        margin: "5px",
+                                        colorHover: "#00aaee",
+                                        backgroundColorHover: "#ffffff",
+                                        iconSize: "20px",
+                                        iconColorHover: "#00aaee",
+                                        height: 40
+                                    },
+
+                                    items: loginButtons.concat({
+                                        hidden: hasInternalLogin,
+                                        type: "html",
+                                        html: `<div class="auth-create-account">${txtTitleCase("#no account")}</div>`,
+                                        events: {
+                                            click: () => kiss.router.navigateTo({
+                                                ui: "authentication-register",
+                                                lm: loginMethods
+                                            }, true)
+                                        }
+                                    })
+                                }
+                            ],
+
+                            methods: {
+                                async load() {
+                                    // Check if a token was returned from a 3rd party service (Microsoft, Google, ...)
+                                    // If yes, update the session with the token before routing
+                                    const token = kiss.router.getRoute().token
+                                    if (token) {
+                                        this.hide()
+                                        const success = await kiss.session.login({
+                                            token: token
+                                        })
+
+                                        if (success) {
+                                            await kiss.router.navigateTo(redirectTo, true)
+                                        } else {
+                                            $("login").setAnimation("shakeX")
+                                        }
+                                    } else {
+
+                                        // Responsiveness
+                                        this.adjustToScreen()
+                                    }
+                                },
+
+                                /**
+                                 * Try to login
+                                 */
+                                async login() {
+                                    const fieldUsername = $("username")
+                                    const fieldPassword = $("password")
+
+                                    if (fieldUsername.isValid && fieldPassword.isValid) {
+                                        const success = await kiss.session.login({
+                                            username: fieldUsername.getValue(),
+                                            password: fieldPassword.getValue()
+                                        })
+
+                                        if (success) {
+                                            await kiss.router.navigateTo(redirectTo, true)
+                                        } else {
+                                            $("login").setAnimation("shakeX")
+                                        }
+                                    } else {
+                                        $("login").setAnimation("shakeX")
+                                    }
+                                },
+
+                                /**
+                                 * Send a request to reset the password
+                                 */
+                                async requestPasswordReset() {
+                                    const fieldUsername = $("username")
+                                    if (!fieldUsername.isValid) {
+                                        createNotification(txtTitleCase("#email missing"))
+                                        return
+                                    }
+
+                                    await kiss.ajax.request({
+                                        url: "/requestPasswordReset",
+                                        method: "post",
+                                        showLoading: true,
+                                        body: JSON.stringify({
+                                            username: fieldUsername.getValue(),
+                                            language: kiss.language.current
+                                        })
+                                    })
+
+                                    createDialog({
+                                        type: "message",
+                                        message: txtTitleCase("#password reset request")
+                                    })
+                                },
+
+                                /**
+                                 * Adjust layout to screen size
+                                 */
+                                adjustToScreen() {
+                                    if (!$("authentication-login")) return
+
+                                    if (kiss.screen.isVertical()) {
+                                        // $("common-matrix").hide()
+                                        $("login").config.width = "380px"
+                                        $("panel-body-login").style.flexFlow = "column"
+                                        $("auth-login-separator").style.flexFlow = "row"
+                                    } else {
+                                        // $("common-matrix").show()
+                                        $("login").config.width = "760px"    
+                                        $("panel-body-login").style.flexFlow = "row"
+                                        $("auth-login-separator").style.flexFlow = "column"
+                                    }
+                                    
+                                    if (kiss.screen.isMobile) {
+                                        $("login").config.width = "95%" 
+                                    }
+                                }
+                            },
+
+                            // Responsiveness
+                            subscriptions: {
+                                EVT_WINDOW_RESIZED: function () {
+                                    this.adjustToScreen()
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        })
+    }
+})
+
+;kiss.app.defineView({
+    id: "planes",
+    renderer: function(id, target) {
+        return createBlock({
+            id,
+            target,
+            fullscreen: true,
+            layout: "vertical",
+            items: [
+                createTopBar(),
+                {
+                    id: "planes-list",
+                    type: "datatable",
+                    color: "var(--buttons-color)",
+                    canEdit: true,
+                    canCreateRecord: true,
+                    createRecordText: "AJOUTER UN NOUVEL AVION A LA FLOTTE",
+                    height: () => kiss.screen.current.height - 60,
+                    collection: kiss.app.collections.plane,
+
+                    actions: [
+                        {
+                            text: txtTitleCase("Supprimer les avions sélectionnés"),
+                            icon: "fas fa-trash",
+                            iconColor: "var(--red)",
+                            action: () => kiss.selection.deleteSelectedRecords()
+                        }                        
+                    ],
+
+                    methods: {
+                        createRecord: async function() {
+                            const newPlane = kiss.app.models.plane.create()
+                            createForm(newPlane)
+                            createDeleteButton(newPlane)
+                        },
+                        selectRecord: function(record) {
+                            createForm(record)
+                            createDeleteButton(record)
+                        }
+                    }
+                }
+            ]
+        })
+    }
+})
+
+;kiss.app.defineView({
+    id: "planning",
+    renderer: function(id, target) {
+
+        // Restrict the columns to the ones we want to display
+        let visibleColumns = ["client", "planeId", "duration", "type"]
+        let columns = kiss.app.models.flight.getFieldsAsColumns()
+        columns.forEach(column => {
+            column.hidden = !visibleColumns.includes(column.id)
+        })
+
+        return createBlock({
+            id, 
+            target,
+            fullscreen: true,
+            layout: "vertical",
+            items: [
+                createTopBar(),
+                {
+                    type: "calendar",
+                    color: "var(--buttons-color)",
+
+                    // Calendar options
+                    period: "1 week + details",
+                    startOnMonday: true,
+                    showWeekend: true,
+                    canCreateRecord: true,
+                    createRecordText: "RESERVER UN NOUVEAU VOL",
+                    height: () => kiss.screen.current.height - 60,
+                    
+                    // Collection and columns (= fields) to display
+                    collection: kiss.app.collections.flight,
+                    columns,
+
+                    // Defines what happens when:
+                    methods: {
+                        // - the user clicks on the "Create" button at the top left
+                        createRecord: async function() {
+                            const newFlight = kiss.app.models.flight.create()
+                            await newFlight.save()
+
+                            createForm(newFlight)
+                            createDeleteButton(newFlight)
+                        },
+                        // - the user clicks on a flight in the calendar
+                        selectRecord: function(record) {
+                            createForm(record)
+                            createDeleteButton(record)
+                        }
+                    }
+                }
+            ],
+            methods: {
+                async load() {
+                    if (kiss.app.collections["onlyExercises"]) return
+
+                    const filteredCollection = new kiss.data.Collection({
+                        id: "onlyExercises",
+                        model: kiss.app.models["training"],
+                        isMaster: false,
+                        filterSyntax: "mongo",
+                        filter: {
+                            type: "Exercice en vol"
+                        }
+                    })
+
+                    filteredCollection.filterBy({
+                        type: "Exercice en vol"
+                    })
+                }
+            }
+        })
+    }
+})
+
+;kiss.app.defineView({
+    id: "questions",
+    renderer: function(id, target) {
+        return createBlock({
+            id,
+            target,
+            fullscreen: true,
+            layout: "vertical",
+            items: [
+                createTopBar(),
+                {
+                    id: "questions-list",
+                    type: "datatable",
+                    color: "var(--buttons-color)",
+                    canEdit: true,
+                    canCreateRecord: true,
+                    createRecordText: "POSER UNE NOUVELLE QUESTION",
+                    height: () => kiss.screen.current.height - 60,
+                    collection: kiss.app.collections.question,
+
+                    actions: [
+                        {
+                            text: txtTitleCase("Supprimer les questions sélectionnés"),
+                            icon: "fas fa-trash",
+                            iconColor: "var(--red)",
+                            action: () => kiss.selection.deleteSelectedRecords()
+                        }                        
+                    ],
+
+                    methods: {
+                        createRecord: async function() {
+                            const newQuestion = kiss.app.models.question.create()
+                            await newQuestion.save()
+                            createForm(newQuestion)
+                            createDeleteButton(newQuestion)
+                        },
+                        selectRecord: function(record) {
+                            createForm(record)
+                            createDeleteButton(record)
+                        }
+                    }
+                }
+            ]
+        })
+    }
+})
+
+;/**
+ * Authentication => registration process
+ */
+kiss.app.defineView({
+    id: "authentication-register",
+    renderer: function (id, target) {
+        // Grab parameters sent through URL
+        const userEmail = kiss.router.getRoute().email
+        const pendingUserId = kiss.router.getRoute().userId
+
+        // Define the possible login methods and build registration buttons accordingly
+        let loginMethods = kiss.router.getRoute().lm
+        if (!loginMethods) loginMethods = kiss.session.getLoginMethods()
+
+        const allLoginButtons = kiss.session.getLoginMethodTypes().slice(1).map(loginMethod => {
+            return {
+                type: "button",
+                alias: loginMethod.alias,
+                text: loginMethod.text,
+                icon: loginMethod.icon,
+                action: async () => {
+
+                    // Some environment (ex: docker) don't allow external registration
+                    const serverEnvironment = await kiss.session.getServerEnvironment()
+                    if (serverEnvironment == "docker") {
+                        return createNotification(txtTitleCase("#feature not available"))
+                    }
+
+                    document.location = loginMethod.callback
+                }
+            }
+        })
+
+        const loginButtons = Array.from(loginMethods).map(loginMethodAlias => allLoginButtons.find(button => button.alias == loginMethodAlias))
+        const hasInternalLogin = loginMethods.includes("i")
+        const hasExternalLogin = loginMethods.includes("g")
+
+        /**
+         * Show a welcome popup once the registration is complete
+         */
+        const showWelcome = () => {
+            $("register").hide()
+
+            createPanel({
+                type: "panel",
+                title: txtUpperCase("welcome onboard"),
+                icon: "fas fa-handshake",
+                headerBackgroundColor: "var(--background-blue)",
+                position: "absolute",
+                top: () => ((window.innerHeight - 128) / 2) + "px",
+                width: () => Math.min(window.innerWidth - 100, 600),
+                align: "center",
+
+                items: [{
+                    type: "html",
+                    html: "<center>" + txtTitleCase("#thanks for registration") + "</center>",
+                    padding: "32px"
+                }]
+            }).render()
+        }
+
+        /**
+         * Generates the panel containing the login infos
+         */
+        return createBlock({
+            id,
+            target,
+
+            items: [
+                // Fullscreen background with cover image
+                {
+                    id: "register-page",
+                    fullscreen: true,
+                    layout: "horizontal",
+                    overflow: "auto",
+
+                    items: [
+                        // White color + logo
+                        {
+                            flex: 1,
+                            background: "white"
+                        },
+                        // Blue color
+                        {
+                            id: "welcome-image",
+                            flex: 1,
+                            background: "var(--skyexplorer-color)",
+                        }
+                    ]
+                },
+
+                // Logo and register window
+                {
+                    margin: "0px 0px 200px 0px",
+
+                    items: [
+                        // Logo
+                        {
+                            hidden: !app.logo,
+                            position: "absolute",
+                            top: "calc(50% - 75px)",
+                            left: "calc(25% - 175px)",
+
+                            type: "image",
+                            src: app.logo,
+                            alt: "Logo"
+                        },
+                        {
+                            id: "register",
+                            type: "panel",
+                            icon: "fas fa-key",
+                            title: "Enregistez-vous",
+                            headerBackgroundColor: "var(--skyexplorer-color)",
+                            draggable: true,
+
+                            width: 800,
+                            align: "center",
+                            verticalAlign: "center",
+                            layout: "horizontal",
+
+                            // Language buttons
+                            // headerButtons: kiss.templates.authLanguageButtons(),
+
+                            items: [
+                                // LOCAL REGISTRATION METHOD
+                                {
+                                    hidden: !hasInternalLogin,
+
+                                    flex: 1,
+                                    class: "auth-block",
+
+                                    defaultConfig: {
+                                        width: "100%",
+                                        fieldWidth: "100%",
+                                        labelPosition: "top",
+                                        padding: "2px 0"
+                                    },
+
+                                    items: [
+                                        // FIRST NAME
+                                        {
+                                            type: "text",
+                                            id: "firstName",
+                                            placeholder: txtTitleCase("first name"),
+                                            required: true
+                                        },
+                                        // LAST NAME
+                                        {
+                                            type: "text",
+                                            id: "lastName",
+                                            placeholder: txtTitleCase("last name"),
+                                            required: true
+                                        },
+                                        // COMPANY
+                                        {
+                                            hidden: (pendingUserId) ? true : false,
+                                            type: "text",
+                                            id: "company",
+                                            placeholder: txtTitleCase("company")
+                                        },
+                                        // TELEPHONE
+                                        {
+                                            hidden: (pendingUserId) ? true : false,
+                                            type: "text",
+                                            id: "telephone",
+                                            placeholder: txtTitleCase("telephone")
+                                        },
+                                        // EMAIL
+                                        {
+                                            type: "text",
+                                            id: "email",
+                                            placeholder: txtTitleCase("email"),
+                                            required: true,
+                                            validationType: "email",
+                                            value: userEmail
+                                        },
+                                        // PASSWORD
+                                        {
+                                            type: "password",
+                                            id: "password",
+                                            placeholder: txtTitleCase("password"),
+                                            required: true
+                                        },
+                                        // PASSWORD CONFIRMATION
+                                        {
+                                            type: "password",
+                                            id: "passwordConfirmation",
+                                            placeholder: txtTitleCase("password confirmation"),
+                                            required: true
+                                        },
+                                        // BUTTONS
+                                        {
+                                            layout: "horizontal",
+                                            margin: "20px 0px 0px 0px",
+                                            items: [
+                                                // REGISTER button
+                                                {
+                                                    type: "button",
+                                                    icon: "fa fa-check",
+                                                    text: txtTitleCase("register"),
+                                                    iconColor: "#00aaee",
+                                                    flex: 1,
+                                                    height: 40,
+                                                    events: {
+                                                        click: async function () {
+                                                            let fieldFirstName = $("firstName")
+                                                            let fieldLastName = $("lastName")
+                                                            let fieldEmail = $("email")
+                                                            let fieldPassword = $("password")
+                                                            let fieldPasswordConfirmation = $("passwordConfirmation")
+
+                                                            fieldFirstName.validate()
+                                                            fieldLastName.validate()
+                                                            fieldEmail.validate()
+                                                            fieldPassword.validate()
+                                                            fieldPasswordConfirmation.validate()
+
+                                                            if (fieldFirstName.isValid && fieldLastName.isValid && fieldEmail.isValid && fieldPassword.isValid && fieldPasswordConfirmation.isValid) {
+                                                                let firstName = fieldFirstName.getValue()
+                                                                let lastName = fieldLastName.getValue()
+                                                                let email = fieldEmail.getValue()
+                                                                let password = fieldPassword.getValue()
+                                                                let passwordConfirmation = fieldPasswordConfirmation.getValue()
+
+                                                                if (password != passwordConfirmation) {
+                                                                    createNotification(txtTitleCase("#password don't match"))
+                                                                    return $("register").setAnimation("shakeX")
+                                                                }
+
+                                                                kiss.ajax.request({
+                                                                        url: "/register",
+                                                                        method: "post",
+                                                                        body: JSON.stringify({
+                                                                            userId: pendingUserId,
+                                                                            firstName: firstName,
+                                                                            lastName: lastName,
+                                                                            language: kiss.language.current,
+                                                                            email: email,
+                                                                            password: password,
+                                                                            passwordConfirmation: passwordConfirmation
+                                                                        })
+                                                                    })
+                                                                    .then(response => {
+                                                                        if (response.error) {
+                                                                            $("register").setAnimation("shakeX")
+
+                                                                            // Beta closed!
+                                                                            if (response.error == "#beta closed") {
+                                                                                createDialog({
+                                                                                    title: "Beta test is closed",
+                                                                                    message: response.msg,
+                                                                                    noCancel: true
+                                                                                })
+                                                                            }
+                                                                        } else {
+                                                                            // Jump to welcome page
+                                                                            showWelcome()
+                                                                        }
+                                                                    }).catch(err => {
+                                                                        $("register").setAnimation("shakeX")
+                                                                    })
+                                                            } else {
+                                                                $("register").setAnimation("shakeX")
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        // LINK TO LOGIN PAGE
+                                        {
+                                            type: "html",
+                                            html: `
+                                            <div class="auth-create-account">${txtTitleCase("#already an account")}</div>
+                                        `,
+                                            events: {
+                                                click: () => kiss.router.navigateTo({
+                                                    ui: "authentication-login",
+                                                    lm: loginMethods
+                                                }, true)
+                                            }
+                                        }
+                                    ]
+                                },
+
+                                // Separation between registration methods
+                                {
+                                    hidden: !hasInternalLogin || !hasExternalLogin,
+
+                                    id: "auth-separator",
+                                    class: "auth-separator",
+
+                                    layout: "vertical",
+                                    items: [{
+                                            type: "spacer",
+                                            flex: 1
+                                        },
+                                        {
+                                            type: "html",
+                                            class: "auth-separator-text",
+                                            html: txtUpperCase("or")
+                                        },
+                                        {
+                                            type: "spacer",
+                                            flex: 1
+                                        }
+                                    ]
+                                },
+
+                                // OTHER REGISTRATION METHODS
+                                {
+                                    hidden: !hasExternalLogin,
+                                    flex: 1,
+                                    class: "auth-block",
+                                    layout: "vertical",
+                                    justifyContent: "center",
+
+                                    defaultConfig: {
+                                        margin: "5px",
+                                        colorHover: "#00aaee",
+                                        backgroundColorHover: "#ffffff",
+                                        iconSize: "20px",
+                                        iconColorHover: "#00aaee",
+                                        height: 40
+                                    },
+
+                                    items: loginButtons.concat({
+                                        hidden: hasInternalLogin,
+                                        type: "html",
+                                        html: `<div class="auth-create-account">${txtTitleCase("#already an account")}</div>`,
+                                        events: {
+                                            click: () => kiss.router.navigateTo({
+                                                ui: "authentication-login",
+                                                lm: loginMethods
+                                            }, true)
+                                        }
+                                    })
+                                }
+                            ],
+
+                            methods: {
+                                load: function () {
+                                    this.adjustToScreen()
+                                },
+
+                                /**
+                                 * Adjust layout to screen size
+                                 */
+                                adjustToScreen: () => {
+                                    if (kiss.context.ui != "authentication-register") return
+
+                                    if (kiss.screen.isVertical()) {
+                                        $("welcome-image").hide()
+                                        $("register").config.width = (kiss.screen.isMobile) ? "320px" : "380px"
+                                        $("panel-body-register").style.flexFlow = "column"
+                                        $("auth-separator").style.flexFlow = "row"
+                                    } else {
+                                        $("welcome-image").show()
+                                        $("register").config.width = "760px"
+                                        $("panel-body-register").style.flexFlow = "row"
+                                        $("auth-separator").style.flexFlow = "column"
+                                    }
+                                }
+                            },
+
+                            // Responsiveness
+                            subscriptions: {
+                                EVT_WINDOW_RESIZED: function () {
+                                    this.adjustToScreen()
+                                }
+                            }
+                        }
+                    ]
+                }
+
+            ]
+        })
+    }
+})
+
+;/**
+ * Home start.
+ * This is the entry point of pickaform.
+ */
+kiss.app.defineView({
+    id: "home-start",
+    renderer: function (id, target) {
+        return createBlock({
+            id,
+            target,
+            fullscreen: true,
+            layout: "horizontal",
+            items: [
+                {
+                    class: "home-left",
+                    type: "html",
+                    width: "50%",
+                    html: `<img src="./resources/img/skyExplorer.svg">`
+                },
+                {
+                    layout: "vertical",
+                    background: "#000055",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flex: 1,
+                    defaultConfig: {
+                        iconSize: 22,
+                        iconColor: "var(--buttons-color)",
+                        height: 50,
+                        width: 300,
+                        margin: 20,
+                        borderRadius: "var(--panel-border-radius)",
+                        fontSize: 16,
+                        boxShadow: "none",
+                        boxShadowHover: "0 0 20px #0077c8"
+                    },
+                    items: [
+                        {
+                            type: "button",
+                            icon: "fas fa-clipboard",
+                            text: "Voir le planning des vols",
+                            action: () => kiss.router.navigateTo("planning")
+                        },
+                        {
+                            type: "button",
+                            icon: "fas fa-chart-line",
+                            text: "Ma progression (exercices)",
+                            action: () => kiss.router.navigateTo({
+                                ui: "exercises",
+                                modelId: "exercise",
+                                viewId: "exercises-list"
+                            })
+                        },
+                        {
+                            type: "button",
+                            icon: "fas fa-dollar-sign",
+                            text: "Factures",
+                            action: () => kiss.router.navigateTo({
+                                ui: "invoices",
+                                modelId: "invoice",
+                                viewId: "invoices-list"
+                            })
+                        },
+                        {
+                            type: "button",
+                            icon: "fas fa-user-graduate",
+                            text: "Gérer le plan de formation",
+                            action: () => kiss.router.navigateTo({
+                                ui: "training",
+                                modelId: "training",
+                                viewId: "training-list"
+                            })
+                        },
+                        {
+                            type: "button",
+                            icon: "fas fa-fighter-jet",
+                            text: "Suivi des avions",
+                            action: () => kiss.router.navigateTo({
+                                ui: "planes",
+                                modelId: "plane",
+                                viewId: "planes-list"
+                            })
+                        },
+                        {
+                            type: "button",
+                            icon: "fas fa-users",
+                            text: "Gestion des utilisateurs",
+                            action: () => kiss.router.navigateTo({
+                                ui: "users",
+                                modelId: "user",
+                                viewId: "users-list"
+                            })
+                        },
+                        {
+                            type: "button",
+                            icon: "fas fa-question",
+                            text: "Questions & Réponses",
+                            action: () => kiss.router.navigateTo({
+                                ui: "questions",
+                                modelId: "question",
+                                viewId: "questions-list"
+                            })
+                        },                                             
+                        {
+                            type: "button",
+                            icon: "fas fa-power-off",
+                            text: "Se déconnecter",
+                            action: () => kiss.session.logout()
+                        }
+                    ]
+                }
+            ]
+        })
+    }
+})
+
+;kiss.app.defineView({
+    id: "training",
+    renderer: function(id, target) {
+        return createBlock({
+            id,
+            target,
+            fullscreen: true,
+            layout: "vertical",
+            items: [
+                createTopBar(),
+                {
+                    id: "training-list",
+                    type: "datatable",
+                    color: "var(--buttons-color)",
+                    canEdit: true,
+                    canCreateRecord: true,
+                    createRecordText: "AJOUTER UN NOUVEL ELEMENT A LA FORMATION",
+                    height: () => kiss.screen.current.height - 60,
+                    collection: kiss.app.collections.training,
+
+                    actions: [
+                        {
+                            text: txtTitleCase("Supprimer les formations sélectionnées"),
+                            icon: "fas fa-trash",
+                            iconColor: "var(--red)",
+                            action: () => kiss.selection.deleteSelectedRecords()
+                        }                        
+                    ],
+
+                    methods: {
+                        createRecord: async function() {
+                            const newTraining = kiss.app.models.training.create()
+                            await newTraining.save()
+                            createForm(newTraining)
+                            createDeleteButton(newTraining)
+                            
+                        },
+                        selectRecord: function(record) {
+                            createForm(record)
+                            createDeleteButton(record)
+                        }
+                    }
+                }
+            ]
+        })
+    }
+})
+
+;kiss.app.defineView({
+    id: "users",
+    renderer: function(id, target) {
+        return createBlock({
+            id,
+            target,
+            fullscreen: true,
+            layout: "vertical",
+            items: [
+                createTopBar(),
+                {
+                    id: "users-list",
+                    type: "datatable",
+                    color: "var(--buttons-color)",
+                    canEdit: false,
+                    canCreateRecord: false,
+                    canSelect: false,
+                    showAction: false,
+                    height: () => kiss.screen.current.height - 60,
+                    collection: kiss.app.collections.user,
+
+                    methods: {
+                        selectRecord: function(record) {
+                            createForm(record)
+                        }
+                    }
+                }
+            ]
+        })
+    }
+})
+
 ;function createDeleteButton(record) {
     $(record.id).addHeaderButton({
         icon: "fas fa-trash",
@@ -3399,15 +3369,29 @@ kiss.app.defineModel({
 }
 
 ;/**
+ * Méthode du modèle pour vérifier si l'avion est disponible au jour et à l'heure demandée
  * 
- * Application texts
- * 
+ * @async
+ * @returns {boolean} true si l'avion est disponible, false sinon
  */
-kiss.app.defineTexts({
-    "welcome text": {
-        "en": "Welcome to Fly Explorer",
-        "fr": "Bienvenue sur Fly Explorer"
+async function checkAvailability() {
+    const planeId = $("planeId").getValue()
+    if (!planeId) {
+        createNotification("Merci de choisir un avion pour pouvoir vérifier sa disponibilité à cette date & heure")
+        return false
     }
-})
 
-;
+    const hour = $("time").getValue()
+    const date = $("date").getValue()
+
+    const flights = kiss.app.collections.flight.records
+    const planeFlights = flights.filter(flight => flight.planeId === planeId)
+    const reservationsAtTheSameDateAndTime = planeFlights.filter(flight => flight.date === date && flight.time === hour)
+
+    if (reservationsAtTheSameDateAndTime.length > 0) {
+        createNotification("Désolé, l'avion est déjà réservé à cette date & heure !")
+        return false
+    }
+
+    return true
+}
