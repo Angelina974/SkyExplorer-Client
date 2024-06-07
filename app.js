@@ -1656,7 +1656,12 @@ kiss.app.defineModel({
                             id: "date",
                             type: "date",
                             label: "Date du vol",
-                            value: "today"
+                            value: "today",
+
+                            // Vériication de la disponibilité de l'avion à la date et l'heure choisies
+                            validationFunction: async function () {
+                                return await this.record.checkAvailability()
+                            }
                         },
                         // Heure
                         {
@@ -1670,25 +1675,7 @@ kiss.app.defineModel({
 
                             // Vériication de la disponibilité de l'avion à la date et l'heure choisies
                             validationFunction: async function () {
-                                const planeId = $("planeId").getValue()
-                                if (!planeId) {
-                                    createNotification("Merci de choisir un avion pour pouvoir vérifier sa dispoinibilité à cette heure")
-                                    return false
-                                }
-
-                                const hour = $("time").getValue()
-                                const date = $("date").getValue()
-
-                                const flights = kiss.app.collections.flight.records
-                                const planeFlights = flights.filter(flight => flight.planeId === planeId)
-                                const reservationsAtTheSameDateAndTime = planeFlights.filter(flight => flight.date === date && flight.time === hour)
-                                
-                                if (reservationsAtTheSameDateAndTime.length > 0) {
-                                    createNotification("Désolé, l'avion est déjà réservé à cette heure !")
-                                    return false
-                                }
-
-                                return true
+                                return await this.record.checkAvailability()
                             }
                         }
                     ]
@@ -1770,7 +1757,7 @@ kiss.app.defineModel({
 
             defaultConfig: {
                 width: "100%",
-                fieldWidth: "100%",
+                fieldWidth: "75%",
                 labelWidth: "25%",
             },
 
@@ -1800,7 +1787,7 @@ kiss.app.defineModel({
 
             defaultConfig: {
                 width: "100%",
-                fieldWidth: "100%",
+                fieldWidth: "75%",
                 labelWidth: "25%",
             },
 
@@ -1830,7 +1817,37 @@ kiss.app.defineModel({
                 }
             ]
         }
-    ]
+    ],
+
+    methods: {
+        /**
+         * Méthode du modèle pour vérifier si l'avion est disponible au jour et à l'heure demandée
+         * 
+         * @async
+         * @returns {boolean} true si l'avion est disponible, false sinon
+         */
+        async checkAvailability() {
+            const planeId = $("planeId").getValue()
+            if (!planeId) {
+                createNotification("Merci de choisir un avion pour pouvoir vérifier sa disponibilité à cette date & heure")
+                return false
+            }
+
+            const hour = $("time").getValue()
+            const date = $("date").getValue()
+
+            const flights = kiss.app.collections.flight.records
+            const planeFlights = flights.filter(flight => flight.planeId === planeId)
+            const reservationsAtTheSameDateAndTime = planeFlights.filter(flight => flight.date === date && flight.time === hour)
+            
+            if (reservationsAtTheSameDateAndTime.length > 0) {
+                createNotification("Désolé, l'avion est déjà réservé à cette date & heure !")
+                return false
+            }
+
+            return true
+        }
+    }
 })
 
 ;kiss.app.defineModel({
@@ -1957,43 +1974,67 @@ kiss.app.defineModel({
                 width: "100%",
                 fieldWidth: "100%",
                 labelWidth: "25%",
+                labelPosition: "top"
             },
 
             items: [
-                // NUméro de facture
                 {
-                    id: "invoiceId",
-                    type: "text",
-                    label: "Référence",
-                    value: "unid"
+                    layout: "horizontal",
+                    defaultConfig: {
+                        width: "50%",
+                        fieldWidth: "100%",
+                        labelWidth: "100%",
+                        labelPosition: "top"
+                    },
+                    items: [
+                        // NUméro de facture
+                        {
+                            id: "invoiceId",
+                            type: "text",
+                            label: "Référence",
+                            value: "unid"
+                        },
+                        // - Client
+                        {
+                            id: "client",
+                            type: "lookup",
+                            label: "Client",
+                            computed: true,
+                            lookup: {
+                                linkId: "flight",
+                                fieldId: "client",
+                                type: "text"
+                            }
+                        },
+                    ]
                 },
-                // Date de la facture
                 {
-                    id: "date",
-                    type: "date",
-                    label: "Date de la facture",
-                    value: "today"
+                    layout: "horizontal",
+                    defaultConfig: {
+                        width: "50%",
+                        fieldWidth: "100%",
+                        labelWidth: "100%",
+                        labelPosition: "top"
+                    },
+                    items: [
+                        // Date de la facture
+                        {
+                            id: "date",
+                            type: "date",
+                            label: "Date de la facture",
+                            value: "today"
+                        },
+                        // Calcul année / mois pour les regroupements
+                        {
+                            id: "month",
+                            type: "text",
+                            label: "Année / Mois",
+                            computed: true,
+                            formula: `YEAR_MONTH( {{Date de la facture}} )`
+                        },
+                    ]
                 },
-                // Calcul année / mois pour les regroupements
-                {
-                    id: "month",
-                    type: "text",
-                    label: "Année / Mois",
-                    computed: true,
-                    formula: `YEAR_MONTH( {{Date de la facture}} )`
-                },
-                // - Client
-                {
-                    id: "client",
-                    type: "lookup",
-                    label: "Client",
-                    computed: true,
-                    lookup: {
-                        linkId: "flight",
-                        fieldId: "client",
-                        type: "text"
-                    }
-                },
+
                 // - Prix du vol
                 {
                     id: "totalPrice",
@@ -2019,6 +2060,7 @@ kiss.app.defineModel({
                 width: "100%",
                 fieldWidth: "100%",
                 labelWidth: "25%",
+                labelPosition: "top"
             },
 
             items: [
@@ -2050,53 +2092,80 @@ kiss.app.defineModel({
                         type: "text"
                     }
                 },
-                // - ID de l'avion
                 {
-                    id: "flightPlaneId",
-                    type: "lookup",
-                    label: "Avion",
-                    computed: true,
-                    lookup: {
-                        linkId: "flight",
-                        fieldId: "planeId",
-                        type: "text"
-                    }
+                    layout: "horizontal",
+                    defaultConfig: {
+                        width: "50%",
+                        fieldWidth: "100%",
+                        labelWidth: "100%",
+                        labelPosition: "top"
+                    },
+
+                    items: [
+                        // - Date du vol
+                        {
+                            id: "flightDate",
+                            type: "lookup",
+                            label: "Date du vol",
+                            computed: true,
+                            lookup: {
+                                linkId: "flight",
+                                fieldId: "date",
+                                type: "date"
+                            }
+                        },
+                        // - Durée du vol
+                        {
+                            id: "flightDuration",
+                            type: "lookup",
+                            label: "Durée du vol",
+                            computed: true,
+                            lookup: {
+                                linkId: "flight",
+                                fieldId: "duration",
+                                type: "number"
+                            }
+                        },
+                    ]
+
                 },
-                // - Date du vol
                 {
-                    id: "flightDate",
-                    type: "lookup",
-                    label: "Date du vol",
-                    computed: true,
-                    lookup: {
-                        linkId: "flight",
-                        fieldId: "date",
-                        type: "date"
-                    }
-                },
-                // - Type du vol
-                {
-                    id: "flightType",
-                    type: "lookup",
-                    label: "Type du vol",
-                    computed: true,
-                    lookup: {
-                        linkId: "flight",
-                        fieldId: "type",
-                        type: "select"
-                    }
-                },
-                // - Durée du vol
-                {
-                    id: "flightDuration",
-                    type: "lookup",
-                    label: "Durée du vol",
-                    computed: true,
-                    lookup: {
-                        linkId: "flight",
-                        fieldId: "duration",
-                        type: "number"
-                    }
+                    layout: "horizontal",
+                    defaultConfig: {
+                        width: "50%",
+                        fieldWidth: "100%",
+                        labelWidth: "100%",
+                        labelPosition: "top"
+                    },
+
+                    items: [
+                        // - ID de l'avion
+                        {
+                            id: "flightPlaneId",
+                            type: "lookup",
+                            label: "Avion",
+                            computed: true,
+                            lookup: {
+                                linkId: "flight",
+                                fieldId: "planeId",
+                                type: "text"
+                            }
+                        },
+
+                        // - Type du vol
+                        {
+                            id: "flightType",
+                            type: "lookup",
+                            label: "Type du vol",
+                            computed: true,
+                            lookup: {
+                                linkId: "flight",
+                                fieldId: "type",
+                                type: "select"
+                            }
+                        },
+
+                    ]
                 },
             ]
         }
@@ -2530,37 +2599,56 @@ kiss.app.defineModel({
             collapsible: true,
 
             defaultConfig: {
+                labelPosition: "top",
                 width: "100%",
                 fieldWidth: "100%",
                 labelWidth: "25%",
             },
 
-            items: [{
+            items: [
+                // Immatriculation
+                {
                     id: "planeId",
                     type: "text",
                     label: "Immatriculation"
                 },
                 {
-                    id: "planeBrand",
-                    type: "text",
-                    label: "Marque"
+                    layout: "horizontal",
+                    defaultConfig: {
+                        width: "50%",
+                        fieldWidth: "100%",
+                        labelWidth: "100%",
+                        labelPosition: "top"
+                    },
+
+                    items: [
+                        // Marque
+                        {
+                            id: "planeBrand",
+                            type: "text",
+                            label: "Marque"
+                        },
+                        // type de l'avion
+                        {
+                            id: "planeType",
+                            type: "text",
+                            label: "Type"
+                        },
+                    ]
                 },
-                {
-                    id: "planeType",
-                    type: "text",
-                    label: "Type"
-                },
+                // Tarif horaire
                 {
                     id: "hourPrice",
                     type: "number",
                     unit: "€/h",
                     label: "Tarif horaire"
                 },
+                // Notes
                 {
                     id: "notes",
                     type: "textarea",
                     label: "Notes complémentaires",
-                    rows: 8
+                    rows: 5
                 }
             ]
         },
@@ -2572,12 +2660,15 @@ kiss.app.defineModel({
             collapsible: true,
 
             defaultConfig: {
+                labelPosition: "top",
                 width: "100%",
                 fieldWidth: "100%",
                 labelWidth: "25%",
             },
 
-            items: [{
+            items: [
+                // Total heures des vols
+                {
                     id: "flightHours",
                     type: "summary",
                     label: "Total heures des vols",
@@ -2588,12 +2679,14 @@ kiss.app.defineModel({
                         operation: "SUM"
                     }
                 },
+                // Report des heures précédentes
                 {
                     id: "initialHours",
                     type: "number",
                     label: "Report des heures précédentes",
                     unit: "h"
                 },
+                // Total général du nombre d'heures de vol
                 {
                     id: "totalHours",
                     type: "number",
@@ -2602,6 +2695,7 @@ kiss.app.defineModel({
                     computed: true,
                     formula: `{{Total heures des vols}} + {{Report des heures précédentes}}`
                 },
+                // Liste des vols
                 {
                     id: "flights",
                     type: "link",
@@ -2629,22 +2723,37 @@ kiss.app.defineModel({
 
     items: [
         {
-            id: "student",
-            label: "Elève",
-            type: "directory",
-            value: "username"
+            layout: "horizontal",
+            defaultConfig: {
+                width: "50%",
+                fieldWidth: "100%",
+                labelWidth: "100%",
+                labelPosition: "top"
+            },
+            items: [
+                // Eleve
+                {
+                    id: "student",
+                    label: "Elève",
+                    type: "directory",
+                    value: "username"
+                },
+                // Instructeur
+                {
+                    id: "instructor",
+                    label: "Instructeur",
+                    type: "directory"
+                }
+            ]
         },
-        {
-            id: "instructor",
-            label: "Instructeur",
-            type: "directory"
-        },
+        // Question
         {
             id: "question",
             type: "textarea",
             label: "Question",
             rows: 10
         },
+        // Réponse
         {
             id: "answer",
             type: "textarea",
@@ -2660,7 +2769,9 @@ kiss.app.defineModel({
     icon: "fas fa-clipboard",
     color: "var(--buttons-color)",
 
-    items: [{
+    items: [
+        // Type de formation
+        {
             id: "type",
             type: "select",
             label: "Type",
@@ -2685,21 +2796,35 @@ kiss.app.defineModel({
             ]
         },
         {
-            id: "category",
-            type: "select",
-            label: "Catégorie",
-            labelPosition: "top",
-            allowValuesNotInList: true,
-            options: ["Apprentissage", "Maniabilité", "Pilotage", "Procédures particulières"]
+            layout: "horizontal",
+            defaultConfig: {
+                width: "50%",
+                fieldWidth: "100%",
+                labelWidth: "100%",
+                labelPosition: "top"
+            },
+            items: [
+                // Catégorie de formation
+                {
+                    id: "category",
+                    type: "select",
+                    label: "Catégorie",
+                    labelPosition: "top",
+                    allowValuesNotInList: true,
+                    options: ["Apprentissage", "Maniabilité", "Pilotage", "Procédures particulières"]
+                },
+                // Sous-catégorie de formation
+                {
+                    id: "subcategory",
+                    type: "select",
+                    label: "Sous-catégorie",
+                    labelPosition: "top",
+                    allowValuesNotInList: true,
+                    options: ["Croisière", "Décollage", "Mise en oeuvre / Roulage / Effet primaire des gouvernes", "Montée", "Opérations au sol"]
+                },
+            ]
         },
-        {
-            id: "subcategory",
-            type: "select",
-            label: "Sous-catégorie",
-            labelPosition: "top",
-            allowValuesNotInList: true,
-            options: ["Croisière", "Décollage", "Mise en oeuvre / Roulage / Effet primaire des gouvernes", "Montée", "Opérations au sol"]
-        },
+        // Sujet
         {
             id: "subject",
             type: "text",
@@ -2707,6 +2832,7 @@ kiss.app.defineModel({
             label: "Sujet",
             labelPosition: "top"
         },
+        // Ordre
         {
             id: "order",
             type: "number",
@@ -2815,6 +2941,7 @@ kiss.app.defineModel({
     items: [{
             id: "accountId"
         },
+        // Email de l'utilisateur
         {
             id: "email",
             type: "text",
@@ -2822,14 +2949,28 @@ kiss.app.defineModel({
             primary: true
         },
         {
-            id: "firstName",
-            type: "text",
-            label: "Prénom"
-        },
-        {
-            id: "lastName",
-            type: "text",
-            label: "Nom"
+            layout: "horizontal",
+            defaultConfig: {
+                width: "50%",
+                fieldWidth: "100%",
+                labelWidth: "100%",
+                labelPosition: "top"
+            },
+            
+            items: [
+                // Prénom
+                {
+                    id: "firstName",
+                    type: "text",
+                    label: "Prénom"
+                },
+                // Nom
+                {
+                    id: "lastName",
+                    type: "text",
+                    label: "Nom"
+                },
+            ]
         },
         {
             id: "type",

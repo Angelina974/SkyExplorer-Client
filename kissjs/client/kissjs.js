@@ -307,6 +307,8 @@ const kiss = {
         core: {
             scripts: [
                 // "modules/global",
+                "modules/language",
+                "modules/language.texts",
                 "modules/dataTrash",
                 "modules/ajax",
                 "modules/context",
@@ -319,8 +321,6 @@ const kiss = {
                 "modules/router",
                 "modules/views",
                 "modules/theme",
-                "modules/language",
-                "modules/language.texts",
                 "modules/plugins",
                 "modules/selection",
                 "modules/screen",
@@ -482,7 +482,7 @@ const kiss = {
                 const script = document.createElement("script")
                 script.type = "text/javascript"
                 script.async = true
-                script.src = path + autoAddExtension + "?build=" + kiss.version
+                script.src = path + autoAddExtension// + "?build=" + kiss.version
                 if (options) {
                     Object.keys(options).forEach(key => {
                         script.setAttribute(key, options[key])
@@ -513,7 +513,7 @@ const kiss = {
                 style.rel = "stylesheet"
                 style.type = "text/css"
                 style.async = true
-                style.href = path + ".css?build=" + kiss.version
+                style.href = path + ".css" // ?build=" + kiss.version
                 const head = document.getElementsByTagName("head")[0]
                 head.appendChild(style)
                 style.onload = resolve
@@ -2780,7 +2780,7 @@ kiss.db.online = {
         log("kiss.db - online - updateLink: ", 0, link)
 
         const response = await kiss.ajax.request({
-            url: "/command/computedFields/updateLink",
+            url: "/updateLink",
             method: "post",
             body: JSON.stringify(link)
         })
@@ -3281,11 +3281,15 @@ kiss.ajax = {
     host: "",
 
     /**
-     * Set the host for the requests
+     * Set the host for the requests.
+     * You can use this method to set the base URL for the requests.
      * 
-     * @param {string} host 
+     * @param {string} host
+     * 
+     * @example
+     * kiss.ajax.setHost("https://api.example.com:3000")
      */
-    setHost(host) {
+    setHost(host = "") {
         kiss.ajax.host = host
     },
 
@@ -3318,7 +3322,8 @@ kiss.ajax = {
      * 
      * @async
      * @param {object} params - A single object containing the following:
-     * @param {string} params.url
+     * @param {string} [params.host] - Optional host to prepend to the URL in replacement of the default host
+     * @param {string} params.url - Url to request
      * @param {string} params.method - get, post, put, patch, delete, options - Default to get
      * @param {object} params.accept - Accept header
      * @param {object} params.contentType - Content Type header - Default to application/json; charset=UTF-8
@@ -3367,9 +3372,6 @@ kiss.ajax = {
             headers: kiss.ajax.headers
         }
 
-        // Restore websocket if it's not alive anymore
-        //kiss.websocket.init()
-
         // Inject authorization header with the active token
         // kissjs keeps the token in the localStorage until a logout is triggered
         const token = kiss.session.getToken()
@@ -3406,7 +3408,11 @@ kiss.ajax = {
             loadingId = kiss.loadingSpinner.show()
         }
 
-        return fetch(this.host + params.url, options)
+        // Build url using default host or the one provided in the params
+        // Having a default host will point every request to the same server
+        const url = (params.host || params.host === "") ? params.host + params.url : kiss.ajax.host + params.url
+
+        return fetch(url, options)
             .then(async response => {
 
                 if (params.showLoading) {
@@ -5259,6 +5265,36 @@ kiss.language.texts = {
         "fr": "rechercher",
         "es": "buscar"
     },
+    "#createdAt": {
+        "en": "created at",
+        "fr": "créé le",
+        "es": "creado el"
+    },
+    "#createdBy": {
+        "en": "created by",
+        "fr": "créé par",
+        "es": "creado por"
+    },
+    "#updatedAt": {
+        "en": "updated at",
+        "fr": "modifié le",
+        "es": "modificado el"
+    },
+    "#updatedBy": {
+        "en": "updated by",
+        "fr": "modifié par",
+        "es": "modificado por"
+    },
+    "#deletedAt": {
+        "en": "deleted at",
+        "fr": "supprimé le",
+        "es": "eliminado el"
+    },
+    "#deletedBy": {
+        "en": "deleted by",
+        "fr": "supprimé par",
+        "es": "eliminado por"
+    },
 
     /**
      * Authentication & Registration
@@ -5985,6 +6021,24 @@ kiss.language.texts = {
     /**
      * Link field
      */
+    "link to another table": {
+        "fr": "liaison vers une autre table",
+        "es": "enlace a otra tabla"
+    },
+    "#select link": {
+        "en": "select",
+        "fr": "sélectionner",
+        "es": "seleccionar"
+    },
+    "delete a link": {
+        "fr": "effacer une liaison",
+        "es": "eliminar un enlace"
+    },
+    "#delete link": {
+        "en": "this will delete the link between the records. Do you want to do that?",
+        "fr": "cela va supprimer la liaison entre les fiches. Voulez-vous bien faire cela ?",
+        "es": "esto eliminará el enlace entre los registros. ¿Quieres hacer eso?"
+    },
     "#connect records": {
         "en": "connecting 2 records",
         "fr": "connecter 2 données",
@@ -5999,6 +6053,20 @@ kiss.language.texts = {
         "en": "link to a record from the table:",
         "fr": "lier à une donnée de la table :",
         "es": "enlazar con un registro de la tabla:"
+    },
+    "#record already linked": {
+        "en": "this record is already linked",
+        "fr": "cette fiche est déjà liée",
+        "es": "este registro ya está vinculado"
+    },
+    "#only one link": {
+        "en": "you can only link a single element",
+        "fr": "vous ne pouvez lier qu'un seul élément",
+        "es": "solo puedes enlazar un único elemento"
+    },
+    "display as table": {
+        "fr": "afficher en table",
+        "es": "mostrar como tabla"
     },
 
     /**
@@ -6295,6 +6363,11 @@ kiss.language.texts = {
         "en": "do you want to review these tips?",
         "fr": "voulez-vous revoir ces conseils ?",
         "es": "¿quieres revisar estos consejos?"
+    },
+    "#open link": {
+        en: "open link in new tab",
+        fr: "ouvrir le lien dans un nouvel onglet",
+        es: "abrir enlace en nueva pestaña"
     },
 
     /**
@@ -8114,7 +8187,7 @@ kiss.selection = {
  * - kiss.ajax, to send credentials to the server
  * - kiss.views, to popup the login window
  * - kiss.router, to route to the right application view if session is valid
- * - kiss.websocket, to check that the websocket connection is alive (and reconnect if not)
+ * - kiss.websocket, to init the connection, to check that it's alive and reconnect if not
  * 
  * @namespace
  * 
@@ -8137,6 +8210,7 @@ kiss.session = {
     // Flag to track if the active user is the account owner
     isOwner: false,
 
+    // Track current invitations and collaborations
     invitedBy: [],
     isCollaboratorOf: [],
 
@@ -8148,6 +8222,82 @@ kiss.session = {
 
     // Default login methods:
     loginMethods: ["internal", "google", "microsoftAD"],
+
+    // Host and ports used for session requests (both http and websocket)
+    host: "",
+    httpPort: 80,
+    httpsPort: 443,
+    wsPort: 80,
+    wssPort: 443,
+
+    /**
+     * Set the host for session requests.
+     * Host will be completed with protocol and port
+     * 
+     * @param {object} config
+     * @param {string} [config.host]
+     * @param {number} [config.httpPort]
+     * @param {number} [config.httpsPort]
+     * @param {number} [config.wsPort]
+     * @param {number} [config.wssPort]
+     * 
+     * @example
+     * kiss.session.setHost({
+     *  host: "your-host.com",
+     *  httpPort: 3000,
+     *  httpsPort: 4000,
+     *  wsPort: 3000,
+     *  wssPort: 4000
+     * })
+     */
+    setHost(config) {
+        config.host = config.host || ""
+        config.httpPort = config.httpPort || 80
+        config.httpsPort = config.httpsPort || 443
+        config.wsPort = config.wsPort || 80
+        config.wssPort = config.wssPort || 443
+        Object.assign(kiss.session, config)
+    },
+
+    // By default, the session requests are secure
+    secure: true,
+
+    /**
+     * Set the protocol security for session requests.
+     * If true (default):
+     * - will use "https" for HTTP
+     * - will use "wss" for Websocket
+     * 
+     * @param {string} host
+     * 
+     * @example
+     * kiss.session.setSecure(true)
+     */
+    setSecure(secure = true) {
+        kiss.session.secure = secure
+    },
+
+    /**
+     * Get the Http host with protocol and port
+     * 
+     * @returns {string} The host with protocol and port
+     */
+    getHttpHost() {
+        const host = (!this.host) ? window.location.host : this.host
+        const url = (this.secure) ? "https://" + host : "http://" + host
+        return (this.secure) ? url + ":" + this.httpsPort : url + ":" + this.httpPort
+    },
+
+    /**
+     * Get the websocket host with protocol and port
+     * 
+     * @returns {string} The host with protocol and port
+     */
+    getWebsocketHost() {
+        const host = (!this.host) ? window.location.host : this.host
+        const url = (this.secure) ? "wss://" + host : "ws://" + host
+        return (this.secure) ? url + ":" + this.wssPort : url + ":" + this.wsPort
+    },
 
     /**
      * Define the default views:
@@ -9036,7 +9186,7 @@ kiss.session = {
      * @return {Promise<boolean>}
      */
     async checkTokenValidity(autoRenew = true) {
-        const resp = await fetch("/checkTokenValidity", {
+        const resp = await fetch(kiss.session.host + "/checkTokenValidity", {
             headers: {
                 authorization: "Bearer " + this.getToken()
             }
@@ -9053,7 +9203,7 @@ kiss.session = {
     logout() {
         // Reset the tokens on the server
         kiss.ajax.request({
-            url: "/logout",
+            url: kiss.session.host + "/logout",
             method: "get"
         })
 
@@ -12273,10 +12423,10 @@ kiss.webfonts = {
 
 			// Connect to WS or WSS depending on the current protocol
 			if (!socketUrl) {
-				const isHttps = (window.location.protocol == "https:")
-				const socketProtocol = (isHttps) ? "wss://" : "ws://"
-				const socketPort = (isHttps) ? `:${sslPort || 443}` : `:${port || 80}`
-				socketUrl = socketProtocol + window.location.host + socketPort + "/?token="
+				socketUrl = kiss.session.getWebsocketHost() + "/?token="
+			}
+			else {
+				socketUrl += "/?token="
 			}
 
 			log(`${logPrefix} - Connecting to ${socketUrl}`)
@@ -14637,7 +14787,6 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
      * @param {number} [delay] - Delay to retard the reload, when the back-end update needs time
      */
     async _reloadWhenNeeded(msgData, delay) {
-
         // If the datatable exists but is not connected, it means it's in the cache.
         // We can't reload it, but we put a flag on it so it will be reloaded when displayed again
         if (!this.isConnected) {
@@ -15168,6 +15317,7 @@ kiss.ui.DataComponent = class DataComponent extends kiss.ui.Component {
         }
 
         if (this.columns) {
+
             // A config is provided
             // Filters out the columns which field doesn't exist anymore in the model
             this.columns = this.columns.filter(column => {
@@ -17817,17 +17967,22 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
      */
     async _updateOneAndReload(msgData) {
         const filterFields = kiss.db.mongo.getFilterFields(this.filter)
+        let dateHasChanged = false
+        let timeHasChanged = false
         let filterHasChanged = false
 
         let updates = msgData.data
         for (let fieldId of Object.keys(updates)) {
+            if (this.dateField == fieldId) dateHasChanged = true
+            if (this.timeField == fieldId) timeHasChanged = true
             if (filterFields.indexOf(fieldId) != -1) filterHasChanged = true
         }
 
-        this._updateRecord(msgData.id)
-
-        if (filterHasChanged) {
+        if (dateHasChanged || timeHasChanged || filterHasChanged) {
             this._reloadWhenNeeded(msgData, 2000)
+        }
+        else {
+            this._updateRecord(msgData.id)
         }
     }
 
@@ -17907,7 +18062,7 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
             hidden: !this.canCreateRecord,
             class: "calendar-create-record",
             target: "create:" + this.id,
-            text: this.model.name.toTitleCase(),
+            text: this.config.createRecordText || this.model.name.toTitleCase(),
             icon: "fas fa-plus",
             iconColor: this.color,
             borderWidth: "3px",
@@ -18268,6 +18423,7 @@ const createCalendar = (config) => document.createElement("a-calendar").init(con
  * @param {boolean} [config.canAddField] - Can we add a field (= column) to the table?
  * @param {boolean} [config.canEditField] - Can we edit an existing field (= column)?
  * @param {boolean} [config.canCreateRecord] - Can we create new records from the datatable?
+ * @param {boolean} [config.createRecordText] - Optional text to insert in the button to create a new record, instead of the default model's name
  * @param {boolean} [config.iconAction] - Font Awesome icon class to display the "open record" symbol. Defaults to "far fa-file-alt"
  * @param {object[]} [config.actions] - Array of menu actions, where each menu entry is: {text: "abc", icon: "fas fa-check", action: function() {}}
  * @param {object[]} [config.buttons] - Array of custom buttons, where each button is: {position: 3, text: "button 3", icon: "fas fa-check", action: function() {}}
@@ -20572,7 +20728,7 @@ kiss.ui.Datatable = class Datatable extends kiss.ui.DataComponent {
             hidden: !this.canCreateRecord,
             class: "datatable-create-record",
             target: "create:" + this.id,
-            text: this.model.name.toTitleCase(),
+            text: this.config.createRecordText || this.model.name.toTitleCase(),
             icon: "fas fa-plus",
             iconColor: this.color,
             borderWidth: "3px",
@@ -28519,6 +28675,7 @@ const createImage = (config) => document.createElement("a-image").init(config)
  * @param {object} config
  * @param {object[]|string[]} config.items - The array of menu entries
  * @param {boolean} config.closeOnClick - Set to false if the menu should not be closed after an entry is clicked. Default to true
+ * @param {boolean} config.closeOnExit - Set to false if the menu should not be closed after exiting. Default to true
  * @param {string} [config.classModifier] - Custom class to apply to the menu and menu items
  * @param {string} [config.top]
  * @param {string} [config.left]
@@ -28675,7 +28832,7 @@ kiss.ui.Menu = class Menu extends kiss.ui.Component {
         }
 
         // Remove menu on exit
-        this.onmouseleave = () => this.close()
+        if (config.closeOnExit !== false) this.onmouseleave = () => this.close()
 
         // Set a default animation
         this.setAnimation(config.animation || {
@@ -31075,7 +31232,7 @@ const createColorPicker = (config) => document.createElement("a-colorpicker").in
  * @param {string} [config.formula] - For computed fields only
  * @param {string} [config.validationType] - Pre-built validation type: alpha | alphanumeric | email | url | ip
  * @param {*} [config.validationRegex] - Regexp
- * @param {*} [config.validationFormula] - Regexp
+ * @param {function} [config.validationFunction] - Async function that returns true if the value is valid
  * @param {string} [config.validationMessage] - TODO
  * @param {string} [config.placeholder]
  * @param {boolean} [config.autocomplete] - Set "off" to disable
@@ -31486,7 +31643,12 @@ kiss.ui.Field = class Field extends kiss.ui.Component {
             this.record.updateFieldDeep(this.id, newValue).then(success => {
 
                 // Rollback the initial value if the update failed (ACL)
-                if (!success) this.field.value = this.initialValue || ""
+                if (!success) {
+                    this.field.value = this.initialValue || ""
+                }
+                else {
+                    this.initialValue = newValue
+                }
             })
         } else {
             // Otherwise, we just change the field value
@@ -33641,7 +33803,12 @@ kiss.ui.Select = class Select extends kiss.ui.Component {
             this.record.updateFieldDeep(this.id, this.value).then(success => {
 
                 // Rollback the initial value if the update failed (ACL)
-                if (!success) this._updateValue(this.initialValue)
+                if (!success) {
+                    this._updateValue(this.initialValue)
+                }
+                else {
+                    this.initialValue = newValue
+                }
             })
         }
 
@@ -35717,7 +35884,7 @@ const createFormContent = function (config) {
     if (config.record) {
         record = config.record
         model = record.model
-        modelItems = JSON.parse(JSON.stringify(model.items))
+        modelItems = model.items//JSON.parse(JSON.stringify(model.items))
         
     } else if (config.model) {
         model = config.model
@@ -35743,7 +35910,9 @@ const createFormContent = function (config) {
             if (item.items) {
                 //
                 // Section
-                // 
+                //
+
+                // Set read access at section level
                 if (config.record && item.accessRead) item.accessRead = item.accessRead.map(entry => (entry != "$creator") ? entry : config.record.createdBy)
                 const canRead = kiss.tools.intersects(item.accessRead, userACL) || !item.accessRead
 
@@ -35751,6 +35920,7 @@ const createFormContent = function (config) {
                     item.hidden = true
                 }
                 else {
+                    // Set update access at section level
                     if (config.record && item.accessUpdate) item.accessUpdate = item.accessUpdate.map(entry => (entry != "$creator") ? entry : config.record.createdBy)
                     const canUpdate = (editMode === false) ? false : kiss.tools.intersects(item.accessUpdate, userACL) || !item.accessUpdate
 
@@ -35760,7 +35930,7 @@ const createFormContent = function (config) {
                 }
 
                 // Force clean case
-                item.title = item.title.toTitleCase()
+                item.title = (item.hasOwnProperty("title")) ? item.title.toTitleCase() : ""
 
                 // Set section "light" style
                 if (item.colored === false) {
@@ -35801,6 +35971,13 @@ const createFormContent = function (config) {
                     item.fieldWidth = "100.00%"
                     item.labelWidth = "100.00%"
                 }
+
+                // Restore methods and events
+                // const field = model.getField(item.id)
+                // if (field) {
+                //     if (field.methods) item.methods = field.methods
+                //     if (field.events) item.events = field.events
+                // }
             }
         })
         return items
@@ -40896,12 +41073,12 @@ kiss.app.defineView({
                         // Gradient
                         {
                             flex: 1,
-                            background: "var(--background-blue)"
+                            background: "white"
                         },
                         // Matrix effect
                         {
                             type: "view",
-                            id: "common-matrix"
+                            background: "#000055"
                         }
                     ]
                 },
@@ -40913,9 +41090,9 @@ kiss.app.defineView({
                         {
                             hidden: !app.logo,
                             position: "absolute",
-                            top: 0,
-                            left: 0,
-
+                            top: 400,
+                            left: 300,
+                            
                             type: "image",
                             src: app.logo,
                             alt: "Logo",
@@ -44631,7 +44808,7 @@ kiss.data.Model = class {
         } else {
             await kiss.ajax.request({
                 showLoading: true,
-                url: "/command/computedFields/updateAllDeep",
+                url: "/updateAllDeep",
                 method: "post",
                 body: JSON.stringify({
                     modelId: this.id
@@ -44970,12 +45147,12 @@ kiss.data.Model = class {
                 // Show the relationships in the console
                 let hasMany = field.multiple
                 let toModel = (hasMany) ? targetLinkModel.namePlural : targetLinkModel.name
-                // log(`kiss.data.Model - ${this.name.padEnd(40, " ")} -> ${(hasMany) ? "N" : "1"} ${toModel.padEnd(40, " ")}` + " (link field: " + field.label + ")")
+                log(`kiss.data.Model - ${this.name.padEnd(40, " ")} -> ${(hasMany) ? "N" : "1"} ${toModel.padEnd(40, " ")}` + " (link field: " + field.label + ")")
 
             } catch (err) {
                 // Problem, the foreign model does not exist
                 field.type = "text"
-                // modelProblems.push(`kiss.data.Model - The link field <${this.name + " / " + field.label}> points to a foreign model that can't be found`)
+                modelProblems.push(`kiss.data.Model - The link field <${this.name + " / " + field.label}> points to a foreign model that can't be found`)
             }
         })
 
@@ -45012,7 +45189,7 @@ kiss.data.Model = class {
             } catch (err) {
                 // Problem, the foreign model does not exist
                 field.type = "text"
-                // modelProblems.push(`kiss.data.Model - The lookup field <${this.name + " / " + field.label}> points to a model that can't be found`)
+                modelProblems.push(`kiss.data.Model - The lookup field <${this.name + " / " + field.label}> points to a model that can't be found`)
             }
         })
 
@@ -45049,7 +45226,7 @@ kiss.data.Model = class {
             } catch (err) {
                 // Problem, the foreign model does not exist
                 field.type = "text"
-                // modelProblems.push(`kiss.data.Model - The summary field <${this.name + " / " + field.label}> points to a model that can't be found`)
+                modelProblems.push(`kiss.data.Model - The summary field <${this.name + " / " + field.label}> points to a model that can't be found`)
             }
         })
 
@@ -45646,7 +45823,8 @@ kiss.data.Model = class {
         /**
          * Update a single field of the record
          * 
-         * This update propagates other mutations inside the same record and also in foreign records
+         * This update propagates other mutations inside the same record and also in foreign records.
+         * It also check the new field value against custom validation function, if it exists.
          * 
          * @async
          * @param {string} fieldId
@@ -45669,6 +45847,12 @@ kiss.data.Model = class {
                     return false
                 }
 
+                const validation = await this.checkValidationRules(fieldId, value)
+                if (!validation) {
+                    kiss.loadingSpinner.hide(loadingId)
+                    return false
+                }
+
                 // Update the field and propagate the change
                 const response = await this.db.updateOneDeep(this.model.id, this.id, {
                     [fieldId]: value
@@ -45683,6 +45867,21 @@ kiss.data.Model = class {
                 kiss.loadingSpinner.hide(loadingId)
                 return false
             }
+        }
+
+        /**
+         * Check the validation rules of a field if they exist
+         * 
+         * @param {string} fieldId 
+         * @param {*} value 
+         * @returns {boolean} true if the value is valid or if there is no validation rule
+         */
+        async checkValidationRules(fieldId, value) {
+            const field = this.model.getField(fieldId)
+            if (!field.validationFunction) return true
+
+            const result = await field.validationFunction(value)
+            return !!result
         }
 
         /**
@@ -50784,40 +50983,40 @@ kiss.addToModule("tools", {
  * 
  * A *Link* field allows to link records together by picking a foreign record from a list.
  * 
- * @ignore
  * @param {object} config
- * @param {object[]} config.options - List of options, where each option is an object like: {value: "France"} or {label: "France", value: "FR"} or {label: "France", value: "FR", color: "#00aaee"}
+ * @param {object} config.link - Configuration of the link:
+ * @param {string} config.link.modelId - Id of the foreign model
+ * @param {string} config.link.fieldId - Id of the field in the foreign model that will be linked
+ * @param {boolean} [config.canCreateRecord] - Set to false to prevent from creating a new foreign record directly from the Link field. Default = true
+ * @param {boolean} [config.canLinkRecord] - Set to false to prevent from linking to a new foreign record directly from the Link field. Default = true
+ * @param {boolean} [config.canDeleteLinks] - Set to false to prevent from deleting links directly from the Link field. Default = true
  * @param {boolean} [config.multiple] - True to enable multi-select
  * @param {boolean} [config.linkStyle] - "default" or "compact"
- * @param {string|string[]} [config.value] - Default value
- * @param {string} [config.optionsColor] - Default color for all options
- * @param {string} [config.valueSeparator] - Character used to display multiple values
- * @param {string} [config.inputSeparator] - Character used to input multiple values
- * @param {boolean} [config.stackValues] - True to render the values one on another
- * @param {boolean} [config.hideInput] - true (default) to automatically hide the input field after a completed search
- * @param {boolean} [config.allowValuesNotInList] - Allow to input a value which is not in the list of options
- * @param {boolean} [config.allowDuplicates] - Allow to input duplicate values. Default to false.
- * @param {boolean} [config.allowClickToDelete] - Add a "cross" icon over the values to delete them. Default to false.
- * @param {boolean} [config.allowSwitchOnOff] - Allow to click on a value to switch it on/off
- * @param {function} [config.optionRenderer] - Custom function to render each option in the list of options
- * @param {function} [config.valueRenderer] - Custom function to render the actual field values
  * @param {string} [config.label]
  * @param {string} [config.labelWidth]
  * @param {string} [config.labelPosition] - left | right | top | bottom
  * @param {string} [config.labelAlign] - left | right
- * @param {boolean} [config.autocomplete] - Set "off" to disable
  * @param {boolean} [config.readOnly]
- * @param {boolean} [config.disabled]
- * @param {boolean} [config.required]
  * @param {string} [config.margin]
  * @param {string} [config.padding]
- * @param {string} [config.display] - flex | inline flex
  * @param {string|number} [config.width]
  * @param {string|number} [config.minWidth]
  * @param {string|number} [config.height]
- * @param {boolean} [config.canCreateRecord] - false to prevent from creating a new foreign record directly from the Link field
- * @param {boolean} [config.canLinkRecord] - false to prevent from linking to a new foreign record directly from the Link field
  * @returns this
+ * 
+ * @example
+ * {
+ *   type: "link",
+ *   id: "customers",
+ *   label: "Customers",
+ *   link: {
+ *      modelId: "customer",
+ *      fieldId: "name"
+ *   },
+ *   multiple: true,
+ *   canCreateRecord: true,
+ *   canLinkRecord: true
+ * }
  * 
  */
 kiss.ux.Link = class Link extends kiss.ui.Select {
@@ -51917,8 +52116,9 @@ customElements.define("a-selectviewcolumn", kiss.ux.SelectViewColumn)
  * 
  * @ignore
  * @param {object} config
- * @param {object} config.viewId - The view to pick records in
- * @param {object} config.fieldId - The field or fields which will be set when picking a record
+ * @param {string} [config.viewId] - The view to pick records in. Use this or collectionId.
+ * @param {string} [config.collectionId] - The collection to pick records in. Use this or viewId.
+ * @param {string[]} config.fieldId - Ids of the fields which will be set when picking a record
  * @param {string|string[]} [config.value] - Default value
  * @param {string} [config.optionsColor] - Default color for all options
  * @param {boolean} [config.allowValuesNotInList] - Allow to create a new entry in the view
@@ -51953,7 +52153,10 @@ kiss.ux.SelectViewColumns = class SelectViewColumns extends kiss.ui.Select {
         super.init(config)
 
         // View used to retrieve data
+        // OR
+        // Collection used to retrieve data
         this.viewId = config.viewId
+        this.collectionId = config.collectionId
 
         // Field to retrieve in the view
         this.fieldId = config.fieldId[0]
@@ -51992,22 +52195,49 @@ kiss.ux.SelectViewColumns = class SelectViewColumns extends kiss.ui.Select {
      */
     async _showView() {
         const _this = this
-        const viewRecord = await kiss.app.collections.view.findOne(this.viewId)
-        this.viewModel = kiss.app.models[viewRecord.modelId]
+        let collection, columns, sort, sortSyntax, filter, filterSyntax, group, viewRecord
+
+        if (this.viewId) {
+            viewRecord = await kiss.app.collections.view.findOne(this.viewId)
+            this.viewModel = kiss.app.models[viewRecord.modelId]
+            collection = this.viewModel.collection
+            columns = this.viewModel.getFieldsAsColumns()
+            sort = viewRecord.sort
+            filter = viewRecord.filter
+            group = viewRecord.group
+        }
+        else if (this.collectionId) {
+            collection = kiss.app.collections[this.collectionId]
+            this.viewModel = kiss.app.models[collection.modelId]
+            columns = this.viewModel.getFieldsAsColumns()
+            sort = collection.sort || []
+            sortSyntax = collection.sortSyntax || "normalized"
+            filter = collection.filter || {}
+            filterSyntax = collection.filterSyntax || "normalized"
+            group = collection.group || []
+            log("###########@@@@@@@@@@@@@")
+            log(collection)
+            log(filter)
+        }
+        else {
+            // Exit if no viewId or collectionId have been provided
+            return
+        }
         
         // Build the datatable
         const datatable = createDatatable({
             collection: this.viewModel.collection,
-            sort: viewRecord.sort,
-            filter: viewRecord.filter,
-            group: viewRecord.group,
+            sort,
+            filter,
+            group,
 
             canEdit: false,
+            canSelect: false,
             canAddField: false,
             canEditField: false,
             canCreateRecord: this.allowValuesNotInList,
             showActions: false,
-            columns: viewRecord.config.columns,
+            columns: columns,
             color: this.viewModel.color,
             height: () => kiss.screen.current.height - 250,
 
