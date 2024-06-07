@@ -4,6 +4,10 @@
  * Your application modules must be bundled and minified into a single file (app.min.js)
  */
 window.onload = async function () {
+    // Set the lib language
+    kiss.language.current = "fr"
+
+    // Start the app
     app.init
         .logo()
         .host()
@@ -15,6 +19,7 @@ window.onload = async function () {
 
     // Load application scripts dynamically
     await kiss.loader.loadScript("./app.min")
+
 
     // Init the KissJS app
     await kiss.app.init()
