@@ -3071,12 +3071,14 @@ kiss.app.defineView({
             fullscreen: true,
             layout: "horizontal",
             items: [
+                // Partie gauche de la Home page
                 {
                     class: "home-left",
                     type: "html",
                     width: "50%",
                     html: `<img src="./resources/img/skyExplorer.svg">`
                 },
+                // Conteneur pour les boutons de la Home page
                 {
                     layout: "vertical",
                     background: "#000055",
@@ -3095,12 +3097,14 @@ kiss.app.defineView({
                         boxShadowHover: "0 0 20px #0077c8"
                     },
                     items: [
+                        // Planning des vols
                         {
                             type: "button",
                             icon: "fas fa-clipboard",
                             text: "Voir le planning des vols",
                             action: () => kiss.router.navigateTo("planning")
                         },
+                        // Liste des exercices (progression élève)
                         {
                             type: "button",
                             icon: "fas fa-chart-line",
@@ -3111,6 +3115,7 @@ kiss.app.defineView({
                                 viewId: "exercises-list"
                             })
                         },
+                        // Factures
                         {
                             type: "button",
                             icon: "fas fa-dollar-sign",
@@ -3121,6 +3126,7 @@ kiss.app.defineView({
                                 viewId: "invoices-list"
                             })
                         },
+                        // Gestion du plan de formation
                         {
                             type: "button",
                             icon: "fas fa-user-graduate",
@@ -3131,6 +3137,7 @@ kiss.app.defineView({
                                 viewId: "training-list"
                             })
                         },
+                        // Gestion des avions
                         {
                             type: "button",
                             icon: "fas fa-fighter-jet",
@@ -3141,6 +3148,7 @@ kiss.app.defineView({
                                 viewId: "planes-list"
                             })
                         },
+                        // Gestion des utilisateurs
                         {
                             type: "button",
                             icon: "fas fa-users",
@@ -3151,6 +3159,7 @@ kiss.app.defineView({
                                 viewId: "users-list"
                             })
                         },
+                        // Gestion des questions & réponses
                         {
                             type: "button",
                             icon: "fas fa-question",
@@ -3160,7 +3169,8 @@ kiss.app.defineView({
                                 modelId: "question",
                                 viewId: "questions-list"
                             })
-                        },                                             
+                        },
+                        // Déconnexion
                         {
                             type: "button",
                             icon: "fas fa-power-off",
@@ -3369,7 +3379,7 @@ kiss.app.defineView({
 }
 
 ;/**
- * Méthode du modèle pour vérifier si l'avion est disponible au jour et à l'heure demandée
+ * Méthode pour vérifier si un avion est disponible au jour et à l'heure demandée
  * 
  * @async
  * @returns {boolean} true si l'avion est disponible, false sinon
