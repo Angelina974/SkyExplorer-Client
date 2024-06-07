@@ -19,7 +19,7 @@ const createFormContent = function (config) {
     if (config.record) {
         record = config.record
         model = record.model
-        modelItems = JSON.parse(JSON.stringify(model.items))
+        modelItems = model.items//JSON.parse(JSON.stringify(model.items))
         
     } else if (config.model) {
         model = config.model
@@ -108,11 +108,11 @@ const createFormContent = function (config) {
                 }
 
                 // Restore methods and events
-                const field = model.getField(item.id)
-                if (field) {
-                    if (field.methods) item.methods = field.methods
-                    if (field.events) item.events = field.events
-                }
+                // const field = model.getField(item.id)
+                // if (field) {
+                //     if (field.methods) item.methods = field.methods
+                //     if (field.events) item.events = field.events
+                // }
             }
         })
         return items
