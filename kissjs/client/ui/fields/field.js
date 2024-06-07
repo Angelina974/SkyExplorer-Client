@@ -26,7 +26,7 @@
  * @param {string} [config.formula] - For computed fields only
  * @param {string} [config.validationType] - Pre-built validation type: alpha | alphanumeric | email | url | ip
  * @param {*} [config.validationRegex] - Regexp
- * @param {*} [config.validationFormula] - Regexp
+ * @param {*} [config.validationFunction] - Async function that returns true if the value is valid
  * @param {string} [config.validationMessage] - TODO
  * @param {string} [config.placeholder]
  * @param {boolean} [config.autocomplete] - Set "off" to disable

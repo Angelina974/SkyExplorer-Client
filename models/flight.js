@@ -26,13 +26,11 @@ kiss.app.defineModel({
                     value: "unid"
                 },
                 {
-                    title: "",
                     layout: "horizontal",
-
                     defaultConfig: {
                         width: "50%",
                         fieldWidth: "100%",
-                        labelWidth: "25%",
+                        labelWidth: "50%",
                     },
 
                     items: [
@@ -49,7 +47,21 @@ kiss.app.defineModel({
                             template: "time",
                             min: 7,
                             max: 19,
-                            interval: 60
+                            interval: 60,
+                            validator: async function(value) {
+
+                                const planeId = $("planeId").getValue()
+                                if (!planeId) {
+                                    createNotification("Merci de choisir un avion pour pouvoir vérifier sa dispoinibilité à cette heure")
+                                    return false
+                                }
+                                
+                                const flights = kiss.app.collections.flight.records
+                                const planeFlights = flights.filter(flight => flight.planeId === planeId)
+                                log(planeFlights)
+                                
+                                return false
+                            }
                         }                        
                     ]
                 },
@@ -101,7 +113,7 @@ kiss.app.defineModel({
 
             defaultConfig: {
                 width: "100%",
-                fieldWidth: "100%",
+                fieldWidth: "75%",
                 labelWidth: "25%",
             },
 
@@ -113,6 +125,7 @@ kiss.app.defineModel({
                     canDeleteLinks: true,
                     canLinkRecord: true,
                     multiple: false,
+                    // linkStyle: "compact",
                     link: {
                         modelId: "plane",
                         fieldId: "flights"

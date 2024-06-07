@@ -45,7 +45,9 @@ const createFormContent = function (config) {
             if (item.items) {
                 //
                 // Section
-                // 
+                //
+
+                // Set read access at section level
                 if (config.record && item.accessRead) item.accessRead = item.accessRead.map(entry => (entry != "$creator") ? entry : config.record.createdBy)
                 const canRead = kiss.tools.intersects(item.accessRead, userACL) || !item.accessRead
 
@@ -53,6 +55,7 @@ const createFormContent = function (config) {
                     item.hidden = true
                 }
                 else {
+                    // Set update access at section level
                     if (config.record && item.accessUpdate) item.accessUpdate = item.accessUpdate.map(entry => (entry != "$creator") ? entry : config.record.createdBy)
                     const canUpdate = (editMode === false) ? false : kiss.tools.intersects(item.accessUpdate, userACL) || !item.accessUpdate
 
@@ -102,6 +105,13 @@ const createFormContent = function (config) {
                     item.width = "100.00%"
                     item.fieldWidth = "100.00%"
                     item.labelWidth = "100.00%"
+                }
+
+                // Restore methods and events
+                const field = model.getField(item.id)
+                if (field) {
+                    if (field.methods) item.methods = field.methods
+                    if (field.events) item.events = field.events
                 }
             }
         })

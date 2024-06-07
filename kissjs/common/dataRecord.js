@@ -378,6 +378,12 @@ kiss.data.RecordFactory = function (modelId) {
                     return false
                 }
 
+                const validation = await this.checkValidationRules(fieldId, value)
+                if (!validation) {
+                    kiss.loadingSpinner.hide(loadingId)
+                    return false
+                }
+
                 // Update the field and propagate the change
                 const response = await this.db.updateOneDeep(this.model.id, this.id, {
                     [fieldId]: value
@@ -392,6 +398,14 @@ kiss.data.RecordFactory = function (modelId) {
                 kiss.loadingSpinner.hide(loadingId)
                 return false
             }
+        }
+
+        async checkValidationRules(fieldId, value) {
+            const field = this.model.getField(fieldId)
+            if (!field.validator) return true
+
+            const result = await field.validator(value)
+            return !!result
         }
 
         /**
