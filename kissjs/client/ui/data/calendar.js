@@ -890,17 +890,22 @@ kiss.ui.Calendar = class Calendar extends kiss.ui.DataComponent {
      */
     async _updateOneAndReload(msgData) {
         const filterFields = kiss.db.mongo.getFilterFields(this.filter)
+        let dateHasChanged = false
+        let timeHasChanged = false
         let filterHasChanged = false
 
         let updates = msgData.data
         for (let fieldId of Object.keys(updates)) {
+            if (this.dateField == fieldId) dateHasChanged = true
+            if (this.timeField == fieldId) timeHasChanged = true
             if (filterFields.indexOf(fieldId) != -1) filterHasChanged = true
         }
 
-        this._updateRecord(msgData.id)
-
-        if (filterHasChanged) {
+        if (dateHasChanged || timeHasChanged || filterHasChanged) {
             this._reloadWhenNeeded(msgData, 2000)
+        }
+        else {
+            this._updateRecord(msgData.id)
         }
     }
 
