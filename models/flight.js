@@ -152,7 +152,7 @@ kiss.app.defineModel({
                             value: "today",
 
                             // Vériication de la disponibilité de l'avion à la date et l'heure choisies
-                            validationFunction: async function() {
+                            validationFunction: async function () {
                                 return await checkAvailability()
                             }
                         },
@@ -174,7 +174,7 @@ kiss.app.defineModel({
                     ]
                 }
             ]
-        },        
+        },
 
         // Section avec les informations sur l'avion
         {
@@ -310,7 +310,47 @@ kiss.app.defineModel({
                 }
             ]
         }
-    ]
+    ],
+
+    acl: {
+        permissions: {
+            create: [{
+                userType: "Administrateur"
+            }, {
+                userType: "Instructeur"
+            }],
+            update: [{
+                userType: "Administrateur"
+            }, {
+                userType: "Instructeur"
+            }],
+            delete: [{
+                userType: "Administrateur"
+            }, {
+                userType: "Instructeur"
+            }]
+        },
+
+        validators: {
+            async isOwner({
+                req
+            }) {
+                return (kiss.isServer) ? req.token.isOwner : kiss.session.isAccountOwner()
+            },
+
+            async userType({
+                req
+            }) {
+                if (kiss.isServer) {
+                    const accountUsers = kiss.directory.users[req.token.currentAccountId]
+                    const user = accountUsers[req.token.userId]
+                    return user.type
+                } else {
+                    return getUserType()
+                }
+            }
+        }
+    }
 })
 
 ;

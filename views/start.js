@@ -39,6 +39,7 @@ kiss.app.defineView({
                     items: [
                         // Planning des vols
                         {
+                            hidden: !isUser(["Administrateur", "Instructeur"]),
                             type: "button",
                             icon: "fas fa-clipboard",
                             text: "Voir le planning des vols",
@@ -57,6 +58,7 @@ kiss.app.defineView({
                         },
                         // Factures
                         {
+                            hidden: !isUser(["Administrateur"]),
                             type: "button",
                             icon: "fas fa-dollar-sign",
                             text: "Factures",
@@ -68,6 +70,7 @@ kiss.app.defineView({
                         },
                         // Gestion du plan de formation
                         {
+                            hidden: !isUser(["Administrateur", "Instructeur"]),
                             type: "button",
                             icon: "fas fa-user-graduate",
                             text: "Gérer le plan de formation",
@@ -79,6 +82,7 @@ kiss.app.defineView({
                         },
                         // Gestion des avions
                         {
+                            hidden: !isUser(["Administrateur", "Instructeur"]),
                             type: "button",
                             icon: "fas fa-fighter-jet",
                             text: "Suivi des avions",
@@ -90,6 +94,7 @@ kiss.app.defineView({
                         },
                         // Gestion des utilisateurs
                         {
+                            hidden: !isUser(["Administrateur"]) && !kiss.session.isOwner,
                             type: "button",
                             icon: "fas fa-users",
                             text: "Gestion des utilisateurs",

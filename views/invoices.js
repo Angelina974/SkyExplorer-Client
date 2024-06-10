@@ -2,7 +2,7 @@ kiss.app.defineView({
     id: "invoices",
     renderer: function(id, target) {
 
-        // Cherche la coolonne "Montant" de la facture et active la propriété "summary" pour faire la somme sur cette colonne
+        // Cherche la colonne "Montant" de la facture et active la propriété "summary" pour faire la somme sur cette colonne
         let columns = kiss.app.models.invoice.getFieldsAsColumns()
         columns.forEach(column => {
             if (column.title == "Montant de la facture") {
