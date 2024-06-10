@@ -233,6 +233,11 @@ kiss.app.defineModel({
                 userType: "Administrateur"
             }, {
                 userType: "Instructeur"
+            }],
+            printInvoice: [{
+                canPrintInvoice: "Administrateur"
+            },{
+                canPrintInvoice: "Instructeur"
             }]
         },
 
@@ -253,7 +258,17 @@ kiss.app.defineModel({
                 } else {
                     return getUserType()
                 }
-            }
+            },
+
+            async canPrintInvoice() {
+                if (kiss.isServer) {
+                    const accountUsers = kiss.directory.users[req.token.currentAccountId]
+                    const user = accountUsers[req.token.userId]
+                    return user.type 
+                } else {
+                    return getUserType()
+                }
+            },
         }
     }    
 })

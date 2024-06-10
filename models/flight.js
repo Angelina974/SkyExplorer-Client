@@ -315,6 +315,8 @@ kiss.app.defineModel({
     acl: {
         permissions: {
             create: [{
+                isOwner: true
+            }, {
                 userType: "Administrateur"
             }, {
                 userType: "Instructeur"
