@@ -18,26 +18,6 @@ kiss.app.defineView({
             items: [
                 createTopBar(),
                 {
-                    type: "button",
-                    text: "hello",
-                    action: async () => {
-                        const selectedRecords = await kiss.selection.getRecordsFromActiveView()
-                        console.log(selectedRecords)
-                        const record = selectedRecords[0]
-                        const canPrintInvoice = await kiss.acl.check({
-                            action: "printInvoice",
-                            record
-                        })
-                        console.log(canPrintInvoice)
-                        if (canPrintInvoice) {
-                            getPdf()
-                        } else {
-                            createNotification('Vous n\'avez pas les droits pour imprimer cette facture')
-                        }
-                        
-                    }
-                },
-                {
                     id: "invoices-list",
                     type: "datatable",
                     color: "var(--buttons-color)",
@@ -57,7 +37,13 @@ kiss.app.defineView({
                             icon: "fas fa-trash",
                             iconColor: "var(--red)",
                             action: () => kiss.selection.deleteSelectedRecords()
-                        }                        
+                        },
+                        {
+                            text: txtTitleCase("Générer une facture"),
+                            icon: "fas fa-file-pdf",
+                            iconColor: "var(--green)",
+                            action: async () => generatePDF()
+                        }                       
                     ],
 
                     methods: {
@@ -133,32 +119,34 @@ function getPdf() {
         const columnX1 = 120;
         const lineYadd = 7;
         const lineYadd2 = 100
-        const lineYadd3 = lineYadd2 + 8
-        let lineY;
+        let lineY = lineYadd2 + 10;
 
 
         doc.addImage(img, 'PNG', 0, 0, pdfWidth, pdfHeight);
 
-        //Gros titre
-        doc.setFont('Saira sans-serif', "bold");          
+        //Numéro de facture
+        doc.setFont('Helvetica', "bold");          
         doc.setFontSize(30);
         doc.setTextColor("#000055");
         doc.text("Facture N° :", 120, 45);
-
+        doc.setFont('Helvetica', "normal")
+        doc.setFontSize(25);
+        doc.text(kiss.tools.shortUid(), 120, 56)
 
         //description
-        doc.setFont('Helvetica', "normal");          
         doc.setFontSize(14);
         doc.setTextColor("#000055");
 
-        //${kiss.session.getUserName()}
-        
-        doc.text("Date :", columnX1, 60);
-        doc.text("Echéance : ", columnX1, 67);
-        doc.text("Client : ", columnX1, 74);
+      
+        // Date, Echéance, Client
+        let today = new Date()
+        totay = today.toLocaleDateString()
+
+        doc.text("Date : " + totay, columnX1, 65);
+        doc.text("Client : ", columnX1, 72);
 
         doc.setFont('Helvetica', "normal");
-        doc.text(`${kiss.session.getUserName()}`, columnX1 + 18, 74);
+        doc.text(`${kiss.session.getUserName()}`, columnX1 + 18, 72);
 
 
         //Tableur
@@ -167,35 +155,48 @@ function getPdf() {
         doc.setTextColor("#000000");
 
         doc.text("Référence", startX, lineYadd2);
-        doc.text("Date", startX + 40, lineYadd2);
-        doc.text("Client", startX + 80, lineYadd2);
+        doc.text("Client", startX + 40, lineYadd2);
+        doc.text("Date", startX + 80, lineYadd2);
         doc.text("Type", startX + 120, lineYadd2);
         doc.text("€HT/h", startX + 155, lineYadd2);
 
         doc.setFontSize(12);
         doc.setTextColor("#000055");
 
+
+        let sum = 0;
         for (let i = 0; i < rowData.length; i++) {
-            doc.text(rowData[i]["columns"][0], startX, lineYadd3); //Référence
-            doc.text(rowData[i]["columns"][1], startX + 40, lineYadd3); //Date
-            doc.text(rowData[i]["columns"][3], startX + 80, lineYadd3); //Client
-            doc.text(rowData[i]["columns"][9], startX + 120, lineYadd3); //type du vol
-            doc.text(rowData[i]["columns"][4], startX + 155, lineYadd3); //HT/h
+            doc.text(rowData[i]["columns"][0], startX, lineY); //Référence
+            doc.text(rowData[i]["columns"][1], startX + 40, lineY); //Client
+            doc.text(rowData[i]["columns"][3], startX + 80, lineY); //Date
+            doc.text(rowData[i]["columns"][9], startX + 120, lineY); //type du vol
+            doc.text(rowData[i]["columns"][4], startX + 155, lineY); //HT/h
             
             lineY += lineYadd;
+
+            // Gestion du total
+            let totalHt = rowData[i]["columns"][4]
+            totalHt = totalHt.replace(" €HT/h", "")
+            totalHt = totalHt.replace(",", ".")
+            sum += Number(totalHt)            
         }
 
+        //Total
+        doc.text("Total HT : " + sum + "€", startX, lineY + 20);
+        doc.text("TVA 20% :" + sum*0.2 + "€", startX, lineY + 27);
+        doc.text("Total TTC : " + sum*1.2 + "€", startX, lineY + 34);
+
         doc.setDrawColor('#000000');
-        doc.setLineWidth(0.5);
+        doc.setLineWidth(0.3);
         doc.setLineDash([3, 3], 0);
-        doc.line(startX-4, 77, 192, 77)
-        doc.line(startX-4, 89, 192, 89)
+        doc.line(startX-4, 93, 192, 93)
+        doc.line(startX-4, 102, 192, 102)
 
         //Reglement
         doc.setFont('Helvetica', "normal");
         doc.setFontSize(14);
         doc.setTextColor("#000055");
-        doc.text("Modalités et conditions de paiement: ", startX, 220); //Effectué ou pas
+        doc.text("En votre aimable règlement à réception.", startX, 220);
 
         
         window.open(doc.output('bloburl'));

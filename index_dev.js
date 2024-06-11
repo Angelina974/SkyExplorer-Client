@@ -47,7 +47,8 @@ kiss.loader.loadScripts([
 
     // CONTROLLERS
     "controllers/global",
-    "controllers/planning"
+    "controllers/planning",
+    "controllers/generatePDF",
 ])
 
 // Load styles dynamically
