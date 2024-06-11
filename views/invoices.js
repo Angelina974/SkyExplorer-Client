@@ -118,6 +118,7 @@ function getPdf() {
         const columnX1 = 105;
         const lineYadd = 7;
         let lineY;
+        let numb;
 
 
         doc.addImage(img, 'PNG', 0, 0, pdfWidth, pdfHeight);
@@ -136,12 +137,10 @@ function getPdf() {
 
         //${kiss.session.getUserName()}
         
-        doc.text("Facturé à : ", startX, 50);
-        doc.text("Référence :", columnX1, 50);
-        doc.text("Echéance le : ", columnX1, 58);
+        doc.text("Facturé à : ", startX-4, 50);
 
         doc.setFont('Helvetica', "normal");
-        doc.text(`${kiss.session.getUserName()}`, startX + 26, 50);
+        doc.text(`${kiss.session.getUserName()}`, startX + 23, 50);
 
 
         //Tableur
@@ -150,8 +149,8 @@ function getPdf() {
         doc.setTextColor("#24265a");
 
         doc.text("Référence", startX, 85);
-        doc.text("Date", startX + 40, 85);
-        doc.text("Client", startX + 80, 85);
+        doc.text("Date", startX + 80, 85);
+        doc.text("Client", startX + 40, 85);
         doc.text("Type", startX + 120, 85);
         doc.text("€HT/h", startX + 155, 85);
 
@@ -165,20 +164,33 @@ function getPdf() {
             doc.text(rowData[i]["columns"][3], startX + 80, lineY); //Client
             doc.text(rowData[i]["columns"][9], startX + 120, lineY); //type du vol
             doc.text(rowData[i]["columns"][4], startX + 155, lineY); //HT/h
-            
+            numb += rowData[i]["columns"][4];
             lineY += lineYadd;
         }
+        
+        doc.setDrawColor('#0077c8');
+        doc.setLineWidth(0.5);
+        doc.setLineDash([3, 3], 0);
+        doc.line(startX-4, lineY, 192, lineY)
 
+        var number = numb.match(/\d/g);
+        number = number.join("");
+
+        doc.setFont('Helvetica', "bold");          
+        doc.setTextColor("#24265a");
+        doc.setFontSize(14);
+
+        doc.text("Total : ", startX-4, lineY + 16);
+        // doc.text("Réglé : ", startX-4, lineY + 23);
+
+        doc.setFont('Helvetica', "normal");          
+        doc.text(number + " €HT/h", startX+14, lineY + 16);
+        
         doc.setDrawColor('#0077c8');
         doc.setLineWidth(0.5);
         doc.setLineDash([3, 3], 0);
         doc.line(startX-4, 77, 192, 77)
         doc.line(startX-4, 89, 192, 89)
-
-        //Reglement
-        doc.setFontSize(24);
-        doc.text("Règlement : ", startX, 220); //Effectué ou pas
-
         
         window.open(doc.output('bloburl'));
 
