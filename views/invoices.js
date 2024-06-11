@@ -2,7 +2,7 @@ kiss.app.defineView({
     id: "invoices",
     renderer: function(id, target) {
 
-        // Cherche la coolonne "Montant" de la facture et active la propriété "summary" pour faire la somme sur cette colonne
+        // Cherche la colonne "Montant" de la facture et active la propriété "summary" pour faire la somme sur cette colonne
         let columns = kiss.app.models.invoice.getFieldsAsColumns()
         columns.forEach(column => {
             if (column.title == "Montant de la facture") {
@@ -20,7 +20,22 @@ kiss.app.defineView({
                 {
                     type: "button",
                     text: "hello",
-                    action: () => {getPdf();}
+                    action: async () => {
+                        const selectedRecords = await kiss.selection.getRecordsFromActiveView()
+                        console.log(selectedRecords)
+                        const record = selectedRecords[0]
+                        const canPrintInvoice = await kiss.acl.check({
+                            action: "printInvoice",
+                            record
+                        })
+                        console.log(canPrintInvoice)
+                        if (canPrintInvoice) {
+                            getPdf()
+                        } else {
+                            createNotification('Vous n\'avez pas les droits pour imprimer cette facture')
+                        }
+                        
+                    }
                 },
                 {
                     id: "invoices-list",
@@ -64,7 +79,6 @@ kiss.app.defineView({
 })
 
 ;
-
 
 
 function getPdf() {

@@ -46,6 +46,7 @@ kiss.loader.loadScripts([
     "templates/formButton",
 
     // CONTROLLERS
+    "controllers/global",
     "controllers/planning"
 ])
 

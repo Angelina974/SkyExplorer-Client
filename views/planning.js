@@ -24,7 +24,7 @@ kiss.app.defineView({
                     period: "1 week + details",
                     startOnMonday: true,
                     showWeekend: true,
-                    canCreateRecord: true,
+                    canCreateRecord: isUser("Administrateur"),
                     createRecordText: "RESERVER UN NOUVEAU VOL",
                     height: () => kiss.screen.current.height - 60,
                     
@@ -37,6 +37,18 @@ kiss.app.defineView({
                         // - the user clicks on the "Create" button at the top left
                         createRecord: async function() {
                             const newFlight = kiss.app.models.flight.create()
+
+                            // Check if the user has the right to create a new record of this type
+                            const canCreate = await kiss.acl.check({
+                                action: "create",
+                                record: newFlight
+                            })
+
+                            if (!canCreate) {
+                                return createNotification("Vous n'avez pas les droits pour créer un vol")
+                            }
+
+                            // If it's ok, we save the new record
                             await newFlight.save()
 
                             createForm(newFlight)
