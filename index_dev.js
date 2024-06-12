@@ -65,7 +65,7 @@ kiss.loader.loadStyles([
 window.onload = async function () {
 
     // Switch http instead of https for local dev
-    kiss.session.secure = true
+    kiss.session.secure = false
 
     // Set the lib language
     kiss.language.current = "fr"

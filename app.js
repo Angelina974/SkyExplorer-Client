@@ -448,7 +448,7 @@ kiss.app.defineModel({
                             value: "today",
 
                             // Vériication de la disponibilité de l'avion à la date et l'heure choisies
-                            validationFunction: async function() {
+                            validationFunction: async function () {
                                 return await checkAvailability()
                             }
                         },
@@ -470,7 +470,7 @@ kiss.app.defineModel({
                     ]
                 }
             ]
-        },        
+        },
 
         // Section avec les informations sur l'avion
         {
@@ -606,7 +606,49 @@ kiss.app.defineModel({
                 }
             ]
         }
-    ]
+    ],
+
+    acl: {
+        permissions: {
+            create: [{
+                isOwner: true
+            }, {
+                userType: "Administrateur"
+            }, {
+                userType: "Instructeur"
+            }],
+            update: [{
+                userType: "Administrateur"
+            }, {
+                userType: "Instructeur"
+            }],
+            delete: [{
+                userType: "Administrateur"
+            }, {
+                userType: "Instructeur"
+            }]
+        },
+
+        validators: {
+            async isOwner({
+                req
+            }) {
+                return (kiss.isServer) ? req.token.isOwner : kiss.session.isAccountOwner()
+            },
+
+            async userType({
+                req
+            }) {
+                if (kiss.isServer) {
+                    const accountUsers = kiss.directory.users[req.token.currentAccountId]
+                    const user = accountUsers[req.token.userId]
+                    return user.type
+                } else {
+                    return getUserType()
+                }
+            }
+        }
+    }
 })
 
 ;kiss.app.defineModel({
@@ -746,7 +788,7 @@ kiss.app.defineModel({
                         labelPosition: "top"
                     },
                     items: [
-                        // NUméro de facture
+                        // Numéro de facture
                         {
                             id: "invoiceId",
                             type: "text",
@@ -806,7 +848,7 @@ kiss.app.defineModel({
                         fieldId: "totalPrice",
                         type: "number"
                     }
-                }
+                },
             ]
         },
         {
@@ -928,7 +970,67 @@ kiss.app.defineModel({
                 },
             ]
         }
-    ]
+    ],
+
+    acl: {
+        permissions: {
+            create: [{
+                userType: "Administrateur"
+            }, {
+                userType: "Instructeur"
+            }],
+            read: [{
+                userType: "Administrateur"
+            }, {
+                userType: "Instructeur"
+            }],
+            update: [{
+                userType: "Administrateur"
+            }, {
+                userType: "Instructeur"
+            }],
+            delete: [{
+                userType: "Administrateur"
+            }, {
+                userType: "Instructeur"
+            }],
+            printInvoice: [{
+                canPrintInvoice: "Administrateur"
+            },{
+                canPrintInvoice: "Instructeur"
+            }]
+        },
+
+        validators: {
+            async isOwner({
+                req
+            }) {
+                return (kiss.isServer) ? req.token.isOwner : kiss.session.isAccountOwner()
+            },
+
+            async userType({
+                req
+            }) {
+                if (kiss.isServer) {
+                    const accountUsers = kiss.directory.users[req.token.currentAccountId]
+                    const user = accountUsers[req.token.userId]
+                    return user.type
+                } else {
+                    return getUserType()
+                }
+            },
+
+            async canPrintInvoice() {
+                if (kiss.isServer) {
+                    const accountUsers = kiss.directory.users[req.token.currentAccountId]
+                    const user = accountUsers[req.token.userId]
+                    return user.type 
+                } else {
+                    return getUserType()
+                }
+            },
+        }
+    }    
 })
 
 ;/**
@@ -1736,10 +1838,22 @@ kiss.app.defineModel({
             type: "select",
             label: "Type",
             options: [
-                "Administrateur",
-                "Instructeur",
-                "Elève pilote",
-                "Pilote"
+                {
+                    value: "Administrateur",
+                    color: "#ff0000"
+                },
+                {
+                    value: "Instructeur",
+                    color: "#00aaee"
+                },
+                {
+                    value: "Elève pilote",
+                    color: "#55cc00"
+                },
+                {
+                    value: "Pilote",
+                    color: "#556677"
+                }
             ]
         },
         {
@@ -2057,7 +2171,7 @@ kiss.app.defineModel({
                     id: "exercises-list",
                     type: "datatable",
                     color: "var(--buttons-color)",
-                    canEdit: true,
+                    canEdit: false,
                     canCreateRecord: false,
                     height: () => kiss.screen.current.height - 60,
                     collection: kiss.app.collections.exercise,
@@ -2093,11 +2207,16 @@ kiss.app.defineModel({
     id: "invoices",
     renderer: function(id, target) {
 
-        // Cherche la coolonne "Montant" de la facture et active la propriété "summary" pour faire la somme sur cette colonne
+        // Cherche la colonne "Montant" de la facture et active la propriété "summary" pour faire la somme sur cette colonne
         let columns = kiss.app.models.invoice.getFieldsAsColumns()
+        let visibleColumns = ["Référence", "Date de la facture", "Client", "Montant de la facture", "Type du vol"]
         columns.forEach(column => {
             if (column.title == "Montant de la facture") {
                 column.summary = "sum"
+            }
+
+            if (!visibleColumns.includes(column.title)) {
+                column.hidden = true
             }
         })
 
@@ -2124,22 +2243,23 @@ kiss.app.defineModel({
 
                     actions: [
                         {
-                            text: txtTitleCase("Supprimer les factures sélectionnés"),
+                            text: txtTitleCase("Supprimer les factures sélectionnées"),
                             icon: "fas fa-trash",
                             iconColor: "var(--red)",
                             action: () => kiss.selection.deleteSelectedRecords()
-                        }                        
+                        },
+                        {
+                            text: txtTitleCase("Générer une facture globale à partir des factures sélectionnées"),
+                            icon: "fas fa-file-pdf",
+                            iconColor: "var(--green)",
+                            action: async () => generatePDF()
+                        }                       
                     ],
 
                     methods: {
-                        createRecord: async function() {
-                            const newInvoice = kiss.app.models.invoice.create()
-                            await newInvoice.save()
-                            createForm(newInvoice)
-                            createDeleteButton(newInvoice)
-                        },
                         selectRecord: function(record) {
                             createForm(record)
+                            createPrintButton(record)
                             createDeleteButton(record)
                         }
                     }
@@ -2310,7 +2430,7 @@ kiss.app.defineView({
                                             type: "button",
                                             icon: "fa fa-check",
                                             text: txtTitleCase("login"),
-                                            iconColor: "#00aaee",
+                                            iconColor: "#000055",
                                             height: 40,
                                             margin: "20px 0",
                                             events: {
@@ -2321,7 +2441,7 @@ kiss.app.defineView({
                                         {
                                             type: "html",
                                             html: `
-                                            <div class="auth-reset-password">${txtTitleCase("forgot password?")}</div>
+                                            <div class="auth-reset-password" style="color: #000055;">${txtTitleCase("forgot password?")}</div>
                                         `,
                                             events: {
                                                 click: () => $("login").requestPasswordReset()
@@ -2332,7 +2452,7 @@ kiss.app.defineView({
                                             hidden: kiss.screen.isMobile,
                                             type: "html",
                                             html: `
-                                            <div class="auth-create-account">${txtTitleCase("#no account")}</div>
+                                            <div class="auth-create-account" style="color: #000055;">${txtTitleCase("#no account")}</div>
                                         `,
                                             events: {
                                                 click: () => kiss.router.navigateTo({
@@ -2582,7 +2702,7 @@ kiss.app.defineView({
                     period: "1 week + details",
                     startOnMonday: true,
                     showWeekend: true,
-                    canCreateRecord: true,
+                    canCreateRecord: isUser("Administrateur"),
                     createRecordText: "RESERVER UN NOUVEAU VOL",
                     height: () => kiss.screen.current.height - 60,
                     
@@ -2595,6 +2715,18 @@ kiss.app.defineView({
                         // - the user clicks on the "Create" button at the top left
                         createRecord: async function() {
                             const newFlight = kiss.app.models.flight.create()
+
+                            // Check if the user has the right to create a new record of this type
+                            const canCreate = await kiss.acl.check({
+                                action: "create",
+                                record: newFlight
+                            })
+
+                            if (!canCreate) {
+                                return createNotification("Vous n'avez pas les droits pour créer un vol")
+                            }
+
+                            // If it's ok, we save the new record
                             await newFlight.save()
 
                             createForm(newFlight)
@@ -2831,20 +2963,6 @@ kiss.app.defineView({
                                             placeholder: txtTitleCase("last name"),
                                             required: true
                                         },
-                                        // COMPANY
-                                        {
-                                            hidden: (pendingUserId) ? true : false,
-                                            type: "text",
-                                            id: "company",
-                                            placeholder: txtTitleCase("company")
-                                        },
-                                        // TELEPHONE
-                                        {
-                                            hidden: (pendingUserId) ? true : false,
-                                            type: "text",
-                                            id: "telephone",
-                                            placeholder: txtTitleCase("telephone")
-                                        },
                                         // EMAIL
                                         {
                                             type: "text",
@@ -2853,6 +2971,13 @@ kiss.app.defineView({
                                             required: true,
                                             validationType: "email",
                                             value: userEmail
+                                        },
+                                        // TELEPHONE
+                                        {
+                                            hidden: (pendingUserId) ? true : false,
+                                            type: "text",
+                                            id: "telephone",
+                                            placeholder: txtTitleCase("telephone")
                                         },
                                         // PASSWORD
                                         {
@@ -2878,7 +3003,7 @@ kiss.app.defineView({
                                                     type: "button",
                                                     icon: "fa fa-check",
                                                     text: txtTitleCase("register"),
-                                                    iconColor: "#00aaee",
+                                                    iconColor: "#000055",
                                                     flex: 1,
                                                     height: 40,
                                                     events: {
@@ -2951,7 +3076,7 @@ kiss.app.defineView({
                                         {
                                             type: "html",
                                             html: `
-                                            <div class="auth-create-account">${txtTitleCase("#already an account")}</div>
+                                            <div class="auth-create-account" style="color: #000055;">${txtTitleCase("#already an account")}</div>
                                         `,
                                             events: {
                                                 click: () => kiss.router.navigateTo({
@@ -3099,6 +3224,7 @@ kiss.app.defineView({
                     items: [
                         // Planning des vols
                         {
+                            hidden: !isUser(["Administrateur", "Instructeur"]),
                             type: "button",
                             icon: "fas fa-clipboard",
                             text: "Voir le planning des vols",
@@ -3117,6 +3243,7 @@ kiss.app.defineView({
                         },
                         // Factures
                         {
+                            hidden: !isUser(["Administrateur"]),
                             type: "button",
                             icon: "fas fa-dollar-sign",
                             text: "Factures",
@@ -3128,6 +3255,7 @@ kiss.app.defineView({
                         },
                         // Gestion du plan de formation
                         {
+                            hidden: !isUser(["Administrateur", "Instructeur"]),
                             type: "button",
                             icon: "fas fa-user-graduate",
                             text: "Gérer le plan de formation",
@@ -3139,6 +3267,7 @@ kiss.app.defineView({
                         },
                         // Gestion des avions
                         {
+                            hidden: !isUser(["Administrateur", "Instructeur"]),
                             type: "button",
                             icon: "fas fa-fighter-jet",
                             text: "Suivi des avions",
@@ -3150,6 +3279,7 @@ kiss.app.defineView({
                         },
                         // Gestion des utilisateurs
                         {
+                            hidden: !isUser(["Administrateur"]) && !kiss.session.isOwner,
                             type: "button",
                             icon: "fas fa-users",
                             text: "Gestion des utilisateurs",
@@ -3175,7 +3305,15 @@ kiss.app.defineView({
                             type: "button",
                             icon: "fas fa-power-off",
                             text: "Se déconnecter",
-                            action: () => kiss.session.logout()
+                            action: () => kiss.session.logout(),
+                            events: {
+                                mouseOver: function () {
+                                    this.setAnimation({
+                                        name: 'bounceIn',
+                                        speed: 'faster'
+                                    })
+                                }
+                            } 
                         }
                     ]
                 }
@@ -3235,6 +3373,83 @@ kiss.app.defineView({
 ;kiss.app.defineView({
     id: "users",
     renderer: function(id, target) {
+
+        // Génère les colonnes à partir des champs du modèle, et ajoute une colonne de type "bouton"
+        let columns = kiss.app.models.invoice.getFieldsAsColumns()
+        columns.push({
+            title: "Actions",
+            type: "button",
+            button: {
+                icon: "fas fa-key",
+                text: "Modifier les accès",
+                action: function(rowIndex, columnId, recordId, record) {
+
+                    // Empêche de modifier les droits de l'utilisateur connecté (on ne peut pas se retirer ses propres droits)
+                    if (kiss.session.userId == record.email) {
+                        // return createNotification("Vous ne pouvez pas modifier vos propres droits")
+                    }
+
+                    // Affiche une boite de dialogue pour modifier les droits de l'utilisateur
+                    createDialog({
+                        title: "Modifier les droits de l'utilisateur",
+                        icon: "fas fa-key",
+                        type: "select",
+                        autoClose: false,
+                        message: "Choisissez le nouveau type d'utilisateur :",
+                        options: [
+                            {
+                                value: "Administrateur",
+                                color: "#ff0000"
+                            },
+                            {
+                                value: "Instructeur",
+                                color: "#00aaee"
+                            },
+                            {
+                                value: "Elève pilote",
+                                color: "#55cc00"
+                            },
+                            {
+                                value: "Pilote",
+                                color: "#556677"
+                            }
+                        ],
+                        action: async function(newUserType) {
+
+                            if (newUserType === "") {
+                                createNotification("Vous devez choisir un type d'utilisateur")
+                                return false
+                            }
+
+                            // Vérifie les droits côté client
+                            const canUpdate = await kiss.acl.check({
+                                action: "update",
+                                record
+                            })
+
+                            // Si on ne peut pas mettre à jour, on affiche une notification
+                            if (!canUpdate) {
+                                return createNotification("Vous n'avez pas les droits pour modifier un utilisateur")
+                            }
+
+                            // Sinon on lance la mise à jour (qui sera aussi vérifiée côté serveur)
+                            await record.update({
+                                email: record.email,
+                                type: newUserType
+                            })
+                            
+                            // Si le user mis à jour est le même que le user connecté => reload pour mettre à jour les droits
+                            if (kiss.session.userId == record.email) {
+                                document.location.reload()
+                            }
+
+                            return true
+                        }
+                    }).render()
+                }
+            }
+        })
+
         return createBlock({
             id,
             target,
@@ -3252,10 +3467,12 @@ kiss.app.defineView({
                     showAction: false,
                     height: () => kiss.screen.current.height - 60,
                     collection: kiss.app.collections.user,
-
+                    columns,
                     methods: {
                         selectRecord: function(record) {
+                            record.isLocked = true
                             createForm(record)
+                            createDeleteButton(record)
                         }
                     }
                 }
@@ -3285,6 +3502,20 @@ kiss.app.defineView({
                 }
             })
         }
+    })    
+}
+
+function createPrintButton(record) {
+    $(record.id).addHeaderButton({
+        icon: "fas fa-file-pdf",
+        height: 24,
+        iconSize: 22,
+        iconColor: "#487FDA",
+        backgroundColor: "transparent",
+        borderWidth: 0,
+        margin: "0 10px 0 0",
+        tip: "Imprimer cette facture",
+        action: () => displayPdf([record])
     })    
 }
 
@@ -3379,6 +3610,153 @@ kiss.app.defineView({
 }
 
 ;/**
+ * Code of the button to generate a PDF
+ */
+async function generatePDF() {
+
+    // Vérifie si l'utilisateur a le droit d'imprimer une facture globale
+    const selectedRecords = await kiss.selection.getRecordsFromActiveView()
+    const record = selectedRecords[0]
+    const canPrintInvoice = await kiss.acl.check({
+        action: "printInvoice",
+        record
+    })
+
+    if (canPrintInvoice) {
+        displayPdf(selectedRecords)
+    } else {
+        createNotification('Vous n\'avez pas les droits pour imprimer cette facture')
+    }
+}
+
+/**
+ * Display PDF document in the browser
+ * 
+ * @param {Array} selectedRecords - Invoices to display in the PDF
+ */
+async function displayPdf(selectedRecords) {
+    const { jsPDF } = window.jspdf
+    const doc = new jsPDF()
+    const img = new Image()
+    img.src = './resources/img/facture.png' // Fond de page
+
+    img.onload = function() {
+        const pdfWidth = 210
+        const pdfHeight = 297
+        const startX = 20
+        const columnX1 = 120
+        const lineYadd = 7
+        const lineYadd2 = 100
+        let lineY = lineYadd2 + 10
+
+        doc.addImage(img, 'PNG', 0, 0, pdfWidth, pdfHeight)
+
+        // Numéro de facture
+        doc.setFont('Helvetica', "bold")          
+        doc.setFontSize(30)
+        doc.setTextColor("#000055")
+        doc.text("Facture N° :", 120, 45)
+        doc.setFont('Helvetica', "normal")
+        doc.setFontSize(25)
+        doc.text(kiss.tools.shortUid().toUpperCase(), 120, 56)
+
+        // Description
+        doc.setFontSize(14)
+        doc.setTextColor("#000055")
+      
+        // Date, Emetteur de la facture
+        let today = new Date()
+        totay = today.toLocaleDateString()
+
+        doc.text("Date : " + totay, columnX1, 65)
+        doc.text("Emis par : ", columnX1, 72)
+
+        doc.setFont('Helvetica', "normal")
+        doc.text(`${kiss.session.getUserName()}`, columnX1 + 26, 72)
+
+        // Entête du tableau
+        doc.setFont('Helvetica', "normal")          
+        doc.setFontSize(14)
+        doc.setTextColor("#000000")
+
+        doc.text("Référence", startX, lineYadd2)
+        doc.text("Client", startX + 40, lineYadd2)
+        doc.text("Date", startX + 80, lineYadd2)
+        doc.text("Type", startX + 120, lineYadd2)
+        doc.text("€HT/h", startX + 155, lineYadd2)
+
+        doc.setFontSize(12)
+        doc.setTextColor("#000055")
+
+        let sum = 0
+        for (let i = 0; i < selectedRecords.length; i++) {
+            const reference = selectedRecords[i].invoiceId
+            const client = selectedRecords[i].client
+            const clientName = kiss.directory.getEntryName(client)
+            const date = selectedRecords[i].date
+            const type = selectedRecords[i].flightType
+            const montant = selectedRecords[i].totalPrice
+
+            doc.text(reference, startX, lineY)
+            doc.text(clientName, startX + 40, lineY)
+            doc.text(date, startX + 80, lineY)
+            doc.text(type, startX + 120, lineY)
+            doc.text(montant.toString(), startX + 155, lineY)
+            
+            lineY += lineYadd
+            sum += montant        
+        }
+
+        // Total
+        doc.text("Total HT : " + sum + "€", startX, lineY + 20)
+        doc.text("TVA 20% : " + sum*0.2 + "€", startX, lineY + 27)
+        doc.text("Total TTC : " + sum*1.2 + "€", startX, lineY + 34)
+
+        doc.setDrawColor('#000000')
+        doc.setLineWidth(0.3)
+        doc.setLineDash([3, 3], 0)
+        doc.line(startX-4, 93, 192, 93)
+        doc.line(startX-4, 102, 192, 102)
+
+        // Reglement
+        doc.setFont('Helvetica', "normal")
+        doc.setFontSize(14)
+        doc.setTextColor("#000055")
+        doc.text("En votre aimable règlement à réception.", startX, 220)
+        
+        window.open(doc.output('bloburl'))
+    }
+}/**
+ * Get the user type
+ * 
+ * @returns {string} The user type: "Administrateur", "Instructeur", "Elève pilote" or "Pilote"
+ * 
+ * @example
+ * getUserType() // "Administrateur"
+ */
+function getUserType() {
+    const user = kiss.directory.users.find(user => user.email == kiss.session.userId)
+    return user.type
+}
+
+/**
+ * Test if the user belongs to certain types
+ * 
+ * @param {string|string[]} types
+ * @returns {boolean}
+ * 
+ * @example
+ * isUser("Administrateur") // true if the user is an administrator
+ * isUser(["Administrateur", "Instructeur"]) // true if the user is an administrator or an instructor
+ */
+function isUser(type) {
+    if (Array.isArray(type)) {
+        return type.includes(getUserType())
+    }
+    else {
+        return getUserType() === type
+    }
+}/**
  * Méthode pour vérifier si un avion est disponible au jour et à l'heure demandée
  * 
  * @async
