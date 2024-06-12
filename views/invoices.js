@@ -4,9 +4,14 @@ kiss.app.defineView({
 
         // Cherche la colonne "Montant" de la facture et active la propriété "summary" pour faire la somme sur cette colonne
         let columns = kiss.app.models.invoice.getFieldsAsColumns()
+        let visibleColumns = ["Référence", "Date de la facture", "Client", "Montant de la facture", "Type du vol"]
         columns.forEach(column => {
             if (column.title == "Montant de la facture") {
                 column.summary = "sum"
+            }
+
+            if (!visibleColumns.includes(column.title)) {
+                column.hidden = true
             }
         })
 
@@ -33,13 +38,13 @@ kiss.app.defineView({
 
                     actions: [
                         {
-                            text: txtTitleCase("Supprimer les factures sélectionnés"),
+                            text: txtTitleCase("Supprimer les factures sélectionnées"),
                             icon: "fas fa-trash",
                             iconColor: "var(--red)",
                             action: () => kiss.selection.deleteSelectedRecords()
                         },
                         {
-                            text: txtTitleCase("Générer une facture"),
+                            text: txtTitleCase("Générer une facture globale à partir des factures sélectionnées"),
                             icon: "fas fa-file-pdf",
                             iconColor: "var(--green)",
                             action: async () => generatePDF()

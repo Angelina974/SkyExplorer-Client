@@ -28,7 +28,7 @@ kiss.app.defineModel({
                         labelPosition: "top"
                     },
                     items: [
-                        // NUméro de facture
+                        // Numéro de facture
                         {
                             id: "invoiceId",
                             type: "text",
