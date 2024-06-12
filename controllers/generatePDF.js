@@ -20,6 +20,8 @@ async function generatePDF() {
 
 /**
  * Display PDF document in the browser
+ * 
+ * @param {Array} selectedRecords - Invoices to display in the PDF
  */
 async function displayPdf(selectedRecords) {
     const { jsPDF } = window.jspdf
