@@ -120,7 +120,15 @@ kiss.app.defineView({
                             type: "button",
                             icon: "fas fa-power-off",
                             text: "Se déconnecter",
-                            action: () => kiss.session.logout()
+                            action: () => kiss.session.logout(),
+                            events: {
+                                mouseOver: function () {
+                                    this.setAnimation({
+                                        name: 'bounceIn',
+                                        speed: 'faster'
+                                    })
+                                }
+                            } 
                         }
                     ]
                 }
