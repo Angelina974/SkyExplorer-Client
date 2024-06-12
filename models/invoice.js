@@ -88,7 +88,7 @@ kiss.app.defineModel({
                         fieldId: "totalPrice",
                         type: "number"
                     }
-                }
+                },
             ]
         },
         {

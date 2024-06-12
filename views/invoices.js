@@ -52,14 +52,9 @@ kiss.app.defineView({
                     ],
 
                     methods: {
-                        createRecord: async function() {
-                            const newInvoice = kiss.app.models.invoice.create()
-                            await newInvoice.save()
-                            createForm(newInvoice)
-                            createDeleteButton(newInvoice)
-                        },
                         selectRecord: function(record) {
                             createForm(record)
+                            createPrintButton(record)
                             createDeleteButton(record)
                         }
                     }

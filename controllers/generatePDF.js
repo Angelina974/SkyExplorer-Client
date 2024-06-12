@@ -61,7 +61,7 @@ async function displayPdf(selectedRecords) {
         doc.text("Emis par : ", columnX1, 72)
 
         doc.setFont('Helvetica', "normal")
-        doc.text(`${kiss.session.getUserName()}`, columnX1 + 18, 72)
+        doc.text(`${kiss.session.getUserName()}`, columnX1 + 26, 72)
 
         // Entête du tableau
         doc.setFont('Helvetica', "normal")          

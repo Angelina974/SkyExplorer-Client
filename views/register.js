@@ -151,20 +151,6 @@ kiss.app.defineView({
                                             placeholder: txtTitleCase("last name"),
                                             required: true
                                         },
-                                        // COMPANY
-                                        {
-                                            hidden: (pendingUserId) ? true : false,
-                                            type: "text",
-                                            id: "company",
-                                            placeholder: txtTitleCase("company")
-                                        },
-                                        // TELEPHONE
-                                        {
-                                            hidden: (pendingUserId) ? true : false,
-                                            type: "text",
-                                            id: "telephone",
-                                            placeholder: txtTitleCase("telephone")
-                                        },
                                         // EMAIL
                                         {
                                             type: "text",
@@ -173,6 +159,13 @@ kiss.app.defineView({
                                             required: true,
                                             validationType: "email",
                                             value: userEmail
+                                        },
+                                        // TELEPHONE
+                                        {
+                                            hidden: (pendingUserId) ? true : false,
+                                            type: "text",
+                                            id: "telephone",
+                                            placeholder: txtTitleCase("telephone")
                                         },
                                         // PASSWORD
                                         {

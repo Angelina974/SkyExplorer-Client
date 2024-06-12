@@ -98,7 +98,9 @@ kiss.app.defineView({
                     columns,
                     methods: {
                         selectRecord: function(record) {
-                            // Do nothing when clicking on record
+                            record.isLocked = true
+                            createForm(record)
+                            createDeleteButton(record)
                         }
                     }
                 }

@@ -22,4 +22,18 @@ function createDeleteButton(record) {
     })    
 }
 
+function createPrintButton(record) {
+    $(record.id).addHeaderButton({
+        icon: "fas fa-file-pdf",
+        height: 24,
+        iconSize: 22,
+        iconColor: "#487FDA",
+        backgroundColor: "transparent",
+        borderWidth: 0,
+        margin: "0 10px 0 0",
+        tip: "Imprimer cette facture",
+        action: () => displayPdf([record])
+    })    
+}
+
 ;
