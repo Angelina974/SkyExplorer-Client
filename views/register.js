@@ -198,7 +198,7 @@ kiss.app.defineView({
                                                     type: "button",
                                                     icon: "fa fa-check",
                                                     text: txtTitleCase("register"),
-                                                    iconColor: "#00aaee",
+                                                    iconColor: "#000055",
                                                     flex: 1,
                                                     height: 40,
                                                     events: {
@@ -271,7 +271,7 @@ kiss.app.defineView({
                                         {
                                             type: "html",
                                             html: `
-                                            <div class="auth-create-account">${txtTitleCase("#already an account")}</div>
+                                            <div class="auth-create-account" style="color: #000055;">${txtTitleCase("#already an account")}</div>
                                         `,
                                             events: {
                                                 click: () => kiss.router.navigateTo({

@@ -159,7 +159,7 @@ kiss.app.defineView({
                                             type: "button",
                                             icon: "fa fa-check",
                                             text: txtTitleCase("login"),
-                                            iconColor: "#00aaee",
+                                            iconColor: "#000055",
                                             height: 40,
                                             margin: "20px 0",
                                             events: {
@@ -170,7 +170,7 @@ kiss.app.defineView({
                                         {
                                             type: "html",
                                             html: `
-                                            <div class="auth-reset-password">${txtTitleCase("forgot password?")}</div>
+                                            <div class="auth-reset-password" style="color: #000055;">${txtTitleCase("forgot password?")}</div>
                                         `,
                                             events: {
                                                 click: () => $("login").requestPasswordReset()
@@ -181,7 +181,7 @@ kiss.app.defineView({
                                             hidden: kiss.screen.isMobile,
                                             type: "html",
                                             html: `
-                                            <div class="auth-create-account">${txtTitleCase("#no account")}</div>
+                                            <div class="auth-create-account" style="color: #000055;">${txtTitleCase("#no account")}</div>
                                         `,
                                             events: {
                                                 click: () => kiss.router.navigateTo({
