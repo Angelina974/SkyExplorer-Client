@@ -77,7 +77,7 @@ function getPdf() {
         doc.text("Facture N° :", 120, 45);
         doc.setFont('Helvetica', "normal")
         doc.setFontSize(25);
-        doc.text(kiss.tools.shortUid(), 120, 56)
+        doc.text(kiss.tools.shortUid().toUpperCase(), 120, 56)
 
         //description
         doc.setFontSize(14);
