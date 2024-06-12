@@ -79,7 +79,8 @@ const app = {
         host() {
             // Session host
             kiss.session.setHost({
-                host: "skyexplorer-server.onrender.com"
+                // host: "skyexplorer-server.onrender.com", 
+                host: "localhost",
             })
 
             // Ajax host
