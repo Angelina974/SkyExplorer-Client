@@ -18,6 +18,11 @@ kiss.app.defineView({
                     height: () => kiss.screen.current.height - 60,
                     collection: kiss.app.collections.training,
 
+                    sortSyntax: "normalized",
+                    sort: [{
+                        order: "asc"
+                    }],
+
                     actions: [
                         {
                             text: txtTitleCase("Supprimer les formations sélectionnées"),
