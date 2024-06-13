@@ -49,6 +49,15 @@ kiss.app.defineView({
                         selectRecord: function(record) {
                             createForm(record)
                             createDeleteButton(record)
+
+                            setTimeout(() => {
+                                const imageUrl = $("planeImageUrl").getValue()
+                                if (!imageUrl) return
+                                
+                                const html = `<img src="${imageUrl}" style="width: 100%; height: auto;">`
+                                $("planeImage").setInnerHtml(html)
+                                
+                            }, 2000)
                         }
                     }
                 }
