@@ -21,7 +21,7 @@ kiss.app.defineView({
                 // Conteneur pour les boutons de la Home page
                 {
                     layout: "vertical",
-                    background: "#000055",
+                    background: "var(--skyexplorer-color)",
                     alignItems: "center",
                     justifyContent: "center",
                     flex: 1,
@@ -34,7 +34,9 @@ kiss.app.defineView({
                         borderRadius: "var(--panel-border-radius)",
                         fontSize: 16,
                         boxShadow: "none",
-                        boxShadowHover: "0 0 10px #ffffff",
+                        boxShadowHover: "0 0 10px #4269C9",
+                        backgroundColorHover: "var(--skyexplorer-color)",
+                        colorHover: "#ffffff"
                     },
                     items: [
                         // Planning des vols

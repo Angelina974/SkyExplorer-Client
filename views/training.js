@@ -1,6 +1,6 @@
 kiss.app.defineView({
     id: "training",
-    renderer: function(id, target) {
+    renderer: function (id, target) {
         return createBlock({
             id,
             target,
@@ -20,20 +20,25 @@ kiss.app.defineView({
 
                     sortSyntax: "normalized",
                     sort: [{
-                        order: "asc"
-                    }],
-
-                    actions: [
-                        {
-                            text: txtTitleCase("Supprimer les formations sélectionnées"),
-                            icon: "fas fa-trash",
-                            iconColor: "var(--red)",
-                            action: () => kiss.selection.deleteSelectedRecords()
-                        }                        
+                            type: "asc"
+                        }, {
+                            category: "asc"
+                        }, {
+                            subcategory: "asc"
+                        }, {
+                            order: "asc"
+                        }
                     ],
 
+                    actions: [{
+                        text: txtTitleCase("Supprimer les formations sélectionnées"),
+                        icon: "fas fa-trash",
+                        iconColor: "var(--red)",
+                        action: () => kiss.selection.deleteSelectedRecords()
+                    }],
+
                     methods: {
-                        createRecord: async function() {
+                        createRecord: async function () {
                             const newTraining = kiss.app.models.training.create()
 
                             // Check if the user has the right to create a new record of this type
@@ -49,9 +54,9 @@ kiss.app.defineView({
                             await newTraining.save()
                             createForm(newTraining)
                             createDeleteButton(newTraining)
-                            
+
                         },
-                        selectRecord: function(record) {
+                        selectRecord: function (record) {
                             createForm(record)
                             createDeleteButton(record)
                         }
