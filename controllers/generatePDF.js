@@ -24,10 +24,14 @@ async function generatePDF() {
  * @param {Array} selectedRecords - Invoices to display in the PDF
  */
 async function displayPdf(selectedRecords) {
-    const { jsPDF } = window.jspdf
-    const doc = new jsPDF()
-    const img = new Image()
-    img.src = './resources/img/facture.png' // Fond de page
+    if (window.jspdf && window.jspdf.jsPDF) {
+        const { jsPDF } = window.jspdf
+        const doc = new jsPDF()
+        const img = new Image()
+        img.src = './resources/img/facture.png' // Fond de page
+    } else {
+        console.error("jsPDF is not available");
+    }
 
     img.onload = function() {
         const pdfWidth = 210
