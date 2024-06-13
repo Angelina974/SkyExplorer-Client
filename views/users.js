@@ -100,6 +100,15 @@ kiss.app.defineView({
                         selectRecord: function(record) {
                             record.isLocked = true
                             createForm(record)
+
+                            // Ajoute un bouton pour supprimer la fiche seulement si :
+                            // - l'utilisateur connecté est administrateur
+                            if (!isUser("Administrateur")) return
+
+                            // - le user à supprimer n'est PAS le propriétaire du compte principal (= super admin)
+                            const currentAccountId = kiss.session.getCurrentAccountId()
+                            if (record.accountId == currentAccountId) return
+                            
                             createDeleteButton(record)
                         }
                     }
