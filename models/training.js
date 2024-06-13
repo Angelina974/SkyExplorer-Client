@@ -2,7 +2,7 @@ kiss.app.defineModel({
     id: "training",
     name: "Formation",
     icon: "fas fa-clipboard",
-    color: "var(--buttons-color)",
+    color: "var(--skyexplorer-color)",
 
     items: [
         // Type de formation
@@ -14,19 +14,19 @@ kiss.app.defineModel({
             multiple: false,
             options: [{
                     value: "Cours théoriques",
-                    color: "#0075FF"
+                    color: "#000055"
                 },
                 {
                     value: "Briefings longs",
-                    color: "#ED3757"
+                    color: "#eeaa00"
                 },
                 {
                     value: "Formation pratique",
-                    color: "#55CC00"
+                    color: "#72951A"
                 },
                 {
                     value: "Exercice en vol",
-                    color: "#F77D05"
+                    color: "#00aaee"
                 }
             ]
         },
@@ -46,7 +46,23 @@ kiss.app.defineModel({
                     label: "Catégorie",
                     labelPosition: "top",
                     allowValuesNotInList: true,
-                    options: ["Apprentissage", "Maniabilité", "Pilotage", "Procédures particulières"]
+                    options: [
+                        {
+                            value: "Apprentissage",
+                            color: "#00A39E"
+                        },
+                        {
+                            value: "Maniabilité",
+                            color: "#6A00A3"
+                        },
+                        {
+                            value: "Pilotage",
+                            color: "#A30054"
+                        },
+                        {
+                            value: "Procédures particulières",
+                            color: "#AF3800"
+                        }]
                 },
                 // Sous-catégorie de formation
                 {
@@ -55,7 +71,27 @@ kiss.app.defineModel({
                     label: "Sous-catégorie",
                     labelPosition: "top",
                     allowValuesNotInList: true,
-                    options: ["Croisière", "Décollage", "Mise en oeuvre / Roulage / Effet primaire des gouvernes", "Montée", "Opérations au sol"]
+                    options: [
+                        {
+                            value: "Croisière",
+                            color: "#009295"
+                        },
+                        {
+                            value: "Décollage",
+                            color: "#005895"
+                        },
+                        {
+                            value: "Mise en oeuvre / Roulage / Effet primaire des gouvernes",
+                            color: "#628D00"
+                        },
+                        {
+                            value: "Montée",
+                            color: "#AB7400"
+                        },
+                        {
+                            value: "Opérations au sol",
+                            color: "#1A3581"
+                        }]
                 },
             ]
         },

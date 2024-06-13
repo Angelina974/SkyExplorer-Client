@@ -3,7 +3,7 @@ kiss.app.defineModel({
     name: "Avion",
     namePlural: "Avions",
     icon: "fas fa-fighter-jet",
-    color: "#00aaee",
+    color: "var(--skyexplorer-color)",
 
     items: [
         // Section pour les infos de l'avion

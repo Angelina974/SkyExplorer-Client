@@ -34,7 +34,7 @@ kiss.app.defineView({
                         borderRadius: "var(--panel-border-radius)",
                         fontSize: 16,
                         boxShadow: "none",
-                        boxShadowHover: "0 0 20px #0077c8"
+                        boxShadowHover: "0 0 10px #ffffff",
                     },
                     items: [
                         // Planning des vols

@@ -2,7 +2,7 @@ kiss.app.defineModel({
     id: "exercise",
     name: "Exercice",
     icon: "fas fa-clipboard",
-    color: "#000055",
+    color: "var(--skyexplorer-color)",
 
     items: [
         // Flight date

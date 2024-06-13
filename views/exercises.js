@@ -21,7 +21,7 @@ kiss.app.defineView({
                         {
                             text: txtTitleCase("Supprimer les exercices sélectionnés"),
                             icon: "fas fa-trash",
-                            iconColor: "var(--red)",
+                            iconColor: "var(--trash-button-color)",
                             action: () => kiss.selection.deleteSelectedRecords()
                         }                        
                     ],

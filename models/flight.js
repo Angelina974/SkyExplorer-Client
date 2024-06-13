@@ -3,7 +3,7 @@ kiss.app.defineModel({
     name: "Vol",
     namePlural: "Vols",
     icon: "fas fa-clipboard",
-    color: "var(--buttons-color)",
+    color: "var(--skyexplorer-color)",
 
     items: [
         // Section avec les informations sur le vol
@@ -121,12 +121,12 @@ kiss.app.defineModel({
                             options: [{
                                     label: "Formation",
                                     value: "Formation",
-                                    color: "#00aaee"
+                                    color: "#000055"
                                 },
                                 {
                                     label: "Loisir",
                                     value: "Loisir",
-                                    color: "#ee3333"
+                                    color: "#00aaee"
                                 }
                             ]
                         }

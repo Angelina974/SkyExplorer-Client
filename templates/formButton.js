@@ -3,7 +3,7 @@ function createDeleteButton(record) {
         icon: "fas fa-trash",
         height: 24,
         iconSize: 22,
-        iconColor: "#CF0000",
+        iconColor: "var(--trash-button-color)",
         backgroundColor: "transparent",
         borderWidth: 0,
         margin: "0 10px 0 0",
@@ -18,6 +18,14 @@ function createDeleteButton(record) {
                     $(record.id).close()
                 }
             })
+        },
+        events: {
+            mouseOver: function () {
+                this.setAnimation({
+                    name: 'bounceIn',
+                    speed: 'faster'
+                })
+            }
         }
     })    
 }
@@ -27,12 +35,20 @@ function createPrintButton(record) {
         icon: "fas fa-file-pdf",
         height: 24,
         iconSize: 22,
-        iconColor: "#487FDA",
+        iconColor: "var(--pdf-button-color)",
         backgroundColor: "transparent",
         borderWidth: 0,
         margin: "0 10px 0 0",
         tip: "Imprimer cette facture",
-        action: () => displayPdf([record])
+        action: () => displayPdf([record]),
+        events: {
+            mouseOver: function () {
+                this.setAnimation({
+                    name: 'bounceIn',
+                    speed: 'faster'
+                })
+            }
+        }
     })    
 }
 

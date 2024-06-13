@@ -40,13 +40,13 @@ kiss.app.defineView({
                         {
                             text: txtTitleCase("Supprimer les factures sélectionnées"),
                             icon: "fas fa-trash",
-                            iconColor: "var(--red)",
+                            iconColor: "var(--trash-button-color)",
                             action: () => kiss.selection.deleteSelectedRecords()
                         },
                         {
                             text: txtTitleCase("Générer une facture globale à partir des factures sélectionnées"),
                             icon: "fas fa-file-pdf",
-                            iconColor: "var(--green)",
+                            iconColor: "var(--pdf-button-color)",
                             action: async () => generatePDF()
                         }                       
                     ],

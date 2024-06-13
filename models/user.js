@@ -3,7 +3,7 @@ kiss.app.defineModel({
     name: "User",
     namePlural: "Users",
     icon: "fas fa-user",
-    color: "#00aaee",
+    color: "var(--skyexplorer-color)",
 
     items: [{
             id: "accountId"

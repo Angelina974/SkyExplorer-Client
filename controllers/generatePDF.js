@@ -24,16 +24,12 @@ async function generatePDF() {
  * @param {Array} selectedRecords - Invoices to display in the PDF
  */
 async function displayPdf(selectedRecords) {
-    if (window.jspdf && window.jspdf.jsPDF) {
-        const { jsPDF } = window.jspdf
-        const doc = new jsPDF()
-        const img = new Image()
-        img.src = './resources/img/facture.png' // Fond de page
-    } else {
-        console.error("jsPDF is not available");
-    }
+    const { jsPDF } = window.jspdf
+    const doc = new jsPDF()
+    const img = new Image()
+    img.src = './resources/img/facture.png' // Fond de page
 
-    img.onload = function() {
+    img.onload = function () {
         const pdfWidth = 210
         const pdfHeight = 297
         const startX = 20
@@ -45,7 +41,7 @@ async function displayPdf(selectedRecords) {
         doc.addImage(img, 'PNG', 0, 0, pdfWidth, pdfHeight)
 
         // Numéro de facture
-        doc.setFont('Helvetica', "bold")          
+        doc.setFont('Helvetica', "bold")
         doc.setFontSize(30)
         doc.setTextColor("#000055")
         doc.text("Facture N° :", 120, 45)
@@ -56,7 +52,7 @@ async function displayPdf(selectedRecords) {
         // Description
         doc.setFontSize(14)
         doc.setTextColor("#000055")
-      
+
         // Date, Emetteur de la facture
         let today = new Date()
         totay = today.toLocaleDateString()
@@ -68,7 +64,7 @@ async function displayPdf(selectedRecords) {
         doc.text(`${kiss.session.getUserName()}`, columnX1 + 26, 72)
 
         // Entête du tableau
-        doc.setFont('Helvetica', "normal")          
+        doc.setFont('Helvetica', "normal")
         doc.setFontSize(14)
         doc.setTextColor("#000000")
 
@@ -87,7 +83,13 @@ async function displayPdf(selectedRecords) {
             const client = selectedRecords[i].client
             const clientName = kiss.directory.getEntryName(client)
             const date = selectedRecords[i].date
+           
+            // Si le type de vol n'est pas renseigné, on affiche une chaîne vide
+            if (!selectedRecords[i].flightType){
+                selectedRecords[i].flightType = "";
+            }
             const type = selectedRecords[i].flightType
+            
             const montant = selectedRecords[i].totalPrice
 
             doc.text(reference, startX, lineY)
@@ -95,28 +97,28 @@ async function displayPdf(selectedRecords) {
             doc.text(date, startX + 80, lineY)
             doc.text(type, startX + 120, lineY)
             doc.text(montant.toString(), startX + 155, lineY)
-            
+
             lineY += lineYadd
-            sum += montant        
+            sum += montant
         }
 
         // Total
         doc.text("Total HT : " + sum + "€", startX, lineY + 20)
-        doc.text("TVA 20% : " + sum*0.2 + "€", startX, lineY + 27)
-        doc.text("Total TTC : " + sum*1.2 + "€", startX, lineY + 34)
+        doc.text("TVA 20% : " + (sum * 0.2).toFixed(2) + "€", startX, lineY + 27)
+        doc.text("Total TTC : " + sum * 1.2 + "€", startX, lineY + 34)
 
         doc.setDrawColor('#000000')
         doc.setLineWidth(0.3)
         doc.setLineDash([3, 3], 0)
-        doc.line(startX-4, 93, 192, 93)
-        doc.line(startX-4, 102, 192, 102)
+        doc.line(startX - 4, 93, 192, 93)
+        doc.line(startX - 4, 102, 192, 102)
 
         // Reglement
         doc.setFont('Helvetica', "normal")
         doc.setFontSize(14)
         doc.setTextColor("#000055")
         doc.text("En votre aimable règlement à réception.", startX, 220)
-        
+
         window.open(doc.output('bloburl'))
     }
 }

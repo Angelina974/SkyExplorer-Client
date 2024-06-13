@@ -3,9 +3,15 @@ kiss.app.defineModel({
     name: "Question",
     namePlural: "Questions",
     icon: "fas fa-question",
-    color: "#00aaee",
+    color: "var(--skyexplorer-color)",
 
     items: [
+        {
+            id: "date",
+            type: "date",
+            label: "Date de la question",
+            value: "today"
+        },
         {
             layout: "horizontal",
             defaultConfig: {

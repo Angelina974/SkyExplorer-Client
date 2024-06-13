@@ -3,7 +3,7 @@ kiss.app.defineModel({
     name: "Facture",
     namePlural: "Factures",
     icon: "fas fa-check-circle",
-    color: "#9700ee",
+    color: "var(--skyexplorer-color)",
 
     items: [{
             type: "panel",
