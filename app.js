@@ -100,7 +100,7 @@ kiss.app.defineModel({
     id: "exercise",
     name: "Exercice",
     icon: "fas fa-clipboard",
-    color: "#000055",
+    color: "var(--skyexplorer-color)",
 
     items: [
         // Flight date
@@ -299,7 +299,7 @@ kiss.app.defineModel({
     name: "Vol",
     namePlural: "Vols",
     icon: "fas fa-clipboard",
-    color: "var(--buttons-color)",
+    color: "var(--skyexplorer-color)",
 
     items: [
         // Section avec les informations sur le vol
@@ -417,12 +417,12 @@ kiss.app.defineModel({
                             options: [{
                                     label: "Formation",
                                     value: "Formation",
-                                    color: "#00aaee"
+                                    color: "#000055"
                                 },
                                 {
                                     label: "Loisir",
                                     value: "Loisir",
-                                    color: "#ee3333"
+                                    color: "#00aaee"
                                 }
                             ]
                         }
@@ -655,7 +655,7 @@ kiss.app.defineModel({
     id: "formation",
     name: "Nouveau",
     icon: "fas fa-fighter-jet",
-    color: "var(--buttons-color)",
+    color: "var(--skyexplorer-color)",
 
     items: [{
             id: "Phases",
@@ -763,7 +763,7 @@ kiss.app.defineModel({
     name: "Facture",
     namePlural: "Factures",
     icon: "fas fa-check-circle",
-    color: "#9700ee",
+    color: "var(--skyexplorer-color)",
 
     items: [{
             type: "panel",
@@ -1449,7 +1449,7 @@ kiss.app.defineModel({
     name: "Avion",
     namePlural: "Avions",
     icon: "fas fa-fighter-jet",
-    color: "#00aaee",
+    color: "var(--skyexplorer-color)",
 
     items: [
         // Section pour les infos de l'avion
@@ -1580,9 +1580,15 @@ kiss.app.defineModel({
     name: "Question",
     namePlural: "Questions",
     icon: "fas fa-question",
-    color: "#00aaee",
+    color: "var(--skyexplorer-color)",
 
     items: [
+        {
+            id: "date",
+            type: "date",
+            label: "Date de la question",
+            value: "today"
+        },
         {
             layout: "horizontal",
             defaultConfig: {
@@ -1628,7 +1634,7 @@ kiss.app.defineModel({
     id: "training",
     name: "Formation",
     icon: "fas fa-clipboard",
-    color: "var(--buttons-color)",
+    color: "var(--skyexplorer-color)",
 
     items: [
         // Type de formation
@@ -1640,19 +1646,19 @@ kiss.app.defineModel({
             multiple: false,
             options: [{
                     value: "Cours théoriques",
-                    color: "#0075FF"
+                    color: "#000055"
                 },
                 {
                     value: "Briefings longs",
-                    color: "#ED3757"
+                    color: "#eeaa00"
                 },
                 {
                     value: "Formation pratique",
-                    color: "#55CC00"
+                    color: "#72951A"
                 },
                 {
                     value: "Exercice en vol",
-                    color: "#F77D05"
+                    color: "#00aaee"
                 }
             ]
         },
@@ -1672,7 +1678,23 @@ kiss.app.defineModel({
                     label: "Catégorie",
                     labelPosition: "top",
                     allowValuesNotInList: true,
-                    options: ["Apprentissage", "Maniabilité", "Pilotage", "Procédures particulières"]
+                    options: [
+                        {
+                            value: "Apprentissage",
+                            color: "#00A39E"
+                        },
+                        {
+                            value: "Maniabilité",
+                            color: "#6A00A3"
+                        },
+                        {
+                            value: "Pilotage",
+                            color: "#A30054"
+                        },
+                        {
+                            value: "Procédures particulières",
+                            color: "#AF3800"
+                        }]
                 },
                 // Sous-catégorie de formation
                 {
@@ -1681,7 +1703,27 @@ kiss.app.defineModel({
                     label: "Sous-catégorie",
                     labelPosition: "top",
                     allowValuesNotInList: true,
-                    options: ["Croisière", "Décollage", "Mise en oeuvre / Roulage / Effet primaire des gouvernes", "Montée", "Opérations au sol"]
+                    options: [
+                        {
+                            value: "Croisière",
+                            color: "#009295"
+                        },
+                        {
+                            value: "Décollage",
+                            color: "#005895"
+                        },
+                        {
+                            value: "Mise en oeuvre / Roulage / Effet primaire des gouvernes",
+                            color: "#628D00"
+                        },
+                        {
+                            value: "Montée",
+                            color: "#AB7400"
+                        },
+                        {
+                            value: "Opérations au sol",
+                            color: "#1A3581"
+                        }]
                 },
             ]
         },
@@ -1797,7 +1839,7 @@ kiss.app.defineModel({
     name: "User",
     namePlural: "Users",
     icon: "fas fa-user",
-    color: "#00aaee",
+    color: "var(--skyexplorer-color)",
 
     items: [{
             id: "accountId"
@@ -2180,7 +2222,7 @@ kiss.app.defineModel({
                         {
                             text: txtTitleCase("Supprimer les exercices sélectionnés"),
                             icon: "fas fa-trash",
-                            iconColor: "var(--red)",
+                            iconColor: "var(--trash-button-color)",
                             action: () => kiss.selection.deleteSelectedRecords()
                         }                        
                     ],
@@ -2239,13 +2281,13 @@ kiss.app.defineModel({
                         {
                             text: txtTitleCase("Supprimer les factures sélectionnées"),
                             icon: "fas fa-trash",
-                            iconColor: "var(--red)",
+                            iconColor: "var(--trash-button-color)",
                             action: () => kiss.selection.deleteSelectedRecords()
                         },
                         {
                             text: txtTitleCase("Générer une facture globale à partir des factures sélectionnées"),
                             icon: "fas fa-file-pdf",
-                            iconColor: "var(--green)",
+                            iconColor: "var(--pdf-button-color)",
                             action: async () => generatePDF()
                         }                       
                     ],
@@ -2599,7 +2641,7 @@ kiss.app.defineView({
                                         $("auth-login-separator").style.flexFlow = "row"
                                     } else {
                                         // $("common-matrix").show()
-                                        $("login").config.width = "760px"    
+                                        $("login").config.width = "600px"    
                                         $("panel-body-login").style.flexFlow = "row"
                                         $("auth-login-separator").style.flexFlow = "column"
                                     }
@@ -2648,7 +2690,7 @@ kiss.app.defineView({
                         {
                             text: txtTitleCase("Supprimer les avions sélectionnés"),
                             icon: "fas fa-trash",
-                            iconColor: "var(--red)",
+                            iconColor: "var(--trash-button-color)",
                             action: () => kiss.selection.deleteSelectedRecords()
                         }                        
                     ],
@@ -3168,7 +3210,7 @@ kiss.app.defineView({
                                         $("auth-separator").style.flexFlow = "row"
                                     } else {
                                         $("welcome-image").show()
-                                        $("register").config.width = "760px"
+                                        $("register").config.width = "600px"
                                         $("panel-body-register").style.flexFlow = "row"
                                         $("auth-separator").style.flexFlow = "column"
                                     }
@@ -3222,11 +3264,11 @@ kiss.app.defineView({
                         iconColor: "var(--buttons-color)",
                         height: 50,
                         width: 300,
-                        margin: 20,
+                        margin: "1.5vh",
                         borderRadius: "var(--panel-border-radius)",
                         fontSize: 16,
                         boxShadow: "none",
-                        boxShadowHover: "0 0 20px #0077c8"
+                        boxShadowHover: "0 0 10px #ffffff",
                     },
                     items: [
                         // Planning des vols
@@ -3490,6 +3532,24 @@ kiss.app.defineView({
                         selectRecord: function(record) {
                             record.isLocked = true
                             createForm(record)
+
+                            // Ajoute un bouton pour supprimer la fiche seulement si :
+                            // - l'utilisateur connecté est administrateur
+                            if (!isUser("Administrateur")) {
+                                return
+                            }
+
+                            // - le user à supprimer n'est PAS le propriétaire du compte principal (= super admin)
+                            const currentAccountId = kiss.session.getCurrentAccountId()
+                            if (record.accountId == currentAccountId) {
+                                return
+                            }
+
+                            // - le user à supprimer n'est PAS le user connecté
+                            if (record.email == kiss.session.userId) {
+                                return
+                            }
+                            
                             createDeleteButton(record)
                         }
                     }
@@ -3504,7 +3564,7 @@ kiss.app.defineView({
         icon: "fas fa-trash",
         height: 24,
         iconSize: 22,
-        iconColor: "#CF0000",
+        iconColor: "var(--trash-button-color)",
         backgroundColor: "transparent",
         borderWidth: 0,
         margin: "0 10px 0 0",
@@ -3519,6 +3579,14 @@ kiss.app.defineView({
                     $(record.id).close()
                 }
             })
+        },
+        events: {
+            mouseOver: function () {
+                this.setAnimation({
+                    name: 'bounceIn',
+                    speed: 'faster'
+                })
+            }
         }
     })    
 }
@@ -3528,12 +3596,20 @@ function createPrintButton(record) {
         icon: "fas fa-file-pdf",
         height: 24,
         iconSize: 22,
-        iconColor: "#487FDA",
+        iconColor: "var(--pdf-button-color)",
         backgroundColor: "transparent",
         borderWidth: 0,
         margin: "0 10px 0 0",
         tip: "Imprimer cette facture",
-        action: () => displayPdf([record])
+        action: () => displayPdf([record]),
+        events: {
+            mouseOver: function () {
+                this.setAnimation({
+                    name: 'bounceIn',
+                    speed: 'faster'
+                })
+            }
+        }
     })    
 }
 
@@ -3658,7 +3734,7 @@ async function displayPdf(selectedRecords) {
     const img = new Image()
     img.src = './resources/img/facture.png' // Fond de page
 
-    img.onload = function() {
+    img.onload = function () {
         const pdfWidth = 210
         const pdfHeight = 297
         const startX = 20
@@ -3670,7 +3746,7 @@ async function displayPdf(selectedRecords) {
         doc.addImage(img, 'PNG', 0, 0, pdfWidth, pdfHeight)
 
         // Numéro de facture
-        doc.setFont('Helvetica', "bold")          
+        doc.setFont('Helvetica', "bold")
         doc.setFontSize(30)
         doc.setTextColor("#000055")
         doc.text("Facture N° :", 120, 45)
@@ -3681,7 +3757,7 @@ async function displayPdf(selectedRecords) {
         // Description
         doc.setFontSize(14)
         doc.setTextColor("#000055")
-      
+
         // Date, Emetteur de la facture
         let today = new Date()
         totay = today.toLocaleDateString()
@@ -3693,7 +3769,7 @@ async function displayPdf(selectedRecords) {
         doc.text(`${kiss.session.getUserName()}`, columnX1 + 26, 72)
 
         // Entête du tableau
-        doc.setFont('Helvetica', "normal")          
+        doc.setFont('Helvetica', "normal")
         doc.setFontSize(14)
         doc.setTextColor("#000000")
 
@@ -3712,7 +3788,13 @@ async function displayPdf(selectedRecords) {
             const client = selectedRecords[i].client
             const clientName = kiss.directory.getEntryName(client)
             const date = selectedRecords[i].date
+           
+            // Si le type de vol n'est pas renseigné, on affiche une chaîne vide
+            if (!selectedRecords[i].flightType){
+                selectedRecords[i].flightType = "";
+            }
             const type = selectedRecords[i].flightType
+            
             const montant = selectedRecords[i].totalPrice
 
             doc.text(reference, startX, lineY)
@@ -3720,28 +3802,28 @@ async function displayPdf(selectedRecords) {
             doc.text(date, startX + 80, lineY)
             doc.text(type, startX + 120, lineY)
             doc.text(montant.toString(), startX + 155, lineY)
-            
+
             lineY += lineYadd
-            sum += montant        
+            sum += montant
         }
 
         // Total
         doc.text("Total HT : " + sum + "€", startX, lineY + 20)
-        doc.text("TVA 20% : " + sum*0.2 + "€", startX, lineY + 27)
-        doc.text("Total TTC : " + sum*1.2 + "€", startX, lineY + 34)
+        doc.text("TVA 20% : " + (sum * 0.2).toFixed(2) + "€", startX, lineY + 27)
+        doc.text("Total TTC : " + sum * 1.2 + "€", startX, lineY + 34)
 
         doc.setDrawColor('#000000')
         doc.setLineWidth(0.3)
         doc.setLineDash([3, 3], 0)
-        doc.line(startX-4, 93, 192, 93)
-        doc.line(startX-4, 102, 192, 102)
+        doc.line(startX - 4, 93, 192, 93)
+        doc.line(startX - 4, 102, 192, 102)
 
         // Reglement
         doc.setFont('Helvetica', "normal")
         doc.setFontSize(14)
         doc.setTextColor("#000055")
         doc.text("En votre aimable règlement à réception.", startX, 220)
-        
+
         window.open(doc.output('bloburl'))
     }
 }/**
