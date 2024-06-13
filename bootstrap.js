@@ -75,12 +75,13 @@ const app = {
          * Init the application host:
          * - for the session requests
          * - for the ajax requests
+         * 
+         * @param {string} hostServer - The host server URL
          */
-        host() {
+        host(hostServer) {
             // Session host
             kiss.session.setHost({
-                // host: "skyexplorer-server.onrender.com", 
-                host: "localhost",
+                host: hostServer
             })
 
             // Ajax host

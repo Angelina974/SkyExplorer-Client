@@ -73,7 +73,7 @@ window.onload = async function () {
     // Start the app
     app.init
         .logo()
-        .host()
+        .host("localhost")
         .databaseMode()
         .logger(true)
         .session()
