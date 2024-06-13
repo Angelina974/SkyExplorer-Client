@@ -1455,7 +1455,7 @@ kiss.app.defineModel({
         // Section pour les infos de l'avion
         {
             type: "panel",
-            title: "Informations sur l'avion'",
+            title: "Informations sur l'avion",
             icon: "fas fa-clipboard",
             collapsible: true,
 
@@ -1510,6 +1510,17 @@ kiss.app.defineModel({
                     type: "textarea",
                     label: "Notes complémentaires",
                     rows: 5
+                },
+                // Image URL
+                {
+                    id: "planeImageUrl",
+                    type: "text",
+                    label: "URL image de l'avion"
+                },
+                // Image insertion point
+                {
+                    id: "planeImage",
+                    type: "html"
                 }
             ]
         },
@@ -2717,6 +2728,15 @@ kiss.app.defineView({
                         selectRecord: function(record) {
                             createForm(record)
                             createDeleteButton(record)
+
+                            setTimeout(() => {
+                                const imageUrl = $("planeImageUrl").getValue()
+                                if (!imageUrl) return
+                                
+                                const html = `<img src="${imageUrl}" style="width: 100%;">`
+                                $("planeImage").setInnerHtml(html)
+                                
+                            }, 1000)
                         }
                     }
                 }
@@ -3255,7 +3275,7 @@ kiss.app.defineView({
                 // Conteneur pour les boutons de la Home page
                 {
                     layout: "vertical",
-                    background: "#000055",
+                    background: "var(--skyexplorer-color)",
                     alignItems: "center",
                     justifyContent: "center",
                     flex: 1,
@@ -3268,7 +3288,9 @@ kiss.app.defineView({
                         borderRadius: "var(--panel-border-radius)",
                         fontSize: 16,
                         boxShadow: "none",
-                        boxShadowHover: "0 0 10px #ffffff",
+                        boxShadowHover: "0 0 10px #4269C9",
+                        backgroundColorHover: "var(--skyexplorer-color)",
+                        colorHover: "#ffffff"
                     },
                     items: [
                         // Planning des vols
@@ -3373,7 +3395,7 @@ kiss.app.defineView({
 
 ;kiss.app.defineView({
     id: "training",
-    renderer: function(id, target) {
+    renderer: function (id, target) {
         return createBlock({
             id,
             target,
@@ -3391,17 +3413,27 @@ kiss.app.defineView({
                     height: () => kiss.screen.current.height - 60,
                     collection: kiss.app.collections.training,
 
-                    actions: [
-                        {
-                            text: txtTitleCase("Supprimer les formations sélectionnées"),
-                            icon: "fas fa-trash",
-                            iconColor: "var(--red)",
-                            action: () => kiss.selection.deleteSelectedRecords()
-                        }                        
+                    sortSyntax: "normalized",
+                    sort: [{
+                            type: "asc"
+                        }, {
+                            category: "asc"
+                        }, {
+                            subcategory: "asc"
+                        }, {
+                            order: "asc"
+                        }
                     ],
 
+                    actions: [{
+                        text: txtTitleCase("Supprimer les formations sélectionnées"),
+                        icon: "fas fa-trash",
+                        iconColor: "var(--red)",
+                        action: () => kiss.selection.deleteSelectedRecords()
+                    }],
+
                     methods: {
-                        createRecord: async function() {
+                        createRecord: async function () {
                             const newTraining = kiss.app.models.training.create()
 
                             // Check if the user has the right to create a new record of this type
@@ -3417,9 +3449,9 @@ kiss.app.defineView({
                             await newTraining.save()
                             createForm(newTraining)
                             createDeleteButton(newTraining)
-                            
+
                         },
-                        selectRecord: function(record) {
+                        selectRecord: function (record) {
                             createForm(record)
                             createDeleteButton(record)
                         }
@@ -3618,7 +3650,7 @@ function createPrintButton(record) {
         layout: "horizontal",
         alignItems: "center",
         height: 70,
-        background: "#000055",
+        background: "var(--skyexplorer-color)",
         items: [
             {
                 type: "button",
@@ -3630,10 +3662,27 @@ function createPrintButton(record) {
                 background: "var(--buttons-color)",
                 margin: "0 10px",
                 height: 32,
-                boxShadow: "0 0 5px #000000",
+                boxShadow: "0 0 5px #000055",
                 fontSize: 18,
                 borderWidth: 0,
                 action: () => kiss.router.navigateTo("home-start"),
+                events: {
+                    mouseOver: function () {
+                        this.setAnimation({
+                            name: 'bounceIn',
+                            speed: 'faster'
+                        })
+                    }
+                }
+            },
+            {
+                type: "spacer",
+                flex: 1
+            },
+            {
+                type: "image",
+                src: "./resources/img/sky-explorer white-logo.svg",
+                width: 100,
                 events: {
                     mouseOver: function () {
                         this.setAnimation({
@@ -3664,7 +3713,7 @@ function createPrintButton(record) {
                 iconSize: 20,
                 color: "#ffffff",
                 background: "var(--buttons-color)",
-                boxShadow: "0 0 5px #000000",
+                boxShadow: "0 0 5px #000055",
                 borderWidth: 0,
                 action: () => kiss.theme.select(),
                 events: {
@@ -3687,7 +3736,7 @@ function createPrintButton(record) {
                 iconSize: 15,
                 color: "#ffffff",
                 background: "var(--buttons-color)",
-                boxShadow: "0 0 5px #000000",
+                boxShadow: "0 0 5px #000055",
                 borderWidth: 0,
                 action: () => kiss.session.logout(),
                 events: {

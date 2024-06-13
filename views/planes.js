@@ -54,10 +54,10 @@ kiss.app.defineView({
                                 const imageUrl = $("planeImageUrl").getValue()
                                 if (!imageUrl) return
                                 
-                                const html = `<img src="${imageUrl}" style="width: 100%; height: auto;">`
+                                const html = `<img src="${imageUrl}" style="width: 100%;">`
                                 $("planeImage").setInnerHtml(html)
                                 
-                            }, 2000)
+                            }, 1000)
                         }
                     }
                 }
