@@ -30,6 +30,19 @@ kiss.app.defineView({
                     methods: {
                         createRecord: async function() {
                             const newPlane = kiss.app.models.plane.create()
+
+                            // Check if the user has the right to create a new record of this type
+                            const canCreate = await kiss.acl.check({
+                                action: "create",
+                                record: newPlane
+                            })
+
+                            if (!canCreate) {
+                                return createNotification("Vous n'avez pas les droits pour créer un avion")
+                            }
+
+                            // If it's ok, we save the new record
+                            await newPlane.save()
                             createForm(newPlane)
                             createDeleteButton(newPlane)
                         },
