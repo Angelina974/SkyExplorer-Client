@@ -349,7 +349,7 @@ kiss.app.defineView({
                                         $("auth-separator").style.flexFlow = "row"
                                     } else {
                                         $("welcome-image").show()
-                                        $("register").config.width = "760px"
+                                        $("register").config.width = "600px"
                                         $("panel-body-register").style.flexFlow = "row"
                                         $("auth-separator").style.flexFlow = "column"
                                     }

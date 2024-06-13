@@ -334,7 +334,7 @@ kiss.app.defineView({
                                         $("auth-login-separator").style.flexFlow = "row"
                                     } else {
                                         // $("common-matrix").show()
-                                        $("login").config.width = "760px"    
+                                        $("login").config.width = "600px"    
                                         $("panel-body-login").style.flexFlow = "row"
                                         $("auth-login-separator").style.flexFlow = "column"
                                     }
