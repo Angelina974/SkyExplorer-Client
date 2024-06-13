@@ -122,3 +122,5 @@ async function displayPdf(selectedRecords) {
         window.open(doc.output('bloburl'))
     }
 }
+
+;

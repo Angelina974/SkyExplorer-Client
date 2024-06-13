@@ -3826,7 +3826,9 @@ async function displayPdf(selectedRecords) {
 
         window.open(doc.output('bloburl'))
     }
-}/**
+}
+
+;/**
  * Get the user type
  * 
  * @returns {string} The user type: "Administrateur", "Instructeur", "Elève pilote" or "Pilote"
@@ -3856,7 +3858,9 @@ function isUser(type) {
     else {
         return getUserType() === type
     }
-}/**
+}
+
+;/**
  * Méthode pour vérifier si un avion est disponible au jour et à l'heure demandée
  * 
  * @async
@@ -3883,3 +3887,5 @@ async function checkAvailability() {
 
     return true
 }
+
+;

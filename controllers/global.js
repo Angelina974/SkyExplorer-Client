@@ -29,3 +29,5 @@ function isUser(type) {
         return getUserType() === type
     }
 }
+
+;

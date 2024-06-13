@@ -25,3 +25,5 @@ async function checkAvailability() {
 
     return true
 }
+
+;
