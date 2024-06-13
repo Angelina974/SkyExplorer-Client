@@ -103,11 +103,20 @@ kiss.app.defineView({
 
                             // Ajoute un bouton pour supprimer la fiche seulement si :
                             // - l'utilisateur connecté est administrateur
-                            if (!isUser("Administrateur")) return
+                            if (!isUser("Administrateur")) {
+                                return
+                            }
 
                             // - le user à supprimer n'est PAS le propriétaire du compte principal (= super admin)
                             const currentAccountId = kiss.session.getCurrentAccountId()
-                            if (record.accountId == currentAccountId) return
+                            if (record.accountId == currentAccountId) {
+                                return
+                            }
+
+                            // - le user à supprimer n'est PAS le user connecté
+                            if (record.email == kiss.session.userId) {
+                                return
+                            }
                             
                             createDeleteButton(record)
                         }
