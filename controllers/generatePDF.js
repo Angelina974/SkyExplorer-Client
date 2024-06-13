@@ -102,7 +102,7 @@ async function displayPdf(selectedRecords) {
 
         // Total
         doc.text("Total HT : " + sum + "€", startX, lineY + 20)
-        doc.text("TVA 20% : " + (sum*0.2).toFixed(2) + "€", startX, lineY + 27)
+        doc.text("TVA 20% : " + sum*0.2 + "€", startX, lineY + 27)
         doc.text("Total TTC : " + sum*1.2 + "€", startX, lineY + 34)
 
         doc.setDrawColor('#000000')
