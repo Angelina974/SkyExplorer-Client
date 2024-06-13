@@ -30,7 +30,7 @@ kiss.app.defineView({
                         iconColor: "var(--buttons-color)",
                         height: 50,
                         width: 300,
-                        margin: 20,
+                        margin: "1.5vh",
                         borderRadius: "var(--panel-border-radius)",
                         fontSize: 16,
                         boxShadow: "none",
