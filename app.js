@@ -2186,12 +2186,6 @@ kiss.app.defineModel({
                     ],
 
                     methods: {
-                        createRecord: async function() {
-                            const newExercise = kiss.app.models.exercise.create()
-                            await newExercise.save()
-                            createForm(newExercise)
-                            createDeleteButton(newExercise)
-                        },
                         selectRecord: function(record) {
                             createForm(record)
                             createDeleteButton(record)
@@ -2662,6 +2656,19 @@ kiss.app.defineView({
                     methods: {
                         createRecord: async function() {
                             const newPlane = kiss.app.models.plane.create()
+
+                            // Check if the user has the right to create a new record of this type
+                            const canCreate = await kiss.acl.check({
+                                action: "create",
+                                record: newPlane
+                            })
+
+                            if (!canCreate) {
+                                return createNotification("Vous n'avez pas les droits pour créer un avion")
+                            }
+
+                            // If it's ok, we save the new record
+                            await newPlane.save()
                             createForm(newPlane)
                             createDeleteButton(newPlane)
                         },
@@ -3354,6 +3361,17 @@ kiss.app.defineView({
                     methods: {
                         createRecord: async function() {
                             const newTraining = kiss.app.models.training.create()
+
+                            // Check if the user has the right to create a new record of this type
+                            const canCreate = await kiss.acl.check({
+                                action: "create",
+                                record: newTraining
+                            })
+
+                            if (!canCreate) {
+                                return createNotification("Vous n'avez pas les droits pour créer une formation")
+                            }
+
                             await newTraining.save()
                             createForm(newTraining)
                             createDeleteButton(newTraining)
