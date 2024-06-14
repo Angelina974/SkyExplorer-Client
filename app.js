@@ -445,7 +445,6 @@ kiss.app.defineModel({
                             id: "date",
                             type: "date",
                             label: "Date du vol",
-                            value: "today",
 
                             // Vériication de la disponibilité de l'avion à la date et l'heure choisies
                             validationFunction: async function () {
@@ -3645,13 +3644,19 @@ function createPrintButton(record) {
     })    
 }
 
-;function createTopBar() {
+;// Création d'un composant TopBar de type block
+function createTopBar() {
     return {
+        // Propriétés de CSS directement appliquées
         layout: "horizontal",
         alignItems: "center",
         height: 70,
         background: "var(--skyexplorer-color)",
+
+        // Liste des éléments enfants que va contenir tout le composant TopBar
         items: [
+
+            // Bouton de retour
             {
                 type: "button",
                 text: "Retour",
@@ -3665,7 +3670,11 @@ function createPrintButton(record) {
                 boxShadow: "0 0 5px #000055",
                 fontSize: 18,
                 borderWidth: 0,
+
+                // Fonction qui permet de revenir à la page d'accueil
                 action: () => kiss.router.navigateTo("home-start"),
+
+                // Animation au survol
                 events: {
                     mouseOver: function () {
                         this.setAnimation({
@@ -3675,14 +3684,20 @@ function createPrintButton(record) {
                     }
                 }
             },
+
+            // Espace qui prend tout l'espace disponible
             {
                 type: "spacer",
                 flex: 1
             },
+
+            // Logo de Sky Explorer
             {
                 type: "image",
                 src: "./resources/img/sky-explorer white-logo.svg",
                 width: 100,
+
+                // Animation au survol
                 events: {
                     mouseOver: function () {
                         this.setAnimation({
@@ -3692,16 +3707,22 @@ function createPrintButton(record) {
                     }
                 }
             },
+
+            // Espace qui prend tout l'espace disponible
             {
                 type: "spacer",
                 flex: 1
             },
+            // Nom de l'utilisateur connecté
             {
                 type: "html",
                 color: "#ffffff",
                 margin: "0 14px 0 0",
+                // Récupère le nom de l'utilisateur connecté avec la fonction kiss.session.getUserName()
                 html: `<span class="fas fa-user" style="font-size: 20px;"></span> &nbsp; &nbsp; <span style="font-size: 18px;">${kiss.session.getUserName()}</span>`
             },
+
+            // Boutons de configuration 
             {
                 type: "button",
                 icon: "fas fa-sliders-h",
@@ -3715,7 +3736,11 @@ function createPrintButton(record) {
                 background: "var(--buttons-color)",
                 boxShadow: "0 0 5px #000055",
                 borderWidth: 0,
+
+                // Fonction qui permet de changer le thème de l'application
                 action: () => kiss.theme.select(),
+
+                // Animation au survol
                 events: {
                     mouseOver: function () {
                         this.setAnimation({
@@ -3725,9 +3750,13 @@ function createPrintButton(record) {
                     }
                 }
             },
+
+            // Bouton de déconnexion
             {
                 type: "button",
                 icon: "fas fa-power-off",
+
+                // Propriétés de CSS directement appliquées
                 margin: "0 10px 0 0",
                 width: 35,
                 height: 35,
@@ -3738,7 +3767,11 @@ function createPrintButton(record) {
                 background: "var(--buttons-color)",
                 boxShadow: "0 0 5px #000055",
                 borderWidth: 0,
+
+                // Fonction qui permet de se déconnecter
                 action: () => kiss.session.logout(),
+
+                // Animation au survol
                 events: {
                     mouseOver: function () {
                         this.setAnimation({
@@ -3797,7 +3830,7 @@ async function displayPdf(selectedRecords) {
         // Numéro de facture
         doc.setFont('Helvetica', "bold")
         doc.setFontSize(30)
-        doc.setTextColor("#000055")
+        doc.setTextColor("#24265A")
         doc.text("Facture N° :", 120, 45)
         doc.setFont('Helvetica', "normal")
         doc.setFontSize(25)
@@ -3805,7 +3838,7 @@ async function displayPdf(selectedRecords) {
 
         // Description
         doc.setFontSize(14)
-        doc.setTextColor("#000055")
+        doc.setTextColor("#24265A")
 
         // Date, Emetteur de la facture
         let today = new Date()
@@ -3829,7 +3862,7 @@ async function displayPdf(selectedRecords) {
         doc.text("€HT/h", startX + 155, lineYadd2)
 
         doc.setFontSize(12)
-        doc.setTextColor("#000055")
+        doc.setTextColor("#24265A")
 
         let sum = 0
         for (let i = 0; i < selectedRecords.length; i++) {
@@ -3840,28 +3873,28 @@ async function displayPdf(selectedRecords) {
            
             // Si le type de vol n'est pas renseigné, on affiche une chaîne vide
             if (!selectedRecords[i].flightType){
-                selectedRecords[i].flightType = "";
+                selectedRecords[i].flightType = ""
             }
+
             const type = selectedRecords[i].flightType
-            
             const montant = selectedRecords[i].totalPrice
 
             doc.text(reference, startX, lineY)
             doc.text(clientName, startX + 40, lineY)
             doc.text(date, startX + 80, lineY)
             doc.text(type, startX + 120, lineY)
-            doc.text(montant.toString(), startX + 155, lineY)
-
+            doc.text(montant.toFixed(2) + "€", startX + 155, lineY)
+            
             lineY += lineYadd
             sum += montant
         }
 
         // Total
-        doc.text("Total HT : " + sum + "€", startX, lineY + 20)
+        doc.text("Total HT : " + sum.toFixed(2) + "€", startX, lineY + 20)
         doc.text("TVA 20% : " + (sum * 0.2).toFixed(2) + "€", startX, lineY + 27)
-        doc.text("Total TTC : " + sum * 1.2 + "€", startX, lineY + 34)
+        doc.text("Total TTC : " + (sum * 1.2).toFixed(2) + "€", startX, lineY + 34)
 
-        doc.setDrawColor('#000000')
+        doc.setDrawColor('#24265A')
         doc.setLineWidth(0.3)
         doc.setLineDash([3, 3], 0)
         doc.line(startX - 4, 93, 192, 93)
@@ -3870,7 +3903,7 @@ async function displayPdf(selectedRecords) {
         // Reglement
         doc.setFont('Helvetica', "normal")
         doc.setFontSize(14)
-        doc.setTextColor("#000055")
+        doc.setTextColor("")
         doc.text("En votre aimable règlement à réception.", startX, 220)
 
         window.open(doc.output('bloburl'))
