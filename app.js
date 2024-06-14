@@ -2477,7 +2477,7 @@ kiss.app.defineView({
                                             type: "button",
                                             icon: "fa fa-check",
                                             text: txtTitleCase("login"),
-                                            iconColor: "#000055",
+                                            iconColor: "var(--skyexplorer-color)",
                                             height: 40,
                                             margin: "20px 0",
                                             events: {
@@ -2488,7 +2488,7 @@ kiss.app.defineView({
                                         {
                                             type: "html",
                                             html: `
-                                            <div class="auth-reset-password" style="color: #000055;">${txtTitleCase("forgot password?")}</div>
+                                            <div class="auth-reset-password" style="color: var(--skyexplorer-color);">${txtTitleCase("forgot password?")}</div>
                                         `,
                                             events: {
                                                 click: () => $("login").requestPasswordReset()
@@ -2499,7 +2499,7 @@ kiss.app.defineView({
                                             hidden: kiss.screen.isMobile,
                                             type: "html",
                                             html: `
-                                            <div class="auth-create-account" style="color: #000055;">${txtTitleCase("#no account")}</div>
+                                            <div class="auth-create-account" style="color: var(--skyexplorer-color);">${txtTitleCase("#no account")}</div>
                                         `,
                                             events: {
                                                 click: () => kiss.router.navigateTo({
@@ -3072,7 +3072,7 @@ kiss.app.defineView({
                                                     type: "button",
                                                     icon: "fa fa-check",
                                                     text: txtTitleCase("register"),
-                                                    iconColor: "#000055",
+                                                    iconColor: "var(--skyexplorer-color)",
                                                     flex: 1,
                                                     height: 40,
                                                     events: {
@@ -3145,7 +3145,7 @@ kiss.app.defineView({
                                         {
                                             type: "html",
                                             html: `
-                                            <div class="auth-create-account" style="color: #000055;">${txtTitleCase("#already an account")}</div>
+                                            <div class="auth-create-account" style="color: var(--skyexplorer-color);">${txtTitleCase("#already an account")}</div>
                                         `,
                                             events: {
                                                 click: () => kiss.router.navigateTo({
