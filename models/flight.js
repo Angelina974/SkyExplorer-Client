@@ -149,7 +149,6 @@ kiss.app.defineModel({
                             id: "date",
                             type: "date",
                             label: "Date du vol",
-                            value: "today",
 
                             // Vériication de la disponibilité de l'avion à la date et l'heure choisies
                             validationFunction: async function () {
