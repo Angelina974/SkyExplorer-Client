@@ -13,7 +13,6 @@ kiss.loader.loadScripts([
     "models/account",
     "models/user",
     "models/group",
-    "models/model",
     "models/view",
     "models/file",
     "models/link",
