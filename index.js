@@ -4,6 +4,10 @@
  * Your application modules must be bundled and minified into a single file (app.min.js)
  */
 window.onload = async function () {
+    
+    // Switch https instead of http for production environment
+    kiss.session.secure = true
+
     // Set the lib language
     kiss.language.current = "fr"
 
