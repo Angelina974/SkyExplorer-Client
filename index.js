@@ -20,9 +20,17 @@ window.onload = async function () {
     // Load application scripts dynamically
     await kiss.loader.loadScript("./app.min")
 
-
     // Init the KissJS app
     await kiss.app.init()
+
+    // Translate delete message for documents
+    kiss.app.defineTexts({
+        "#warning delete docs": { 
+            fr: "Voulez-vous vraiment supprimer les documents selctionnés ?",
+            en: "Do you really want to delete the selected documents ?",
+            es: "¿Realmente quieres eliminar los documentos seleccionados ?"
+        },
+    })
 
     // Remove the splash screen
     $("splash").remove()
