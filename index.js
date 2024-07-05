@@ -34,6 +34,11 @@ window.onload = async function () {
             en: "Do you really want to delete the selected documents ?",
             es: "¿Realmente quieres eliminar los documentos seleccionados ?"
         },
+        "delete selected documents": {
+            fr: "Supprimer les documents sélectionnés",
+            en: "Delete selected documents",
+            es: "Eliminar los documentos seleccionados"
+        }
     })
 
     // Remove the splash screen
