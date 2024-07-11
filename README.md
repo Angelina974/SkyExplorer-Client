@@ -8,3 +8,4 @@ Ce projet est le client de SkyExplorer, une application de navigation dans le ci
 2. Faites un npm install
 3. Lancer avec la commande : `node server`
 4. Une fois cela fait, allez sur le site : https://skyexplorer.netlify.app/#
+5. Le site met un peu de temps à se charger.
