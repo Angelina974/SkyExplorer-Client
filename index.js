@@ -4,33 +4,13 @@
  * Your application modules must be bundled and minified into a single file (app.min.js)
  */
 window.onload = async function () {
-    
-    // Switch https instead of http for production environment
-    kiss.session.secure = true
-
-    // Set the lib language
-    kiss.language.current = "fr"
-
-    // Start the app
-    app.init
-        .logo()
-        .host("skyexplorer-server.onrender.com")
-        .databaseMode()
-        .logger(false)
-        .session()
-        .router()
-        .applicationLoader()
-
     // Load application scripts dynamically
     await kiss.loader.loadScript("./app.min")
-
-    // Init the KissJS app
-    await kiss.app.init()
 
     // Translate delete message for documents
     kiss.app.defineTexts({
         "#warning delete docs": { 
-            fr: "Voulez-vous vraiment supprimer les documents selctionnés ?",
+            fr: "Voulez-vous vraiment supprimer les documents sélectionnés ?",
             en: "Do you really want to delete the selected documents ?",
             es: "¿Realmente quieres eliminar los documentos seleccionados ?"
         },
@@ -41,6 +21,16 @@ window.onload = async function () {
         }
     })
 
-    // Remove the splash screen
-    $("splash").remove()
+    // Start the app
+    await kiss.app.init({
+        debug: false,
+        name: "skyexplorer",
+        logo: "./resources/img/skyExplorer.svg",
+        mode: "online",
+        host: "skyexplorer-server.onrender.com",
+        https: true,
+        loginMethods: ["internal"],
+        language: "fr",
+        useDirectory: true
+    })
 };

@@ -62,35 +62,30 @@ kiss.loader.loadStyles([
  * Your application starts here
  */
 window.onload = async function () {
-
-    // Switch http instead of https for local dev
-    kiss.session.secure = false
-
-    // Set the lib language
-    kiss.language.current = "fr"
-    
-    // Start the app
-    app.init
-        .logo()
-        .host("localhost")
-        .databaseMode()
-        .logger(true)
-        .session()
-        .router()
-        .applicationLoader()
-
-    // Init the KissJS app
-    await kiss.app.init()
-
     // Translate delete message for documents
     kiss.app.defineTexts({
         "#warning delete docs": { 
-            fr: "Voulez-vous vraiment supprimer les documents selctionnés ?",
+            fr: "Voulez-vous vraiment supprimer les documents sélectionnés ?",
             en: "Do you really want to delete the selected documents ?",
             es: "¿Realmente quieres eliminar los documentos seleccionados ?"
         },
+        "delete selected documents": {
+            fr: "Supprimer les documents sélectionnés",
+            en: "Delete selected documents",
+            es: "Eliminar los documentos seleccionados"
+        }
     })
 
-    // Remove the splash screen
-    $("splash").remove()
+    // Start the app
+    await kiss.app.init({
+        debug: true,
+        name: "skyexplorer",
+        logo: "./resources/img/skyExplorer.svg",
+        mode: "online",
+        host: "localhost",
+        https: false,
+        loginMethods: ["internal"],
+        language: "fr",
+        useDirectory: true
+    })    
 };
